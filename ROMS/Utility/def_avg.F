@@ -32,6 +32,9 @@
 # ifdef SEDIMENT
       USE mod_sediment
 # endif
+# ifdef DIAGENESIS
+      USE mod_bgcbed
+# endif
 !
       USE def_var_mod, ONLY : def_var
 !
@@ -61,7 +64,7 @@
       integer :: def_dim
 
 # ifdef SOLVE3D
-#  ifdef SEDIMENT
+#  if defined SEDIMENT || defined DIAGENESIS
       integer :: b3dgrd(4)
 #  endif
       integer :: p3dgrd(4), t3dgrd(4), u3dgrd(4), v3dgrd(4), w3dgrd(4)
@@ -202,13 +205,15 @@
      &                 NT(ng), DimIDs(11))
         IF (exit_flag.ne.NoError) RETURN
 
+#  if defined SEDIMENT || defined DIAGENESIS
+        status=def_dim(ng, model, AVG(ng)%ncid, ncname, 'Nbed',         &
+     &                 Nbed, DimIDs(16))
+        IF (exit_flag.ne.NoError) RETURN
+#  endif
+
 #  ifdef SEDIMENT
         status=def_dim(ng, iNLM, AVG(ng)%ncid, ncname, 'NST',           &
      &                 NST, DimIDs(32))
-        IF (exit_flag.ne.NoError) RETURN
-
-        status=def_dim(ng, model, AVG(ng)%ncid, ncname, 'Nbed',         &
-     &                 Nbed, DimIDs(16))
         IF (exit_flag.ne.NoError) RETURN
 
 #   if defined WRITE_WATER && defined MASKING
@@ -360,7 +365,7 @@
         w3dgrd(3)=DimIDs(10)
         w3dgrd(4)=DimIDs(12)
 #  endif
-#  ifdef SEDIMENT
+#  if defined SEDIMENT || defined DIAGENESIS
 !
 !  Define dimension vector for sediment bed layer type variables.
 !
@@ -1628,6 +1633,86 @@
           END IF
         END DO
 # endif
+
+# ifdef DIAGENESIS
+!
+!  Define BGC variables.
+!
+        DO i=1,NBGCPW
+          IF (Aout(idBpw(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idBpw(i))
+            WRITE (Vinfo( 2),'(a,1x,a)') Prefix,                        &
+     &                                   TRIM(Vname(2,idBpw(i)))
+            Vinfo( 3)=Vname(3,idBpw(i))
+            Vinfo(14)=Vname(4,idBpw(i))
+            Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+            Vinfo(20)='mask_rho'
+#  endif
+            Vinfo(22)='coordinates'
+            Aval(5)=REAL(Iinfo(1,idBpw(i),ng),r8)
+            status=def_var(ng, model, AVG(ng)%ncid,                     &
+     &                     AVG(ng)%Vid(idBpw(i)), NF_FOUT,              &
+     &                     nvd4, b3dgrd, Aval, Vinfo, ncname)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+          IF (Aout(idFpw(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idFpw(i))
+            WRITE (Vinfo( 2),'(a,1x,a)') Prefix,                        &
+     &                                   TRIM(Vname(2,idFpw(i)))
+            Vinfo( 3)=Vname(3,idFpw(i))
+            Vinfo(14)=Vname(4,idFpw(i))
+            Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+            Vinfo(20)='mask_rho'
+#  endif
+            Vinfo(22)='coordinates'
+            Aval(5)=REAL(Iinfo(1,idFpw(i),ng),r8)
+            status=def_var(ng, model, AVG(ng)%ncid,                     &
+     &                     AVG(ng)%Vid(idFpw(i)), NF_FOUT,              &
+     &                     nvd3, t2dgrd, Aval, Vinfo, ncname)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+
+        DO i=1,NBGCSM
+          IF (Aout(idBsm(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idBsm(i))
+            WRITE (Vinfo( 2),'(a,1x,a)') Prefix,                        &
+     &                                   TRIM(Vname(2,idBsm(i)))
+            Vinfo( 3)=Vname(3,idBsm(i))
+            Vinfo(14)=Vname(4,idBsm(i))
+            Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+            Vinfo(20)='mask_rho'
+#  endif
+            Vinfo(22)='coordinates'
+            Aval(5)=REAL(Iinfo(1,idBsm(i),ng),r8)
+            status=def_var(ng, model, AVG(ng)%ncid,                     &
+     &                     AVG(ng)%Vid(idBsm(i)), NF_FOUT,              &
+     &                     nvd4, b3dgrd, Aval, Vinfo, ncname)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+          IF (Aout(idFsm(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idFsm(i))
+            WRITE (Vinfo( 2),'(a,1x,a)') Prefix,                        &
+     &                                   TRIM(Vname(2,idFsm(i)))
+            Vinfo( 3)=Vname(3,idFsm(i))
+            Vinfo(14)=Vname(4,idFsm(i))
+            Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+            Vinfo(20)='mask_rho'
+#  endif
+            Vinfo(22)='coordinates'
+            Aval(5)=REAL(Iinfo(1,idFsm(i),ng),r8)
+            status=def_var(ng, model, AVG(ng)%ncid,                     &
+     &                     AVG(ng)%Vid(idFsm(i)), NF_FOUT,              &
+     &                     nvd3, t2dgrd, Aval, Vinfo, ncname)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+# endif
+
 # ifdef NEARSHORE_MELLOR
 !
 !  Define 2D radiation stress Sxx.
@@ -2274,6 +2359,28 @@
             END IF
           END DO
 #  endif
+#  ifdef DIAGENESIS
+          DO itrc=1,NBGCPW
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idBpw(itrc)))) THEN
+              got_var(idBpw(itrc))=.true.
+              AVG(ng)%Vid(idBpw(itrc))=var_id(i)
+            ELSE IF (TRIM(var_name(i)).eq.                              &
+     &               TRIM(Vname(1,idFpw(itrc)))) THEN
+              got_var(idFpw(itrc))=.true.
+              AVG(ng)%Vid(idFpw(itrc))=var_id(i)
+            END IF
+          END DO
+          DO itrc=1,NBGCSM
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idBsm(itrc)))) THEN
+              got_var(idBsm(itrc))=.true.
+              AVG(ng)%Vid(idBsm(itrc))=var_id(i)
+            ELSE IF (TRIM(var_name(i)).eq.                              &
+     &               TRIM(Vname(1,idFsm(itrc)))) THEN
+              got_var(idFsm(itrc))=.true.
+              AVG(ng)%Vid(idFsm(itrc))=var_id(i)
+            END IF
+          END DO
+#  endif
 # endif
         END DO
 !
@@ -2800,6 +2907,36 @@
           END IF
           IF (.not.got_var(idVbld(i)).and.Aout(idVbld(i),ng)) THEN
             IF (Master) WRITE (stdout,60) TRIM(Vname(1,idVbld(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+#  endif
+#  ifdef DIAGENESIS
+        DO i=1,NBGCPW
+          IF (.not.got_var(idBpw(i)).and.Aout(idBpw(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBpw(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+          IF (.not.got_var(idFpw(i)).and.Aout(idFpw(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFpw(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+        DO i=1,NBGCSM
+          IF (.not.got_var(idBsm(i)).and.Aout(idBsm(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBsm(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+          IF (.not.got_var(idFsm(i)).and.Aout(idFsm(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFsm(i))),     &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN

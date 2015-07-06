@@ -35,6 +35,10 @@
 
       logical, dimension(Ngrids) :: Lbio
       logical, dimension(NBT,Ngrids) :: Ltrc
+#ifdef DIAGENESIS
+      logical, dimension(NBGCPW,Ngrids) :: Lbpw
+      logical, dimension(NBGCSM,Ngrids) :: Lbsm
+#endif
 
       real(r8), dimension(NBT,Ngrids) :: Rbio
 
@@ -322,6 +326,40 @@
                   Aout(i,ng)=Ltrc(itrc,ng)
                 END DO
               END DO
+# ifdef DIAGENESIS
+            CASE ('Aout(idBpw)')
+              Npts=load_l(Nval, Cval, NBGCPW*Ngrids, Lbpw)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCPW
+                  i=idBpw(itrc)
+                  Aout(i,ng)=Lbpw(itrc,ng)
+                END DO
+              END DO
+            CASE ('Aout(idBsm)')
+              Npts=load_l(Nval, Cval, NBGCSM*Ngrids, Lbsm)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCSM
+                  i=idBsm(itrc)
+                  Aout(i,ng)=Lbsm(itrc,ng)
+                END DO
+              END DO
+            CASE ('Aout(idFpw)')
+              Npts=load_l(Nval, Cval, NBGCPW*Ngrids, Lbpw)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCPW
+                  i=idFpw(itrc)
+                  Aout(i,ng)=Lbpw(itrc,ng)
+                END DO
+              END DO
+            CASE ('Aout(idFsm)')
+              Npts=load_l(Nval, Cval, NBGCSM*Ngrids, Lbsm)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCSM
+                  i=idFsm(itrc)
+                  Aout(i,ng)=Lbsm(itrc,ng)
+                END DO
+              END DO
+# endif
             CASE ('Aout(idTTav)')
               Npts=load_l(Nval, Cval, NBT*Ngrids, Ltrc)
               DO ng=1,Ngrids
@@ -818,6 +856,32 @@
      &            'Write out averaged tracer ', i,                      &
      &            TRIM(Vname(1,idTvar(i)))
             END DO
+# ifdef DIAGENESIS
+            DO i=1,NBGCPW
+              IF (Aout(idBpw(i),ng)) WRITE (out,120)                    &
+     &            Aout(idBpw(i),ng), 'Aout(idBpw)',                     &
+     &            'Write out averaged tracer ', i,                      &
+     &            TRIM(Vname(1,idBpw(i)))
+            END DO
+            DO i=1,NBGCSM
+              IF (Aout(idBsm(i),ng)) WRITE (out,120)                    &
+     &            Aout(idBsm(i),ng), 'Aout(idBsm)',                     &
+     &            'Write out averaged tracer ', i,                      &
+     &            TRIM(Vname(1,idBsm(i)))
+            END DO
+            DO i=1,NBGCPW
+              IF (Aout(idFpw(i),ng)) WRITE (out,120)                    &
+     &            Aout(idFpw(i),ng), 'Aout(idFpw)',                     &
+     &            'Write out averaged flux ', i,                        &
+     &            TRIM(Vname(1,idFpw(i)))
+            END DO
+            DO i=1,NBGCSM
+              IF (Aout(idFsm(i),ng)) WRITE (out,120)                    &
+     &            Aout(idFsm(i),ng), 'Aout(idFsm)',                     &
+     &            'Write out averaged flux ', i,                        &
+     &            TRIM(Vname(1,idFsm(i)))
+            END DO
+# endif
             DO itrc=1,NBT
               i=idbio(itrc)
               IF (Aout(idTTav(i),ng)) WRITE (out,120)                   &

@@ -33,6 +33,9 @@
 #if defined SEDIMENT || defined BBL_MODEL
       USE mod_sediment
 #endif
+#ifdef DIAGENESIS
+      USE mod_bgcbed
+#endif
       USE mod_stepping
 #ifdef PROPAGATOR
       USE mod_storage
@@ -243,7 +246,7 @@
                   RETURN
                 END IF
               END DO
-#if defined SEDIMENT && defined SOLVE3D
+#if (defined SEDIMENT || defined DIAGENESIS) && defined SOLVE3D
             CASE ('Nbed')
               Npts=load_i(Nval, Rval, 1, Ivalue)
               Nbed=Ivalue(1)
@@ -1770,6 +1773,40 @@
                   Aout(i,ng)=Ltracer(itrc,ng)
                 END DO
               END DO
+# ifdef DIAGENESIS
+            CASE ('Aout(idBpw)')
+              Npts=load_l(Nval, Cval, NBGCPW*Ngrids, Ltracer)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCPW
+                  i=idBpw(itrc)
+                  Aout(i,ng)=Ltracer(itrc,ng)
+                END DO
+              END DO
+            CASE ('Aout(idBsm)')
+              Npts=load_l(Nval, Cval, NBGCSM*Ngrids, Ltracer)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCSM
+                  i=idBsm(itrc)
+                  Aout(i,ng)=Ltracer(itrc,ng)
+                END DO
+              END DO
+            CASE ('Aout(idFpw)')
+              Npts=load_l(Nval, Cval, NBGCPW*Ngrids, Ltracer)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCPW
+                  i=idFpw(itrc)
+                  Aout(i,ng)=Ltracer(itrc,ng)
+                END DO
+              END DO
+            CASE ('Aout(idFsm)')
+              Npts=load_l(Nval, Cval, NBGCSM*Ngrids, Ltracer)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCSM
+                  i=idFsm(itrc)
+                  Aout(i,ng)=Ltracer(itrc,ng)
+                END DO
+              END DO
+# endif
             CASE ('Aout(idUsms)')
               Npts=load_l(Nval, Cval, Ngrids, Aout(idUsms,:))
             CASE ('Aout(idVsms)')

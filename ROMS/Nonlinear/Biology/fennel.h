@@ -78,6 +78,9 @@
       USE mod_ncparam
       USE mod_ocean
       USE mod_stepping
+#ifdef DIAGENESIS
+      USE mod_bgcbed
+#endif
 !
       implicit none
 !
@@ -133,6 +136,13 @@
      &                   DIAGS(ng) % DiaBio2d,                          &
      &                   DIAGS(ng) % DiaBio3d,                          &
 #endif
+#ifdef DIAGENESIS
+     &                   GRID(ng) % h,                                  &
+     &                   BGCBED(ng) % bpw,                              &
+     &                   BGCBED(ng) % bsm,                              &
+     &                   BGCBED(ng) % bpwflux,                          &
+     &                   BGCBED(ng) % bsmflux,                          &
+#endif
      &                   OCEAN(ng) % t)
 
 #ifdef PROFILE
@@ -166,6 +176,11 @@
 #endif
 #ifdef DIAGNOSTICS_BIO
      &                         DiaBio2d, DiaBio3d,                      &
+#endif
+#ifdef DIAGENESIS
+     &                         h,                                       &
+     &                         bpw, bsm,                                &
+     &                         bpwflux, bsmflux,                        &
 #endif
      &                         t)
 !-----------------------------------------------------------------------
@@ -212,6 +227,13 @@
       real(r8), intent(inout) :: DiaBio3d(LBi:,LBj:,:,:)
 # endif
       real(r8), intent(inout) :: t(LBi:,LBj:,:,:,:)
+# ifdef DIAGENESIS
+      real(r8), intent(in) :: h(LBi:,LBj:)
+      real(r8), intent(inout) :: bpw(LBi:,LBj:,:,:)
+      real(r8), intent(inout) :: bsm(LBi:,LBj:,:,:)
+      real(r8), intent(inout) :: bpwflux(LBi:,LBj:,:)
+      real(r8), intent(inout) :: bsmflux(LBi:,LBj:,:)
+# endif
 #else
 # ifdef MASKING
       real(r8), intent(in) :: rmask(LBi:UBi,LBj:UBj)
@@ -240,6 +262,13 @@
       real(r8), intent(inout) :: DiaBio3d(LBi:UBi,LBj:UBj,UBk,NDbio3d)
 # endif
       real(r8), intent(inout) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
+# ifdef DIAGENESIS
+      real(r8), intent(in) :: h(LBi:UBi,LBj:UBj)
+      real(r8), intent(inout) :: bpw(LBi:UBi,LBj:UBj,Nbed,NBGCPW)
+      real(r8), intent(inout) :: bsm(LBi:UBi,LBj:UBj,Nbed,NBGCSM)
+      real(r8), intent(inout) :: bpwflux(LBi:UBi,LBj:UBj,NBGCPW)
+      real(r8), intent(inout) :: bsmflux(LBi:UBi,LBj:UBj,NBGCSM)
+# endif
 #endif
 !
 !  Local variable declarations.
@@ -467,6 +496,9 @@
 #elif defined CARBON || defined PHOSPHORUS
       Wbio(5)=wSDet(ng)               ! small Carbon- or Phosphorus-detritus
       Wbio(6)=wLDet(ng)               ! large Carbon- or Phosphorus-detritus
+#endif
+#ifdef DIAGENESIS
+      dia_count=dia_count+1
 #endif
 !
 !  Compute inverse thickness to avoid repeated divisions.
@@ -1237,6 +1269,14 @@
 !  "Bio(:,:,isink)" in terms of a set of parabolic segments within each
 !  grid box. Then, compute semi-Lagrangian flux due to sinking.
 !
+#if defined DIAGENESIS
+          DO itrc=1,NBGCSM
+            DO i=Istr,Iend
+              bsmflux(i,j,itrc)=0.0_r8
+            END DO
+          END DO
+#endif
+
           SINK_LOOP: DO isink=1,Nsink
             ibio=idsink(isink)
 !
@@ -1407,7 +1447,25 @@
               END DO
             END DO
 
-#ifdef BIO_SEDIMENT
+#if defined DIAGENESIS
+!
+!  Biogeochemical model run out of sink loop
+!
+            IF ((ibio.eq.iPhyt).or.                                     &
+     &          (ibio.eq.iSDeN).or.                                     &
+     &          (ibio.eq.iLDeN)) THEN
+              DO i=Istr,Iend
+                cff=FC(i,0)/dtdays*PhyCN(ng)
+                bsmflux(i,j,iPOMf)=bsmflux(i,j,iPOMf)+cff*0.54_r8
+                bsmflux(i,j,iPOMs)=bsmflux(i,j,iPOMs)+cff*0.27_r8
+                bsmflux(i,j,iPOMn)=bsmflux(i,j,iPOMn)+cff*0.19_r8
+!                bsmflux(i,j,iPOMf)=cff*0.54_r8
+!                bsmflux(i,j,iPOMs)=cff*0.27_r8
+!                bsmflux(i,j,iPOMn)=cff*0.19_r8
+              END DO
+            END IF
+
+#elif defined BIO_SEDIMENT
 !
 !  Particulate flux reaching the seafloor is remineralized and returned
 !  to the dissolved nitrate pool. Without this conversion, particulate
@@ -1493,7 +1551,31 @@
 # endif
 #endif
           END DO SINK_LOOP
-#ifdef BIO_SEDIMENT_PARAMETER
+#if defined DIAGENESIS
+!
+!  Biogeochemical model run
+!
+          IF (dia_count.eq.1) THEN
+            CALL diagenesis (ng, tile,                                  &
+     &              Istr, Iend, LBi, UBi, LBj, UBj, N(ng), NT(ng),      &
+     &              IminS, ImaxS, j, dtdays,                            &
+     &              Bio(IminS:,1,:), h(IminS:,j),                       &
+     &              bpw, bsm, bpwflux, bsmflux)
+!
+            DO i=Istr,Iend
+              cff=dtdays*Hz_inv(i,1)
+              Bio(i,1,iNH4_)=Bio(i,1,iNH4_)-cff*bpwflux(i,j,iwNH4)
+              Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff*bpwflux(i,j,iwNO3)
+              Bio(i,1,iPO4_)=Bio(i,1,iPO4_)-cff*bpwflux(i,j,iwPO4)
+              Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff*bpwflux(i,j,iwO2_)
+# ifdef H2S
+              Bio(i,1,iH2S_)=Bio(i,1,iH2S_)-cff*bpwflux(i,j,iwH2S)
+# endif
+!              Bio(i,1,iTIC_)=Bio(i,1,iTIC_)-cff*bpwflux(i,j,iwDOMf)
+!              Bio(i,1,iTIC_)=Bio(i,1,iTIC_)-cff*bpwflux(i,j,iwDOMs)
+            END DO
+          ENDIF
+#elif defined BIO_SEDIMENT_PARAMETER
 !
 !  Elution and oxygen consumption parameters (okada)
 !
@@ -1560,8 +1642,18 @@
         END DO
       END DO J_LOOP
 
+#ifdef DIAGENESIS
+      !IF (dia_count.ge.20) THEN
+        !IF (Master) WRITE (stdout,*) 'DIAGENESIS done!'
+        dia_count=0
+      !END IF
+#endif
       RETURN
       END SUBROUTINE biology_tile
+
+#ifdef DIAGENESIS
+# include "diagenesis.h"
+#endif
 
 #ifdef CARBON
 # ifdef pCO2_RZ

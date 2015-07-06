@@ -29,6 +29,9 @@
 # if defined SEDIMENT || defined BBL_MODEL
       USE mod_sediment
 # endif
+# ifdef DIAGENESIS
+      USE mod_bgcbed
+# endif
 !
       USE def_var_mod, ONLY : def_var
 !
@@ -112,13 +115,15 @@
      &                 NT(ng), DimIDs(11))
         IF (exit_flag.ne.NoError) RETURN
 
+#  if defined SEDIMENT || defined DIAGENESIS
+        status=def_dim(ng, iNLM, STA(ng)%ncid, ncname, 'Nbed',          &
+     &                 Nbed, DimIDs(16))
+        IF (exit_flag.ne.NoError) RETURN
+#  endif
+
 #  ifdef SEDIMENT
         status=def_dim(ng, iNLM, STA(ng)%ncid, ncname, 'NST',           &
      &                 NST, DimIDs(32))
-        IF (exit_flag.ne.NoError) RETURN
-
-        status=def_dim(ng, iNLM, STA(ng)%ncid, ncname, 'Nbed',          &
-     &                 Nbed, DimIDs(16))
         IF (exit_flag.ne.NoError) RETURN
 #  endif
 
@@ -1448,6 +1453,74 @@
           IF (exit_flag.ne.NoError) RETURN
         END IF
 # endif
+
+# ifdef DIAGENESIS
+!
+!  Define BGC variables in each bed layer.
+!
+        DO i=1,NBGCPW
+          IF (Sout(idBpw(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idBpw(i))
+            Vinfo( 2)=Vname(2,idBpw(i))
+            Vinfo( 3)=Vname(3,idBpw(i))
+            Vinfo(14)=Vname(4,idBpw(i))
+            Vinfo(16)=Vname(1,idtime)
+            status=def_var(ng, iNLM, STA(ng)%ncid,                      &
+     &                     STA(ng)%Vid(idBpw(i)), NF_FOUT,              &
+     &                     3, bgrd, Aval, Vinfo, ncname,                &
+     &                     SetFillVal = .TRUE.,                         &
+     &                     SetParAccess = .FALSE.)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+        DO i=1,NBGCSM
+          IF (Sout(idBsm(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idBsm(i))
+            Vinfo( 2)=Vname(2,idBsm(i))
+            Vinfo( 3)=Vname(3,idBsm(i))
+            Vinfo(14)=Vname(4,idBsm(i))
+            Vinfo(16)=Vname(1,idtime)
+            status=def_var(ng, iNLM, STA(ng)%ncid,                      &
+     &                     STA(ng)%Vid(idBsm(i)), NF_FOUT,              &
+     &                     3, bgrd, Aval, Vinfo, ncname,                &
+     &                     SetFillVal = .TRUE.,                         &
+     &                     SetParAccess = .FALSE.)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+
+        DO i=1,NBGCPW
+          IF (Sout(idFpw(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idFpw(i))
+            Vinfo( 2)=Vname(2,idFpw(i))
+            Vinfo( 3)=Vname(3,idFpw(i))
+            Vinfo(14)=Vname(4,idFpw(i))
+            Vinfo(16)=Vname(1,idtime)
+            status=def_var(ng, iNLM, STA(ng)%ncid,                      &
+     &                     STA(ng)%Vid(idFpw(i)), NF_FOUT,              &
+     &                     2, pgrd, Aval, Vinfo, ncname,                &
+     &                     SetFillVal = .TRUE.,                         &
+     &                     SetParAccess = .FALSE.)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+        DO i=1,NBGCSM
+          IF (Sout(idFsm(i),ng)) THEN
+            Vinfo( 1)=Vname(1,idFsm(i))
+            Vinfo( 2)=Vname(2,idFsm(i))
+            Vinfo( 3)=Vname(3,idFsm(i))
+            Vinfo(14)=Vname(4,idFsm(i))
+            Vinfo(16)=Vname(1,idtime)
+            status=def_var(ng, iNLM, STA(ng)%ncid,                      &
+     &                     STA(ng)%Vid(idFsm(i)), NF_FOUT,              &
+     &                     2, pgrd, Aval, Vinfo, ncname,                &
+     &                     SetFillVal = .TRUE.,                         &
+     &                     SetParAccess = .FALSE.)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+# endif
+
 !
 !-----------------------------------------------------------------------
 !  Leave definition mode.
@@ -1786,6 +1859,32 @@
             END IF
           END DO
 #  endif
+# endif
+# ifdef DIAGENESIS
+          DO itrc=1,NBGCPW
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idBpw(itrc)))) THEN
+              got_var(idBpw(itrc))=.TRUE.
+              STA(ng)%Vid(idBpw(itrc))=var_id(i)
+            END IF
+          END DO
+          DO itrc=1,NBGCSM
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idBsm(itrc)))) THEN
+              got_var(idBsm(itrc))=.TRUE.
+              STA(ng)%Vid(idBsm(itrc))=var_id(i)
+            END IF
+          END DO
+          DO itrc=1,NBGCPW
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idFpw(itrc)))) THEN
+              got_var(idFpw(itrc))=.TRUE.
+              STA(ng)%Vid(idFpw(itrc))=var_id(i)
+            END IF
+          END DO
+          DO itrc=1,NBGCSM
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idFsm(itrc)))) THEN
+              got_var(idFsm(itrc))=.TRUE.
+              STA(ng)%Vid(idFsm(itrc))=var_id(i)
+            END IF
+          END DO
 # endif
         END DO
 !
@@ -2292,6 +2391,40 @@
           END IF
         END DO
 #  endif
+# endif
+# ifdef DIAGENESIS
+        DO i=1,NBGCPW
+          IF (.not.got_var(idBpw(i)).and.Sout(idBpw(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBpw(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+        DO i=1,NBGCSM
+          IF (.not.got_var(idBsm(i)).and.Sout(idBsm(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBsm(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+        DO i=1,NBGCPW
+          IF (.not.got_var(idFpw(i)).and.Sout(idFpw(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFpw(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+        DO i=1,NBGCSM
+          IF (.not.got_var(idFsm(i)).and.Sout(idFsm(i),ng)) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFsm(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
 # endif
 !
 !  Set unlimited time record dimension to the appropriate value.

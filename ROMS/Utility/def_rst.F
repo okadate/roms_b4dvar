@@ -33,6 +33,9 @@
 #if defined SEDIMENT || defined BBL_MODEL
       USE mod_sediment
 #endif
+#ifdef DIAGENESIS
+      USE mod_bgcbed
+#endif
 !
       USE def_var_mod, ONLY : def_var
 !
@@ -187,13 +190,15 @@
      &                 NT(ng), DimIDs(11))
         IF (exit_flag.ne.NoError) RETURN
 
+# if defined SEDIMENT || defined DIAGENESIS
+        status=def_dim(ng, iNLM, RST(ng)%ncid, ncname, 'Nbed',          &
+     &                 Nbed, DimIDs(16))
+        IF (exit_flag.ne.NoError) RETURN
+# endif
+
 # ifdef SEDIMENT
         status=def_dim(ng, iNLM, RST(ng)%ncid, ncname, 'NST',           &
      &                 NST, DimIDs(32))
-        IF (exit_flag.ne.NoError) RETURN
-
-        status=def_dim(ng, iNLM, RST(ng)%ncid, ncname, 'Nbed',          &
-     &                 Nbed, DimIDs(16))
         IF (exit_flag.ne.NoError) RETURN
 
 #  if !defined PERFECT_RESTART && \
@@ -1349,6 +1354,97 @@
           IF (exit_flag.ne.NoError) RETURN
         END DO
 # endif
+
+# ifdef DIAGENESIS
+!
+!  Define bgc variables in each bed layer.
+!
+        DO i=1,NBGCPW
+          Vinfo( 1)=Vname(1,idBpw(i))
+          Vinfo( 2)=Vname(2,idBpw(i))
+          Vinfo( 3)=Vname(3,idBpw(i))
+          Vinfo(14)=Vname(4,idBpw(i))
+          Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+#   if defined PERFECT_RESTART
+          Vinfo(24)='_FillValue'
+          Aval(6)=spval
+#   else
+          Vinfo(20)='mask_rho'
+#   endif
+#  endif
+          Vinfo(22)='coordinates'
+          Aval(5)=REAL(Iinfo(1,idBpw(i),ng),r8)
+          status=def_var(ng, iNLM, RST(ng)%ncid,                        &
+     &                   RST(ng)%Vid(idBpw(i)), NF_FRST,                &
+     &                   nvd4, sr3dgrd, Aval, Vinfo, ncname)
+          IF (exit_flag.ne.NoError) RETURN
+        END DO
+        DO i=1,NBGCSM
+          Vinfo( 1)=Vname(1,idBsm(i))
+          Vinfo( 2)=Vname(2,idBsm(i))
+          Vinfo( 3)=Vname(3,idBsm(i))
+          Vinfo(14)=Vname(4,idBsm(i))
+          Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+#   if defined PERFECT_RESTART
+          Vinfo(24)='_FillValue'
+          Aval(6)=spval
+#   else
+          Vinfo(20)='mask_rho'
+#   endif
+#  endif
+          Vinfo(22)='coordinates'
+          Aval(5)=REAL(Iinfo(1,idBsm(i),ng),r8)
+          status=def_var(ng, iNLM, RST(ng)%ncid,                        &
+     &                   RST(ng)%Vid(idBsm(i)), NF_FRST,                &
+     &                   nvd4, sr3dgrd, Aval, Vinfo, ncname)
+          IF (exit_flag.ne.NoError) RETURN
+        END DO
+        DO i=1,NBGCPW
+          Vinfo( 1)=Vname(1,idFpw(i))
+          Vinfo( 2)=Vname(2,idFpw(i))
+          Vinfo( 3)=Vname(3,idFpw(i))
+          Vinfo(14)=Vname(4,idFpw(i))
+          Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+#   if defined PERFECT_RESTART
+          Vinfo(24)='_FillValue'
+          Aval(6)=spval
+#   else
+          Vinfo(20)='mask_rho'
+#   endif
+#  endif
+          Vinfo(22)='coordinates'
+          Aval(5)=REAL(Iinfo(1,idFpw(i),ng),r8)
+          status=def_var(ng, iNLM, RST(ng)%ncid,                        &
+     &                   RST(ng)%Vid(idFpw(i)), NF_FRST,               &
+     &                   nvd3, sr2dgrd, Aval, Vinfo, ncname)
+          IF (exit_flag.ne.NoError) RETURN
+        END DO
+        DO i=1,NBGCSM
+          Vinfo( 1)=Vname(1,idFsm(i))
+          Vinfo( 2)=Vname(2,idFsm(i))
+          Vinfo( 3)=Vname(3,idFsm(i))
+          Vinfo(14)=Vname(4,idFsm(i))
+          Vinfo(16)=Vname(1,idtime)
+#  if defined WRITE_WATER && defined MASKING
+#   if defined PERFECT_RESTART
+          Vinfo(24)='_FillValue'
+          Aval(6)=spval
+#   else
+          Vinfo(20)='mask_rho'
+#   endif
+#  endif
+          Vinfo(22)='coordinates'
+          Aval(5)=REAL(Iinfo(1,idFsm(i),ng),r8)
+          status=def_var(ng, iNLM, RST(ng)%ncid,                        &
+     &                   RST(ng)%Vid(idFsm(i)), NF_FRST,               &
+     &                   nvd3, sr2dgrd, Aval, Vinfo, ncname)
+          IF (exit_flag.ne.NoError) RETURN
+        END DO
+# endif
+
 # if defined SEDIMENT || defined BBL_MODEL
 !
 !  define exposed sediment layer properties. Notice that only the
@@ -1690,6 +1786,30 @@
             END IF
           END DO
 # endif
+
+# ifdef DIAGENESIS
+          DO itrc=1,NBGCPW
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idBpw(itrc)))) THEN
+              got_var(idBpw(itrc))=.TRUE.
+              RST(ng)%Vid(idBpw(itrc))=var_id(i)
+            END IF
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idFpw(itrc)))) THEN
+              got_var(idFpw(itrc))=.TRUE.
+              RST(ng)%Vid(idFpw(itrc))=var_id(i)
+            END IF
+          END DO
+          DO itrc=1,NBGCSM
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idBsm(itrc)))) THEN
+              got_var(idBsm(itrc))=.TRUE.
+              RST(ng)%Vid(idBsm(itrc))=var_id(i)
+            END IF
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idFsm(itrc)))) THEN
+              got_var(idFsm(itrc))=.TRUE.
+              RST(ng)%Vid(idFsm(itrc))=var_id(i)
+            END IF
+          END DO
+# endif
+
 # if defined SEDIMENT || defined BBL_MODEL
           DO itrc=1,6
             IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idBott(itrc)))) THEN
@@ -1932,6 +2052,38 @@
           END IF
         END DO
 # endif
+
+# ifdef DIAGENESIS
+        DO i=1,NBGCPW
+          IF (.not.got_var(idBpw(i))) THEN
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idBpw(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+          IF (.not.got_var(idFpw(i))) THEN
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idFpw(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+        DO i=1,NBGCSM
+          IF (.not.got_var(idBsm(i))) THEN
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idBsm(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+          IF (.not.got_var(idFsm(i))) THEN
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idFsm(i))),     &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+# endif
+
 # if defined SEDIMENT || defined BBL_MODEL
         DO i=1,6
           IF (.not.got_var(idBott(i))) THEN

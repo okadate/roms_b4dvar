@@ -60,6 +60,99 @@
               CASE ('idTvar(iH2S_)')
                 idTvar(iH2S_)=varid
 # endif
+# ifdef DIAGENESIS
+              CASE ('idBpw(iwO2_)')
+                idBpw(iwO2_)=varid
+              CASE ('idBpw(iwNH4)')
+                idBpw(iwNH4)=varid
+              CASE ('idBpw(iwNO3)')
+                idBpw(iwNO3)=varid
+              CASE ('idBpw(iwPO4)')
+                idBpw(iwPO4)=varid
+              CASE ('idBpw(iwSO4)')
+                idBpw(iwSO4)=varid
+              CASE ('idBpw(iwH2S)')
+                idBpw(iwH2S)=varid
+              CASE ('idBpw(iwMn_)')
+                idBpw(iwMn_)=varid
+              CASE ('idBpw(iwFe_)')
+                idBpw(iwFe_)=varid
+              CASE ('idBpw(iwCH4)')
+                idBpw(iwCH4)=varid
+              CASE ('idBpw(iwDOMf)')
+                idBpw(iwDOMf)=varid
+              CASE ('idBpw(iwDOMs)')
+                idBpw(iwDOMs)=varid
+                
+              CASE ('idBsm(iPOMf)')
+                idBsm(iPOMf)=varid
+              CASE ('idBsm(iPOMs)')
+                idBsm(iPOMs)=varid
+              CASE ('idBsm(iPOMn)')
+                idBsm(iPOMn)=varid
+              CASE ('idBsm(iFeOA)')
+                idBsm(iFeOA)=varid
+              CASE ('idBsm(iFeOB)')
+                idBsm(iFeOB)=varid
+              CASE ('idBsm(iFeOP)')
+                idBsm(iFeOP)=varid
+              CASE ('idBsm(iMnOA)')
+                idBsm(iMnOA)=varid
+              CASE ('idBsm(iMnOB)')
+                idBsm(iMnOB)=varid
+              CASE ('idBsm(iS0__)')
+                idBsm(iS0__)=varid
+              CASE ('idBsm(iFeS_)')
+                idBsm(iFeS_)=varid
+              CASE ('idBsm(iFeS2)')
+                idBsm(iFes2)=varid
+                
+              CASE ('idFpw(iwO2_)')
+                idFpw(iwO2_)=varid
+              CASE ('idFpw(iwNH4)')
+                idFpw(iwNH4)=varid
+              CASE ('idFpw(iwNO3)')
+                idFpw(iwNO3)=varid
+              CASE ('idFpw(iwPO4)')
+                idFpw(iwPO4)=varid
+              CASE ('idFpw(iwSO4)')
+                idFpw(iwSO4)=varid
+              CASE ('idFpw(iwH2S)')
+                idFpw(iwH2S)=varid
+              CASE ('idFpw(iwMn_)')
+                idFpw(iwMn_)=varid
+              CASE ('idFpw(iwFe_)')
+                idFpw(iwFe_)=varid
+              CASE ('idFpw(iwCH4)')
+                idFpw(iwCH4)=varid
+              CASE ('idFpw(iwDOMf)')
+                idFpw(iwDOMf)=varid
+              CASE ('idFpw(iwDOMs)')
+                idFpw(iwDOMs)=varid
+                
+              CASE ('idFsm(iPOMf)')
+                idFsm(iPOMf)=varid
+              CASE ('idFsm(iPOMs)')
+                idFsm(iPOMs)=varid
+              CASE ('idFsm(iPOMn)')
+                idFsm(iPOMn)=varid
+              CASE ('idFsm(iFeOA)')
+                idFsm(iFeOA)=varid
+              CASE ('idFsm(iFeOB)')
+                idFsm(iFeOB)=varid
+              CASE ('idFsm(iFeOP)')
+                idFsm(iFeOP)=varid
+              CASE ('idFsm(iMnOA)')
+                idFsm(iMnOA)=varid
+              CASE ('idFsm(iMnOB)')
+                idFsm(iMnOB)=varid
+              CASE ('idFsm(iS0__)')
+                idFsm(iS0__)=varid
+              CASE ('idFsm(iFeS_)')
+                idFsm(iFeS_)=varid
+              CASE ('idFsm(iFeS2)')
+                idFsm(iFes2)=varid
+# endif
 
 /*
 **  Adjoint sensitivity state biological tracers.

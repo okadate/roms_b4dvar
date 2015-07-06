@@ -127,6 +127,10 @@
       USE mod_sedbed
       USE mod_sediment
 # endif
+#ifdef DIAGENESIS
+      USE mod_bgcbed
+      USE mod_biology
+#endif
 !
       USE exchange_2d_mod
 # ifdef SOLVE3D
@@ -441,6 +445,60 @@
                 SEDBED(ng)%avgbedldv(i,j,it)=SEDBED(ng)%bedldv(i,j,it)
 #   ifdef WET_DRY
                 SEDBED(ng)%avgbedldv(i,j,it)=SEDBED(ng)%bedldv(i,j,it)* &
+     &                                       GRID(ng)%vmask_full(i,j)
+#   endif
+              END DO
+            END DO
+          END IF
+        END DO
+#  endif
+
+#  ifdef DIAGENESIS
+        DO it=1,NBGCPW
+          IF (Aout(idBpw(it),ng)) THEN
+            DO j=JstrR,JendR
+              DO i=Istr,IendR
+                BGCBED(ng)%avgpw(i,j,k,it)=BGCBED(ng)%bpw(i,j,k,it)
+#   ifdef WET_DRY
+                BGCBED(ng)%avgpw(i,j,k,it)=BGCBED(ng)%bpw(i,j,it)k,* &
+     &                                       GRID(ng)%umask_full(i,j)
+#   endif
+              END DO
+            END DO
+          END IF
+
+          IF (Aout(idFpw(it),ng)) THEN
+            DO j=Jstr,JendR
+              DO i=IstrR,IendR
+                BGCBED(ng)%avgpwf(i,j,it)=BGCBED(ng)%bpwflux(i,j,it)
+#   ifdef WET_DRY
+                BGCBED(ng)%avgpwf(i,j,it)=BGCBED(ng)%bpwflux(i,j,it)* &
+     &                                       GRID(ng)%vmask_full(i,j)
+#   endif
+              END DO
+            END DO
+          END IF
+        END DO
+
+        DO it=1,NBGCSM
+          IF (Aout(idBsm(it),ng)) THEN
+            DO j=JstrR,JendR
+              DO i=Istr,IendR
+                BGCBED(ng)%avgsm(i,j,k,it)=BGCBED(ng)%bsm(i,j,k,it)
+#   ifdef WET_DRY
+                BGCBED(ng)%avgsm(i,j,k,it)=BGCBED(ng)%bsm(i,j,k,it)* &
+     &                                       GRID(ng)%umask_full(i,j)
+#   endif
+              END DO
+            END DO
+          END IF
+
+          IF (Aout(idFsm(it),ng)) THEN
+            DO j=Jstr,JendR
+              DO i=IstrR,IendR
+                BGCBED(ng)%avgsmf(i,j,it)=BGCBED(ng)%bsmflux(i,j,it)
+#   ifdef WET_DRY
+                BGCBED(ng)%avgsmf(i,j,it)=BGCBED(ng)%bsmflux(i,j,it)* &
      &                                       GRID(ng)%vmask_full(i,j)
 #   endif
               END DO
@@ -1451,6 +1509,61 @@
      &                                       GRID(ng)%vmask_full(i,j)*  &
 #   endif
      &                                       SEDBED(ng)%bedldv(i,j,it)
+              END DO
+            END DO
+          END IF
+        END DO
+#  endif
+
+
+#  ifdef DIAGENESIS
+        DO it=1,NBGCPW
+          IF (Aout(idBpw(it),ng)) THEN
+            DO j=JstrR,JendR
+              DO i=Istr,IendR
+                BGCBED(ng)%avgpw(i,j,k,it)=BGCBED(ng)%avgpw(i,j,k,it)+  &
+#   ifdef WET_DRY
+     &                                     GRID(ng)%umask_full(i,j)*    &
+#   endif
+     &                                     BGCBED(ng)%bpw(i,j,k,it)
+              END DO
+            END DO
+          END IF
+
+          IF (Aout(idFpw(it),ng)) THEN
+            DO j=Jstr,JendR
+              DO i=IstrR,IendR
+                BGCBED(ng)%avgpwf(i,j,it)=BGCBED(ng)%avgpwf(i,j,it)+    &
+#   ifdef WET_DRY
+     &                                    GRID(ng)%vmask_full(i,j)*     &
+#   endif
+     &                                    BGCBED(ng)%bpwflux(i,j,it)
+              END DO
+            END DO
+          END IF
+        END DO
+
+        DO it=1,NBGCSM
+          IF (Aout(idBsm(it),ng)) THEN
+            DO j=JstrR,JendR
+              DO i=Istr,IendR
+                BGCBED(ng)%avgsm(i,j,k,it)=BGCBED(ng)%avgsm(i,j,k,it)+  &
+#   ifdef WET_DRY
+     &                                     GRID(ng)%umask_full(i,j)*    &
+#   endif
+     &                                     BGCBED(ng)%bsm(i,j,k,it)
+              END DO
+            END DO
+          END IF
+
+          IF (Aout(idFsm(it),ng)) THEN
+            DO j=Jstr,JendR
+              DO i=IstrR,IendR
+                BGCBED(ng)%avgsmf(i,j,it)=BGCBED(ng)%avgsmf(i,j,it)+    &
+#   ifdef WET_DRY
+     &                                    GRID(ng)%vmask_full(i,j)*     &
+#   endif
+     &                                    BGCBED(ng)%bsmflux(i,j,it)
               END DO
             END DO
           END IF
@@ -2590,6 +2703,100 @@
      &                            NghostPoints,                         &
      &                            EWperiodic(ng), NSperiodic(ng),       &
      &                            SEDBED(ng)%avgbedldv(:,:,it))
+#   endif
+            END IF
+          END IF
+        END DO
+#  endif
+
+#  ifdef DIAGENESIS
+        DO it=1,NBGCPW
+          IF (Aout(idBpw(it),ng)) THEN
+            DO k=1,Nbed
+              DO j=JstrR,JendR
+                DO i=Istr,IendR
+                  BGCBED(ng)%avgpw(i,j,k,it)=rfac(i,j)*                 &
+     &                                       BGCBED(ng)%avgpw(i,j,k,it)
+                END DO
+              END DO
+            END DO
+            IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+              CALL exchange_r3d_tile (ng, tile,                         &
+     &                                LBi, UBi, LBj, UBj, 1, Nbed,      &
+     &                                BGCBED(ng)%avgpw(:,:,:,it))
+#   ifdef DISTRIBUTE
+              CALL mp_exchange3d (ng, tile, iNLM, 1,                    &
+     &                            LBi, UBi, LBj, UBj, 1, Nbed,          &
+     &                            NghostPoints,                         &
+     &                            EWperiodic(ng), NSperiodic(ng),       &
+     &                            BGCBED(ng)%avgpw(:,:,:,it))
+#   endif
+            END IF
+          END IF
+
+          IF (Aout(idFpw(it),ng)) THEN
+            DO j=JstrR,JendR
+              DO i=Istr,IendR
+                BGCBED(ng)%avgpwf(i,j,it)=rfac(i,j)*                    &
+     &                                    BGCBED(ng)%avgpwf(i,j,it)
+              END DO
+            END DO
+            IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+              CALL exchange_r2d_tile (ng, tile,                         &
+     &                                LBi, UBi, LBj, UBj,               &
+     &                                BGCBED(ng)%avgpwf(:,:,it))
+#   ifdef DISTRIBUTE
+              CALL mp_exchange2d (ng, tile, iNLM, 1,                    &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            NghostPoints,                         &
+     &                            EWperiodic(ng), NSperiodic(ng),       &
+     &                            BGCBED(ng)%avgpwf(:,:,it))
+#   endif
+            END IF
+          END IF
+        END DO
+
+        DO it=1,NBGCSM
+          IF (Aout(idBsm(it),ng)) THEN
+            DO k=1,Nbed
+              DO j=JstrR,JendR
+                DO i=Istr,IendR
+                  BGCBED(ng)%avgsm(i,j,k,it)=rfac(i,j)*                 &
+     &                                       BGCBED(ng)%avgsm(i,j,k,it)
+                END DO
+              END DO
+            END DO
+            IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+              CALL exchange_r3d_tile (ng, tile,                         &
+     &                                LBi, UBi, LBj, UBj, 1, Nbed,      &
+     &                                BGCBED(ng)%avgsm(:,:,:,it))
+#   ifdef DISTRIBUTE
+              CALL mp_exchange3d (ng, tile, iNLM, 1,                    &
+     &                            LBi, UBi, LBj, UBj, 1, Nbed,          &
+     &                            NghostPoints,                         &
+     &                            EWperiodic(ng), NSperiodic(ng),       &
+     &                            BGCBED(ng)%avgsm(:,:,:,it))
+#   endif
+            END IF
+          END IF
+
+          IF (Aout(idFsm(it),ng)) THEN
+            DO j=JstrR,JendR
+              DO i=Istr,IendR
+                BGCBED(ng)%avgsmf(i,j,it)=rfac(i,j)*                    &
+     &                                    BGCBED(ng)%avgsmf(i,j,it)
+              END DO
+            END DO
+            IF (EWperiodic(ng).or.NSperiodic(ng)) THEN
+              CALL exchange_r2d_tile (ng, tile,                         &
+     &                                LBi, UBi, LBj, UBj,               &
+     &                                BGCBED(ng)%avgsmf(:,:,it))
+#   ifdef DISTRIBUTE
+              CALL mp_exchange2d (ng, tile, iNLM, 1,                    &
+     &                            LBi, UBi, LBj, UBj,                   &
+     &                            NghostPoints,                         &
+     &                            EWperiodic(ng), NSperiodic(ng),       &
+     &                            BGCBED(ng)%avgsmf(:,:,it))
 #   endif
             END IF
           END IF

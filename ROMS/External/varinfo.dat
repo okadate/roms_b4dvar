@@ -5698,3 +5698,437 @@
   'idBgTh'
   'nulvar'
   1.0d0
+
+!
+!-----------------------------------------------------------------------------!
+!  Bgc model.                                                                 !
+!-----------------------------------------------------------------------------!
+!       Vinfo(1)      Field variable name.                                    !
+!       Vinfo(2)      Long-name attribute.                                    !
+!       Vinfo(3)      Units attribute.                                        !
+!       Vinfo(4)      Field type attribute.                                   !
+!       Vinfo(5)      Associated time variable name.                          !
+!       Vinfo(6)      Index variable name used in information arrays.         !
+!       Vinfo(7)      Staggered C-grid variable type:                         !
+!                       'nulvar' => non-grided variable.                      !
+!                       'p2dvar' => 2D PHI-variable.                          !
+!                       'r2dvar' => 2D RHO-variable.                          !
+!                       'u2dvar' => 2D U-variable.                            !
+!                       'v2dvar' => 2D V-variable.                            !
+!                       'p3dvar' => 3D PHI-variable.                          !
+!                       'r3dvar' => 3D RHO-variable.                          !
+!                       'u3dvar' => 3D U-variable.                            !
+!                       'v3dvar' => 3D V-variable.                            !
+!                       'w3dvar' => 3D W-variable.                            !
+!                       'b3dvar' => 3D BED-sediment.                          !
+!       scale         Scale to convert input data to model units.             !
+!-----------------------------------------------------------------------------!
+!
+
+'bgc_O2'                                               ! Input/Output
+  'O2 in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_O2, scalar, series'
+  'ocean_time'
+  'idBpw(iwO2_)'
+  'b3dvar'
+  1.0d0
+
+'bgc_NH4'                                              ! Input/Output
+  'NH4 in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_NH4, scalar, series'
+  'ocean_time'
+  'idBpw(iwNH4)'
+  'b3dvar'
+  1.0d0
+
+'bgc_NO3'                                              ! Input/Output
+  'NO3 in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_NO3, scalar, series'
+  'ocean_time'
+  'idBpw(iwNO3)'
+  'b3dvar'
+  1.0d0
+
+'bgc_PO4'                                              ! Input/Output
+  'PO4 in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_PO4, scalar, series'
+  'ocean_time'
+  'idBpw(iwPO4)'
+  'b3dvar'
+  1.0d0
+
+'bgc_SO4'                                              ! Input/Output
+  'SO4 in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_SO4, scalar, series'
+  'ocean_time'
+  'idBpw(iwSO4)'
+  'b3dvar'
+  1.0d0
+
+'bgc_H2S'                                              ! Input/Output
+  'H2S in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_H2S, scalar, series'
+  'ocean_time'
+  'idBpw(iwH2S)'
+  'b3dvar'
+  1.0d0
+
+'bgc_Mn'                                               ! Input/Output
+  'Mn in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_Mn, scalar, series'
+  'ocean_time'
+  'idBpw(iwMn_)'
+  'b3dvar'
+  1.0d0
+
+'bgc_Fe'                                               ! Input/Output
+  'Fe in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_Fe, scalar, series'
+  'ocean_time'
+  'idBpw(iwFe_)'
+  'b3dvar'
+  1.0d0
+
+'bgc_CH4'                                              ! Input/Output
+  'CH4 in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_CH4, scalar, series'
+  'ocean_time'
+  'idBpw(iwCH4)'
+  'b3dvar'
+  1.0d0
+
+'bgc_DOMf'                                             ! Input/Output
+  'DOMf in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_DOMf, scalar, series'
+  'ocean_time'
+  'idBpw(iwDOMf)'
+  'b3dvar'
+  1.0d0
+
+'bgc_DOMs'                                             ! Input/Output
+  'DOM slow in pore water'
+  'millimole meter-3'                              ! [millimole/m3]
+  'bgc_DOMs, scalar, series'
+  'ocean_time'
+  'idBpw(iwDOMs)'
+  'b3dvar'
+  1.0d0
+
+!
+!------------------------------------------------------------------------------
+!  BGC sediment mud variables
+!------------------------------------------------------------------------------
+!
+
+'bgc_POMf'                                             ! Input
+  'POM fast in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_POMf, scalar, series'
+  'ocean_time'
+  'idBsm(iPOMf)'
+  'b3dvar' 
+  1.0d0 
+
+'bgc_POMs'                                             ! Input
+  'POM slow in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_POMs, scalar, series'
+  'ocean_time'
+  'idBsm(iPOMs)'
+  'b3dvar' 
+  1.0d0 
+
+'bgc_POMn'                                             ! Input
+  'POM non in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_POMn, scalar, series'
+  'ocean_time'
+  'idBsm(iPOMn)'
+  'b3dvar' 
+  1.0d0 
+
+'bgc_FeOOHA'                                           ! Input
+  'FeOOHA in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_FeOOHA, scalar, series'
+  'ocean_time'
+  'idBsm(iFeOA)'
+  'b3dvar'
+  1.0d0
+
+'bgc_FeOOHB'                                           ! Input
+  'FeOOHB in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_FeOOHB, scalar, series'
+  'ocean_time'
+  'idBsm(iFeOB)'
+  'b3dvar'
+  1.0d0
+
+'bgc_FeOOHP'                                           ! Input
+  'FeOOH-PO4 in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_FeOOHP, scalar, series'
+  'ocean_time'
+  'idBsm(iFeOP)'
+  'b3dvar'
+  1.0d0
+
+'bgc_MnO2A'                                            ! Input
+  'MnO2A in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_MnO2A, scalar, series'
+  'ocean_time'
+  'idBsm(iMnOA)'
+  'b3dvar'
+  1.0d0
+
+'bgc_MnO2B'                                            ! Input
+  'MnO2B in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_MnO2B, scalar, series'
+  'ocean_time'
+  'idBsm(iMnOB)'
+  'b3dvar'
+  1.0d0
+
+'bgc_S0'                                               ! Input
+  'S0 in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_S0, scalar, series'
+  'ocean_time'
+  'idBsm(iS0__)'
+  'b3dvar'
+  1.0d0
+
+'bgc_FeS'                                              ! Input
+  'FeS in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_FeS, scalar, series'
+  'ocean_time'
+  'idBsm(iFeS_)'
+  'b3dvar'
+  1.0d0
+
+'bgc_FeS2'                                             ! Input
+  'FeS2 in sea mud'
+  'millimole_ meter-3'                             ! [millimole/m3]
+  'bgc_FeS2, scalar, series'
+  'ocean_time'
+  'idBsm(iFeS2)'
+  'b3dvar'
+  1.0d0
+
+!
+!------------------------------------------------------------------------------
+!  BGC fluxes from sediment to water column
+!------------------------------------------------------------------------------
+!
+
+'O2flux'                                           ! Output
+  'O2flux'
+  'mg m-2 day-1'
+  'O2flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwO2_)'
+  'r2dvar' 
+  1.0d0
+
+'NH4flux'                                          ! Output
+  'NH4flux'
+  'mg/m2/day'
+  'NH4flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwNH4)'
+  'r2dvar' 
+  1.0d0
+
+'NO3flux'                                          ! Output
+  'NO3flux'
+  'mg/m2/day'
+  'NO3flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwNO3)'
+  'r2dvar' 
+  1.0d0
+
+'PO4flux'                                          ! Output
+  'PO4flux'
+  'mg/m2/day'
+  'PO4flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwPO4)'
+  'r2dvar' 
+  1.0d0
+
+'H2Sflux'                                          ! Output
+  'H2S flux'
+  'mg/m2/day'
+  'H2Sflux, scalar, series'
+  'ocean_time'
+  'idFpw(iwH2S)'
+  'r2dvar' 
+  1.0d0
+
+'SO4flux'                                          ! Output
+  'SO4flux'
+  'mg/m2/day'
+  'SO4flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwSO4)'
+  'r2dvar' 
+  1.0d0
+
+'CH4flux'                                          ! Output
+  'CH4flux'
+  'mg/m2/day'
+  'CH4flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwCH4)'
+  'r2dvar' 
+  1.0d0
+
+'Feflux'                                           ! Output
+  'Fe2 flux'
+  'mg/m2/day'
+  'Fe2flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwFe_)'
+  'r2dvar' 
+  1.0d0
+
+'Mnflux'                                           ! Output
+  'Mn2 flux'
+  'mg/m2/day'
+  'Mn2flux, scalar, series'
+  'ocean_time'
+  'idFpw(iwMn_)'
+  'r2dvar' 
+  1.0d0
+  
+'DOMfflux'                                         ! Output
+  'DOM fast flux'
+  'mg/m2/day'
+  'DOMfflux, scalar, series'
+  'ocean_time'
+  'idFpw(iwDOMf)'
+  'r2dvar' 
+  1.0d0
+  
+'DOMsflux'                                         ! Output
+  'DOM slow flux'
+  'mg/m2/day'
+  'DOMsflux, scalar, series'
+  'ocean_time'
+  'idFpw(iwDOMs)'
+  'r2dvar' 
+  1.0d0
+   
+'POMfflux'                                         ! Output
+  'POM fast flux'
+  'mg/m2/day'
+  'POMfflux, scalar, series'
+  'ocean_time'
+  'idFsm(iPOMf)'
+  'r2dvar' 
+  1.0d0
+   
+'POMsflux'                                         ! Output
+  'POM slow flux'
+  'mg/m2/day'
+  'POMsflux, scalar, series'
+  'ocean_time'
+  'idFsm(iPOMs)'
+  'r2dvar' 
+  1.0d0
+
+'POMnflux'                                         ! Output
+  'POM non flux'
+  'mg/m2/day'
+  'POMnflux, scalar, series'
+  'ocean_time'
+  'idFsm(iPOMn)'
+  'r2dvar' 
+  1.0d0
+
+'FeOOHAflux'                                         ! Output
+  'FeOOHA flux'
+  'mg/m2/day'
+  'FeOOHAflux, scalar, series'
+  'ocean_time'
+  'idFsm(iFeOA)'
+  'r2dvar' 
+  1.0d0
+
+'FeOOHBflux'                                         ! Output
+  'FeOOHA flux'
+  'mg/m2/day'
+  'FeOOHBflux, scalar, series'
+  'ocean_time'
+  'idFsm(iFeOB)'
+  'r2dvar' 
+  1.0d0
+  
+'FeOOHPflux'                                         ! Output
+  'FeOOHP flux'
+  'mg/m2/day'
+  'FeOOHPflux, scalar, series'
+  'ocean_time'
+  'idFsm(iFeOP)'
+  'r2dvar' 
+  1.0d0
+  
+'MnO2Aflux'                                         ! Output
+  'MnO2A flux'
+  'mg/m2/day'
+  'MnO2Aflux, scalar, series'
+  'ocean_time'
+  'idFsm(iMnOA)'
+  'r2dvar' 
+  1.0d0
+  
+'MnO2Bflux'                                         ! Output
+  'MnO2B flux'
+  'mg/m2/day'
+  'MnO2Bflux, scalar, series'
+  'ocean_time'
+  'idFsm(iMnOB)'
+  'r2dvar' 
+  1.0d0
+  
+'S0flux'                                         ! Output
+  'S0 flux'
+  'mg/m2/day'
+  'S0flux, scalar, series'
+  'ocean_time'
+  'idFsm(iS0__)'
+  'r2dvar' 
+  1.0d0
+  
+'FeSflux'                                         ! Output
+  'FeS flux'
+  'mg/m2/day'
+  'FeSflux, scalar, series'
+  'ocean_time'
+  'idFsm(iFeS_)'
+  'r2dvar' 
+  1.0d0
+  
+'FeS2flux'                                         ! Output
+  'FeS2 flux'
+  'mg/m2/day'
+  'FeS2flux, scalar, series'
+  'ocean_time'
+  'idFsm(iFeS2)'
+  'r2dvar' 
+  1.0d0
