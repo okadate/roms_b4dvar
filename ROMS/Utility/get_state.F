@@ -43,6 +43,10 @@
       USE mod_netcdf
       USE mod_ocean
       USE mod_scalars
+#ifdef DIAGENESIS
+      USE mod_biology
+      USE mod_bgcbed
+#endif
 #if defined SEDIMENT || defined BBL_MODEL
       USE mod_sedbed
       USE mod_sediment
@@ -1231,6 +1235,144 @@
         END IF
 #   endif
 #  endif
+
+#  ifdef DIAGENESIS
+!
+!  Read in nonlinear BGC tracer type variables in pore water.
+!
+        DO itrc=1,NBGCPW
+          IF (get_var(idBpw(itrc))) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idBpw(itrc))), varid)
+            gtype=var_flag(varid)*b3dvar
+            status=nf_fread3d(ng, IDmod, ncname, ncINPid,               &
+     &                          Vname(1,idBpw(itrc)), varid,            &
+     &                          InpRec, gtype, Vsize,                   &
+     &                          LBi, UBi, LBj, UBj, 1, Nbed,            &
+     &                          Fscl, Fmin, Fmax,                       &
+#   ifdef MASKING
+     &                          GRID(ng) % rmask,                       &
+#   endif
+     &                          BGCBED(ng) % bpw(:,:,:,itrc))
+            IF (status.ne.nf90_noerr) THEN
+              IF (Master) THEN
+                WRITE (stdout,60) string, TRIM(Vname(1,idBpw(itrc))), &
+     &                            InpRec, TRIM(ncname)
+              END IF
+              exit_flag=2
+              ioerror=status
+              RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,70) TRIM(Vname(2,idBpw(itrc))),         &
+     &                            Fmin, Fmax
+              END IF
+            END IF
+          END IF
+        END DO
+!
+!  Read in nonlinear BGC tracer type variables in sediment mud.
+!
+        DO itrc=1,NBGCSM
+          IF (get_var(idBsm(itrc))) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idBsm(itrc))), varid)
+            gtype=var_flag(varid)*b3dvar
+            status=nf_fread3d(ng, IDmod, ncname, ncINPid,               &
+     &                          Vname(1,idBsm(itrc)), varid,          &
+     &                          InpRec, gtype, Vsize,                   &
+     &                          LBi, UBi, LBj, UBj, 1, Nbed,            &
+     &                          Fscl, Fmin, Fmax,                       &
+#   ifdef MASKING
+     &                          GRID(ng) % rmask,                       &
+#   endif
+     &                          BGCBED(ng) % bsm(:,:,:,itrc))
+            IF (status.ne.nf90_noerr) THEN
+              IF (Master) THEN
+                WRITE (stdout,60) string, TRIM(Vname(1,idBsm(itrc))), &
+     &                            InpRec, TRIM(ncname)
+              END IF
+              exit_flag=2
+              ioerror=status
+              RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,70) TRIM(Vname(2,idBsm(itrc))),         &
+     &                            Fmin, Fmax
+              END IF
+            END IF
+          END IF
+        END DO
+!
+!  Read in nonlinear BGC flux type variables from sediment to water.
+!
+!        DO itrc=1,NBGCPW
+!          IF (get_var(idFpw(itrc))) THEN
+!            foundit=find_string(var_name, n_var,                        &
+!     &                          TRIM(Vname(1,idFpw(itrc))),            &
+!     &                          varid)
+!            gtype=var_flag(varid)*r2dvar
+!            status=nf_fread2d(ng, IDmod, ncname, ncINPid,               &
+!     &                          Vname(1,idFpw(itrc)), varid,           &
+!     &                          InpRec, gtype, Vsize,                   &
+!     &                          LBi, UBi, LBj, UBj,                     &
+!     &                          Fscl, Fmin, Fmax,                       &
+!#   ifdef MASKING
+!     &                          GRID(ng) % rmask,                       &
+!#   endif
+!     &                          BGCBED(ng) % bpwflux(:,:,itrc))
+!            IF (status.ne.nf90_noerr) THEN
+!              IF (Master) THEN
+!                WRITE (stdout,60) string,                               &
+!     &                            TRIM(Vname(1,idFpw(itrc))),          &
+!     &                            InpRec, TRIM(ncname)
+!              END IF
+!              exit_flag=2
+!              ioerror=status
+!              RETURN
+!            ELSE
+!              IF (Master) THEN
+!                WRITE (stdout,70) TRIM(Vname(2,idFpw(itrc))),          &
+!     &                            Fmin, Fmax
+!              END IF
+!            END IF
+!          END IF
+!        END DO
+!        
+!        DO itrc=1,NBGCSM
+!          IF (get_var(idFsm(itrc))) THEN
+!            foundit=find_string(var_name, n_var,                        &
+!     &                          TRIM(Vname(1,idFsm(itrc))),            &
+!     &                          varid)
+!            gtype=var_flag(varid)*r2dvar
+!            status=nf_fread2d(ng, IDmod, ncname, ncINPid,               &
+!     &                          Vname(1,idFsm(itrc)), varid,           &
+!     &                          InpRec, gtype, Vsize,                   &
+!     &                          LBi, UBi, LBj, UBj,                     &
+!     &                          Fscl, Fmin, Fmax,                       &
+!#   ifdef MASKING
+!     &                          GRID(ng) % rmask,                       &
+!#   endif
+!     &                          BGCBED(ng) % bsmflux(:,:,itrc))
+!            IF (status.ne.nf90_noerr) THEN
+!              IF (Master) THEN
+!                WRITE (stdout,60) string,                               &
+!     &                            TRIM(Vname(1,idFsm(itrc))),          &
+!     &                            InpRec, TRIM(ncname)
+!              END IF
+!              exit_flag=2
+!              ioerror=status
+!              RETURN
+!            ELSE
+!              IF (Master) THEN
+!                WRITE (stdout,70) TRIM(Vname(2,idFsm(itrc))),          &
+!     &                            Fmin, Fmax
+!              END IF
+!            END IF
+!          END IF
+!        END DO
+#  endif
+
 #  ifdef SEDIMENT
 !
 !  Read in nonlinear sediment fraction of each size class in each bed

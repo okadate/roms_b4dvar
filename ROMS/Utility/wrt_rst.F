@@ -29,6 +29,10 @@
       USE mod_sedbed
       USE mod_sediment
 #endif
+#ifdef DIAGENESIS
+      USE mod_bgcbed
+      USE mod_biology
+#endif
       USE mod_stepping
 !
       USE nf_fwrite2d_mod, ONLY : nf_fwrite2d
@@ -945,6 +949,95 @@
         IF (status.ne.nf90_noerr) THEN
           IF (Master) THEN
             WRITE (stdout,10) TRIM(Vname(1,idSbed(i))), RST(ng)%Rindex
+          END IF
+          exit_flag=3
+          ioerror=status
+          RETURN
+        END IF
+      END DO
+# endif
+
+# ifdef DIAGENESIS
+!
+!  Write out bgc variables in each bed layer.
+!
+      DO i=1,NBGCPW
+        scale=1.0_r8
+        gtype=gfactor*b3dvar
+        status=nf_fwrite3d(ng, iNLM, RST(ng)%ncid,                      &
+     &                     RST(ng)%Vid(idBpw(i)),                       &
+     &                     RST(ng)%Rindex, gtype,                       &
+     &                     LBi, UBi, LBj, UBj, 1, Nbed, scale,          &
+#  ifdef MASKING
+     &                     GRID(ng) % rmask,                            &
+#  endif
+     &                     BGCBED(ng) % bpw(:,:,:,i))
+        IF (status.ne.nf90_noerr) THEN
+          IF (Master) THEN
+            WRITE (stdout,10) TRIM(Vname(1,idBpw(i))), RST(ng)%Rindex
+          END IF
+          exit_flag=3
+          ioerror=status
+          RETURN
+        END IF
+      END DO
+      DO i=1,NBGCSM
+        scale=1.0_r8
+        gtype=gfactor*b3dvar
+        status=nf_fwrite3d(ng, iNLM, RST(ng)%ncid,                      &
+     &                     RST(ng)%Vid(idBsm(i)),                       &
+     &                     RST(ng)%Rindex, gtype,                       &
+     &                     LBi, UBi, LBj, UBj, 1, Nbed, scale,          &
+#  ifdef MASKING
+     &                     GRID(ng) % rmask,                            &
+#  endif
+     &                     BGCBED(ng) % bsm(:,:,:,i))
+        IF (status.ne.nf90_noerr) THEN
+          IF (Master) THEN
+            WRITE (stdout,10) TRIM(Vname(1,idBsm(i))), RST(ng)%Rindex
+          END IF
+          exit_flag=3
+          ioerror=status
+          RETURN
+        END IF
+      END DO
+!
+!  Write out bgc fluxes in each bed layer.
+!
+      DO i=1,NBGCPW
+        scale=1.0_r8
+        gtype=gfactor*r2dvar
+        status=nf_fwrite2d(ng, iNLM, RST(ng)%ncid,                      &
+     &                     RST(ng)%Vid(idFpw(i)),                       &
+     &                     RST(ng)%Rindex, gtype,                       &
+     &                     LBi, UBi, LBj, UBj, scale,                   &
+#  ifdef MASKING
+     &                     GRID(ng) % rmask,                            &
+#  endif
+     &                     BGCBED(ng) % bpwflux(:,:,i))
+        IF (status.ne.nf90_noerr) THEN
+          IF (Master) THEN
+            WRITE (stdout,10) TRIM(Vname(1,idFpw(i))), RST(ng)%Rindex
+          END IF
+          exit_flag=3
+          ioerror=status
+          RETURN
+        END IF
+      END DO
+      DO i=1,NBGCSM
+        scale=1.0_r8
+        gtype=gfactor*r2dvar
+        status=nf_fwrite2d(ng, iNLM, RST(ng)%ncid,                      &
+     &                     RST(ng)%Vid(idFsm(i)),                       &
+     &                     RST(ng)%Rindex, gtype,                       &
+     &                     LBi, UBi, LBj, UBj, scale,                   &
+#  ifdef MASKING
+     &                     GRID(ng) % rmask,                            &
+#  endif
+     &                     BGCBED(ng) % bsmflux(:,:,i))
+        IF (status.ne.nf90_noerr) THEN
+          IF (Master) THEN
+            WRITE (stdout,10) TRIM(Vname(1,idFsm(i))), RST(ng)%Rindex
           END IF
           exit_flag=3
           ioerror=status

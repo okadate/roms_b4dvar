@@ -30,6 +30,10 @@
       USE mod_sedbed
       USE mod_sediment
 # endif
+# ifdef DIAGENESIS
+      USE mod_bgcbed
+      USE mod_biology
+# endif
       USE mod_stepping
 !
 # ifdef SOLVE3D
@@ -59,7 +63,7 @@
 
       real(r8), dimension(Nstation(ng)) :: Xpos, Ypos, Zpos, psta
 # ifdef SOLVE3D
-#  ifdef SEDIMENT
+#  if defined SEDIMENT || defined DIAGENESIS
       real(r8), dimension(Nstation(ng)*Nbed) :: XposB, YposB, ZposB
       real(r8), dimension(Nstation(ng)*Nbed) :: bsta
 #  endif
@@ -1049,6 +1053,78 @@
         END IF
       END DO
 #  endif
+#  ifdef DIAGENESIS
+!
+!  Write out bgc variables in each bed layer.
+!
+      DO i=1,NBGCPW
+        IF (Sout(idBpw(i),ng)) THEN
+          scale=1.0_r8
+          CALL extract_sta3d (ng, iNLM, Cgrid, idBpw(i), b3dvar,        &
+     &                        LBi, UBi, LBj, UBj, 1, Nbed,              &
+     &                        scale, BGCBED(ng)%bpw(:,:,:,i),           &
+     &                        NposB, XposB, YposB, ZposB, bsta)
+          CALL netcdf_put_fvar (ng, iNLM, STA(ng)%name,                 &
+     &                          TRIM(Vname(1,idBpw(i))), bsta,          &
+     &                          (/1,1,STA(ng)%Rindex/),                 &
+     &                          (/Nbed,Nstation(ng),1/),                &
+     &                          ncid = STA(ng)%ncid,                    &
+     &                          varid = STA(ng)%Vid(idBpw(i)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+      DO i=1,NBGCSM
+        IF (Sout(idBsm(i),ng)) THEN
+          scale=1.0_r8
+          CALL extract_sta3d (ng, iNLM, Cgrid, idBsm(i), b3dvar,        &
+     &                        LBi, UBi, LBj, UBj, 1, Nbed,              &
+     &                        scale, BGCBED(ng)%bsm(:,:,:,i),           &
+     &                        NposB, XposB, YposB, ZposB, bsta)
+          CALL netcdf_put_fvar (ng, iNLM, STA(ng)%name,                 &
+     &                          TRIM(Vname(1,idBsm(i))), bsta,          &
+     &                          (/1,1,STA(ng)%Rindex/),                 &
+     &                          (/Nbed,Nstation(ng),1/),                &
+     &                          ncid = STA(ng)%ncid,                    &
+     &                          varid = STA(ng)%Vid(idBsm(i)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+!
+!  Write out bgc fluxes in each bed layer.
+!
+      DO i=1,NBGCPW
+        IF (Sout(idFpw(i),ng)) THEN
+          scale=1.0_r8
+          CALL extract_sta2d (ng, iNLM, Cgrid, idFpw(i), r2dvar,        &
+     &                        LBi, UBi, LBj, UBj,                       &
+     &                        scale, BGCBED(ng)%bpwflux(:,:,i),         &
+     &                        Nstation(ng), Xpos, Ypos, psta)
+          CALL netcdf_put_fvar (ng, iNLM, STA(ng)%name,                 &
+     &                          TRIM(Vname(1,idFpw(i))), psta,          &
+     &                          (/1,STA(ng)%Rindex/),                   &
+     &                          (/Nstation(ng),1/),                     &
+     &                          ncid = STA(ng)%ncid,                    &
+     &                          varid = STA(ng)%Vid(idFpw(i)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+      DO i=1,NBGCSM
+        IF (Sout(idFsm(i),ng)) THEN
+          scale=1.0_r8
+          CALL extract_sta2d (ng, iNLM, Cgrid, idFsm(i), r2dvar,        &
+     &                        LBi, UBi, LBj, UBj,                       &
+     &                        scale, BGCBED(ng)%bsmflux(:,:,i),         &
+     &                        Nstation(ng), Xpos, Ypos, psta)
+          CALL netcdf_put_fvar (ng, iNLM, STA(ng)%name,                 &
+     &                          TRIM(Vname(1,idFsm(i))), psta,          &
+     &                          (/1,STA(ng)%Rindex/),                   &
+     &                          (/Nstation(ng),1/),                     &
+     &                          ncid = STA(ng)%ncid,                    &
+     &                          varid = STA(ng)%Vid(idFsm(i)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+#  endif
 
 #  if defined SEDIMENT || defined BBL_MODEL
 !
@@ -1477,7 +1553,20 @@
 !-----------------------------------------------------------------------
 !
       CALL netcdf_sync (ng, iNLM, STA(ng)%name, STA(ng)%ncid)
+      IF (exit_flag.ne.NoError) RETURN
 
+# ifdef NESTING
+      IF (Master) WRITE (stdout,20) STA(ng)%Rindex, ng
+# else
+      IF (Master) WRITE (stdout,20) STA(ng)%Rindex
+# endif
+!
+  20  FORMAT (6x,'WRT_STA   - wrote station fields into time ',         &
+# ifdef NESTING
+     &        'record =',t72,i7.7,2x,i2.2)
+# else
+     &        'record =',t72,i7.7)
+# endif
 #else
       SUBROUTINE wrt_station
 #endif

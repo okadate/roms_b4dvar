@@ -41,6 +41,9 @@
       USE mod_obs, ONLY : allocate_obs, initialize_obs
 #endif
       USE mod_ocean, ONLY : allocate_ocean, initialize_ocean
+#ifdef DIAGENESIS
+      USE mod_bgcbed, ONLY : allocate_bgcbed, initialize_bgcbed
+#endif
 #if defined SEDIMENT || defined BBL_MODEL
       USE mod_sedbed, ONLY : allocate_sedbed, initialize_sedbed
 #endif
@@ -134,6 +137,9 @@
           CALL allocate_obs (ng, LBi, UBi, LBj, UBj)
 #endif
           CALL allocate_ocean (ng, LBi, UBi, LBj, UBj)
+#ifdef DIAGENESIS
+          CALL allocate_bgcbed (ng, LBi, UBi, LBj, UBj)
+#endif
 #if defined SEDIMENT || defined BBL_MODEL
           CALL allocate_sedbed (ng, LBi, UBi, LBj, UBj)
 #endif
@@ -197,6 +203,9 @@
           CALL initialize_obs (ng, tile)
 #endif
           CALL initialize_ocean (ng, tile, model)
+#ifdef DIAGENESIS
+          CALL initialize_bgcbed (ng, tile, model)
+#endif
 #if defined SEDIMENT || defined BBL_MODEL
           CALL initialize_sedbed (ng, tile, model)
 #endif

@@ -21,6 +21,9 @@
       USE mod_sediment
 # endif
       USE mod_scalars
+# ifdef DIAGENESIS
+      USE mod_biology
+# endif
 !
       implicit none
 !
@@ -42,6 +45,10 @@
       logical, dimension(Ngrids) :: Lbottom
 # endif
       logical, dimension(MT,Ngrids) :: Lsta
+# ifdef DIAGENESIS
+      logical, dimension(NBGCPW,Ngrids) :: Lbpw
+      logical, dimension(NBGCSM,Ngrids) :: Lbsm
+# endif
 
       integer, dimension(Ngrids) :: is
 
@@ -321,6 +328,40 @@
               i=idBott(ishgt)
               DO ng=1,Ngrids
                 Sout(i,ng)=Lbottom(ng)
+              END DO
+#  endif
+#  ifdef DIAGENESIS
+            CASE ('Sout(idBpw)')
+              Npts=load_l(Nval, Cval, NBGCPW*Ngrids, Lbpw)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCPW
+                  i=idBpw(itrc)
+                  Sout(i,ng)=Lbpw(itrc,ng)
+                END DO
+              END DO
+            CASE ('Sout(idBsm)')
+              Npts=load_l(Nval, Cval, NBGCSM*Ngrids, Lbsm)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCSM
+                  i=idBsm(itrc)
+                  Sout(i,ng)=Lbsm(itrc,ng)
+                END DO
+              END DO
+            CASE ('Sout(idFpw)')
+              Npts=load_l(Nval, Cval, NBGCPW*Ngrids, Lbpw)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCPW
+                  i=idFpw(itrc)
+                  Sout(i,ng)=Lbpw(itrc,ng)
+                END DO
+              END DO
+            CASE ('Sout(idFsm)')
+              Npts=load_l(Nval, Cval, NBGCSM*Ngrids, Lbsm)
+              DO ng=1,Ngrids
+                DO itrc=1,NBGCSM
+                  i=idFsm(itrc)
+                  Sout(i,ng)=Lbsm(itrc,ng)
+                END DO
               END DO
 #  endif
 # endif
@@ -678,6 +719,32 @@
      &          'Sout(idMtls)',                                         &
      &          'Write out turbulent generic length-scale.'
 #  endif
+# endif
+# ifdef DIAGENESIS
+            DO itrc=1,NBGCPW
+              IF (Sout(idBpw(itrc),ng)) WRITE (out,90)                  &
+     &            Sout(idBpw(itrc),ng), 'Sout(idBpw)',                  &
+     &            'Write out BGC pw variables ', itrc,                  &
+     &            TRIM(Vname(1,idBpw(itrc)))
+            END DO
+            DO itrc=1,NBGCSM
+              IF (Sout(idBsm(itrc),ng)) WRITE (out,90)                  &
+     &            Sout(idBsm(itrc),ng), 'SoutF(idBsm)',                 &
+     &            'Write out BGC sm variables ', itrc,                  &
+     &            TRIM(Vname(1,idBsm(itrc)))
+            END DO
+            DO itrc=1,NBGCPW
+              IF (Sout(idFpw(itrc),ng)) WRITE (out,90)                  &
+     &            Sout(idFpw(itrc),ng), 'Sout(idFpw)',                  &
+     &            'Write out BGC pw fluxes ', itrc,                     &
+     &            TRIM(Vname(1,idFpw(itrc)))
+            END DO
+            DO itrc=1,NBGCSM
+              IF (Sout(idFsm(itrc),ng)) WRITE (out,90)                  &
+     &            Sout(idFsm(itrc),ng), 'Sout(idFsm)',                  &
+     &            'Write out BGC sm fluxes ', itrc,                     &
+     &            TRIM(Vname(1,idFsm(itrc)))
+            END DO
 # endif
             WRITE (out,*)
             DO i=1,Nstation(ng)

@@ -34,6 +34,10 @@
       USE mod_sedbed
       USE mod_sediment
 # endif
+# ifdef DIAGENESIS
+      USE mod_bgcbed
+      USE mod_biology
+# endif
 # if defined AVERAGES_DETIDE && (defined SSH_TIDES || defined UV_TIDES)
       USE mod_tides
 # endif
@@ -1927,6 +1931,107 @@
           IF (status.ne.nf90_noerr) THEN
             IF (Master) THEN
               WRITE (stdout,10) TRIM(Vname(1,idVbld(itrc))),            &
+     &                          AVG(ng)%Rindex
+            END IF
+            exit_flag=3
+            ioerror=status
+            RETURN
+          END IF
+        END IF
+      END DO
+# endif
+
+# ifdef DIAGENESIS
+!
+!  Write out BGC variables
+!
+      DO itrc=1,NBGCPW
+        IF (Aout(idBpw(itrc),ng)) THEN
+          scale=1.0_r8
+          gtype=gfactor*b3dvar
+          status=nf_fwrite3d(ng, iNLM, AVG(ng)%ncid,                    &
+     &                       AVG(ng)%Vid(idBpw(itrc)),                  &
+     &                       AVG(ng)%Rindex, gtype,                     &
+     &                       LBi, UBi, LBj, UBj, 1, Nbed, scale,        &
+#  ifdef MASKING
+     &                       GRID(ng) % umask,                          &
+#  endif
+     &                       BGCBED(ng) % avgpw(:,:,:,itrc))
+          IF (status.ne.nf90_noerr) THEN
+            IF (Master) THEN
+              WRITE (stdout,10) TRIM(Vname(1,idBpw(itrc))),             &
+     &                          AVG(ng)%Rindex
+            END IF
+            exit_flag=3
+            ioerror=status
+            RETURN
+          END IF
+        END IF
+      END DO
+      DO itrc=1,NBGCSM
+        IF (Aout(idBsm(itrc),ng)) THEN
+          scale=1.0_r8
+          gtype=gfactor*b3dvar
+          status=nf_fwrite3d(ng, iNLM, AVG(ng)%ncid,                    &
+     &                       AVG(ng)%Vid(idBsm(itrc)),                  &
+     &                       AVG(ng)%Rindex, gtype,                     &
+     &                       LBi, UBi, LBj, UBj, 1, Nbed, scale,        &
+#  ifdef MASKING
+     &                       GRID(ng) % umask,                          &
+#  endif
+     &                       BGCBED(ng) % avgsm(:,:,:,itrc))
+          IF (status.ne.nf90_noerr) THEN
+            IF (Master) THEN
+              WRITE (stdout,10) TRIM(Vname(1,idBsm(itrc))),             &
+     &                          AVG(ng)%Rindex
+            END IF
+            exit_flag=3
+            ioerror=status
+            RETURN
+          END IF
+        END IF
+      END DO
+!
+!  Write out BGC fluxes
+!
+      DO itrc=1,NBGCPW
+        IF (Aout(idFpw(itrc),ng)) THEN
+          scale=1.0_r8
+          gtype=gfactor*r2dvar
+          status=nf_fwrite2d(ng, iNLM, AVG(ng)%ncid,                    &
+     &                       AVG(ng)%Vid(idFpw(itrc)),                  &
+     &                       AVG(ng)%Rindex, gtype,                     &
+     &                       LBi, UBi, LBj, UBj, scale,                 &
+#  ifdef MASKING
+     &                       GRID(ng) % umask,                          &
+#  endif
+     &                       BGCBED(ng) % avgpwf(:,:,itrc))
+          IF (status.ne.nf90_noerr) THEN
+            IF (Master) THEN
+              WRITE (stdout,10) TRIM(Vname(1,idFpw(itrc))),             &
+     &                          AVG(ng)%Rindex
+            END IF
+            exit_flag=3
+            ioerror=status
+            RETURN
+          END IF
+        END IF
+      END DO
+      DO itrc=1,NBGCSM
+        IF (Aout(idFsm(itrc),ng)) THEN
+          scale=1.0_r8
+          gtype=gfactor*r2dvar
+          status=nf_fwrite2d(ng, iNLM, AVG(ng)%ncid,                    &
+     &                       AVG(ng)%Vid(idFsm(itrc)),                  &
+     &                       AVG(ng)%Rindex, gtype,                     &
+     &                       LBi, UBi, LBj, UBj, scale,                 &
+#  ifdef MASKING
+     &                       GRID(ng) % umask,                          &
+#  endif
+     &                       BGCBED(ng) % avgsmf(:,:,itrc))
+          IF (status.ne.nf90_noerr) THEN
+            IF (Master) THEN
+              WRITE (stdout,10) TRIM(Vname(1,idFsm(itrc))),             &
      &                          AVG(ng)%Rindex
             END IF
             exit_flag=3

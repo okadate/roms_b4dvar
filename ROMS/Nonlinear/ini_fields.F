@@ -33,6 +33,9 @@
       USE mod_coupling
 # endif
       USE mod_ocean
+# ifdef DIAGENESIS
+      USE mod_bgcbed
+# endif
 # if defined SOLVE3D && (defined SEDIMENT || defined BBL_MODEL)
       USE mod_sedbed
 # endif
@@ -84,6 +87,12 @@
      &                      SEDBED(ng) % bed_frac,                      &
      &                      SEDBED(ng) % bed_mass,                      &
 #  endif
+#  if defined DIAGENESIS
+     &                      BGCBED(ng) % bpw,                           &
+     &                      BGCBED(ng) % bsm,                           &
+     &                      BGCBED(ng) % bpwflux,                       &
+     &                      BGCBED(ng) % bsmflux,                       &
+#  endif
      &                      GRID(ng) % Hz,                              &
      &                      OCEAN(ng) % t,                              &
      &                      OCEAN(ng) % u,                              &
@@ -125,6 +134,9 @@
 #  if defined SEDIMENT
      &                            bed, bed_frac, bed_mass,              &
 #  endif
+#  if defined DIAGENESIS
+     &                            bpw, bsm, bpwflux, bsmflux,           &
+#  endif
      &                            Hz,                                   &
      &                            t, u, v,                              &
 # endif
@@ -134,6 +146,9 @@
       USE mod_param
       USE mod_ncparam
       USE mod_scalars
+# ifdef DIAGENESIS
+      USE mod_bgcbed
+# endif
 # if defined SEDIMENT || defined BBL_MODEL
       USE mod_sediment
 # endif
@@ -194,6 +209,12 @@
       real(r8), intent(inout) :: bed_frac(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: bed_mass(LBi:,LBj:,:,:,:)
 #   endif
+#   if defined DIAGENESIS
+      real(r8), intent(inout) :: bpw(LBi:,LBj:,:,:)
+      real(r8), intent(inout) :: bsm(LBi:,LBj:,:,:)
+      real(r8), intent(inout) :: bpwflux(LBi:,LBj:,:)
+      real(r8), intent(inout) :: bsmflux(LBi:,LBj:,:)
+#   endif
 #  endif
 #  ifdef PERFECT_RESTART
 #   ifdef SOLVE3D
@@ -236,6 +257,12 @@
       real(r8), intent(inout) :: bed(LBi:UBi,LBj:UBj,Nbed,MBEDP)
       real(r8), intent(inout) :: bed_frac(LBi:UBi,LBj:UBj,Nbed,NST)
       real(r8), intent(inout) :: bed_mass(LBi:UBi,LBj:UBj,Nbed,2,NST)
+#   endif
+#   if defined DIAGENESIS
+      real(r8), intent(inout) :: bpw(LBi:UBi,LBj:UBj,Nbed,NBGCPW)
+      real(r8), intent(inout) :: bsm(LBi:UBi,LBj:UBj,Nbed,NBGCSM)
+      real(r8), intent(inout) :: bpwflux(LBi:UBi,LBj:UBj,NBGCPW)
+      real(r8), intent(inout) :: bsmflux(LBi:UBi,LBj:UBj,NBGCSM)
 #   endif
 #  endif
 #  ifdef PERFECT_RESTART
