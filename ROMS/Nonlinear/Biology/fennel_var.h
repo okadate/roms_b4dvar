@@ -48,6 +48,19 @@
                 idTvar(iOxyg)=varid
 # endif
 
+# ifdef PHOSPHORUS
+              CASE ('idTvar(iPO4_)')
+                idTvar(iPO4_)=varid
+              CASE ('idTvar(iLDeP)')
+                idTvar(iLDeP)=varid
+              CASE ('idTvar(iSDeP)')
+                idTvar(iSDeP)=varid
+# endif
+# ifdef H2S
+              CASE ('idTvar(iH2S_)')
+                idTvar(iH2S_)=varid
+# endif
+
 /*
 **  Adjoint sensitivity state biological tracers.
 */
@@ -82,6 +95,19 @@
 # ifdef OXYGEN
               CASE ('idTads(iOxyg)')
                 idTads(iOxyg)=varid
+# endif
+
+# ifdef PHOSPHORUS
+              CASE ('idTads(iPO4_)')
+                idTads(iPO4_)=varid
+              CASE ('idTads(iLDeP)')
+                idTads(iLDeP)=varid
+              CASE ('idTads(iSDeP)')
+                idTads(iSDeP)=varid
+# endif
+# ifdef H2S
+              CASE ('idTads(iH2S_)')
+                idTads(iH2S_)=varid
 # endif
 #endif
 
@@ -200,6 +226,42 @@
                 idTbry(inorth,iOxyg)=varid
 #endif
 
+#ifdef PHOSPHORUS
+              CASE ('idTbry(iwest,iPO4_)')
+                idTbry(iwest,iPO4_)=varid
+              CASE ('idTbry(ieast,iPO4_)')
+                idTbry(ieast,iPO4_)=varid
+              CASE ('idTbry(isouth,iPO4_)')
+                idTbry(isouth,iPO4_)=varid
+              CASE ('idTbry(inorth,iPO4_)')
+                idTbry(inorth,iPO4_)=varid
+              CASE ('idTbry(iwest,iLDeP)')
+                idTbry(iwest,iLDeP)=varid
+              CASE ('idTbry(ieast,iLDeP)')
+                idTbry(ieast,iLDeP)=varid
+              CASE ('idTbry(isouth,iLDeP)')
+                idTbry(isouth,iLDeP)=varid
+              CASE ('idTbry(inorth,iLDeP)')
+                idTbry(inorth,iLDeP)=varid
+              CASE ('idTbry(iwest,iSDeP)')
+                idTbry(iwest,iSDeP)=varid
+              CASE ('idTbry(ieast,iSDeP)')
+                idTbry(ieast,iSDeP)=varid
+              CASE ('idTbry(isouth,iSDeP)')
+                idTbry(isouth,iSDeP)=varid
+              CASE ('idTbry(inorth,iSDeP)')
+                idTbry(inorth,iSDeP)=varid
+#endif
+#ifdef H2S
+              CASE ('idTbry(iwest,iH2S_)')
+                idTbry(iwest,iH2S_)=varid
+              CASE ('idTbry(ieast,iH2S_)')
+                idTbry(ieast,iH2S_)=varid
+              CASE ('idTbry(isouth,iH2S_)')
+                idTbry(isouth,iH2S_)=varid
+              CASE ('idTbry(inorth,iH2S_)')
+                idTbry(inorth,iH2S_)=varid
+#endif
 
 /*
 **  Biological tracers point Source/Sinks (river runoff).
@@ -234,6 +296,18 @@
                 idRtrc(iOxyg)=varid
 #endif
 
+#ifdef PHOSPHORUS
+              CASE ('idRtrc(iPO4_)')
+                idRtrc(iPO4_)=varid
+              CASE ('idRtrc(iLDeP)')
+                idRtrc(iLDeP)=varid
+              CASE ('idRtrc(iSDeP)')
+                idRtrc(iSDeP)=varid
+#endif
+#ifdef H2S
+              CASE ('idRtrc(iH2S_)')
+                idRtrc(iH2S_)=varid
+#endif
 
 #ifdef DIAGNOSTICS_BIO
 
@@ -258,4 +332,16 @@
                 iDbio3(iPPro)=varid
               CASE ('iDbio3(iNO3u)')
                 iDbio3(iNO3u)=varid
+              CASE ('iDbio3(iLNH4)')
+                iDbio3(iLNH4)=varid
+              CASE ('iDbio3(iLNO3)')
+                iDbio3(iLNO3)=varid
+# ifdef PHOSPHORUS
+              CASE ('iDbio3(iLPO4)')
+                iDbio3(iLPO4)=varid
+# endif
+# ifdef COD
+              CASE ('iDbio3(iCOD_)')
+                iDbio3(iCOD_)=varid
+# endif
 #endif

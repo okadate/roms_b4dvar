@@ -35,6 +35,54 @@
 !                                                                             !
 !==============================================================================
 !
+! PHOSPHORUS
+!
+! Inverse half-saturation for phytoplankton PO4 uptake [1/(millimole_P m-3)].
+
+       K_PO4 == 33.333d0  ! {33.333d0}
+
+       PhyPN == 0.0625d0  ! {0.0625d0}
+
+       ZooPN == 0.0625d0  ! {0.0625d0}
+
+      LDeRRP == 0.01d0  ! {0.01d0}
+
+      SDeRRP == 0.03d0  ! {0.03d0}
+
+! H2S: Oxidation rate S-fraction [1/day].
+
+       H2SOR == 1.0d0 ! {}
+
+        K_DO == 1.0d0 ! {}
+
+! SIMPLE_DENITRIFICATION
+
+     K_Nitri == 31.25d0  ! {31.25d0} (Nakatani, 2012)
+
+    thNitriR == 1.080d0  ! {1.080d0} (Nakatani, 2012)
+
+! SIMPLE_GROWTH
+
+       g_max == 1.0d0   ! {1.0d0}, 3.0_r8 (Nakatani, 2012)
+
+       t_opt == 25.0d0  ! {25.0d0} (Nakatani, 2012)
+
+       I_opt == 200.0d0 ! {200.0d0} (Irie, 2004)
+
+! DENIT_WATER
+
+      DenitR == 0.050_r8 ! (Nakatani, 2012)
+
+     K_Denit == 3.125_r8 ! (Nakatani, 2012)
+      
+    thDenitR == 1.045_r8 ! (Nakatani, 2012)
+
+! TEMP_DEPENDANCE
+
+     thPhyMR == 1.058_r8 ! (Nakatani, 2012)
+      
+       thRRN == 1.080_r8 ! (Nakatani, 2012)
+
 ! NOTICE: Input parameter units are specified within brackets and default
 ! ******  values are specified within braces.
 !
@@ -192,30 +240,30 @@
 ! Harmonic/biharmonic horizontal diffusion of biological tracer for
 ! nonlinear model and adjoint-based algorithms: [1:NBT,Ngrids].
 
-        TNU2 == 12*0.0d0                        ! m2/s
-        TNU4 == 12*0.0d0                        ! m4/s
+        TNU2 == 13*0.0d0                        ! m2/s
+        TNU4 == 13*0.0d0                        ! m4/s
 
-     ad_TNU2 == 12*0.0d0                        ! m2/s
-     ad_TNU4 == 12*0.0d0                        ! m4/s
+     ad_TNU2 == 13*0.0d0                        ! m2/s
+     ad_TNU4 == 13*0.0d0                        ! m4/s
 
 ! Logical switches (TRUE/FALSE) to increase/decrease horizontal diffusivity
 ! in specific areas of the application domain (like sponge areas) for the
 ! desired grid: [Ngrids]
 
-LtracerSponge == 12*F
+LtracerSponge == 13*F
 
 ! Vertical mixing coefficients for biological tracers for nonlinear
 ! model and basic state scale factor in adjoint-based algorithms:
 ! [1:NBT,Ngrids].
 
-     AKT_BAK == 12*1.0d-6                       ! m2/s
+     AKT_BAK == 13*1.0d-6                       ! m2/s
 
-  ad_AKT_fac == 12*1.0d0                        ! nondimensional
+  ad_AKT_fac == 13*1.0d0                        ! nondimensional
 
 ! Nudging/relaxation time scales, inverse scales will be computed
 ! internally: [1:NBT,Ngrids].
 
-       TNUDG == 12*0.0d0                        ! days
+       TNUDG == 13*0.0d0                        ! days
 
 ! Set lateral boundary conditions keyword. Notice that a value is expected
 ! for each boundary segment per nested grid for each state variable.
@@ -259,11 +307,17 @@ LtracerSponge == 12*F
                     Per     Clo     Per     Clo \    ! idbio( 5), zooplankton
                     Per     Clo     Per     Clo \    ! idbio( 6), LdetritusN
                     Per     Clo     Per     Clo \    ! idbio( 7), SdetritusN
-                    Per     Clo     Per     Clo \    ! idbio( 8), LdetritusC
-                    Per     Clo     Per     Clo \    ! idbio( 9), SdetritusC
-                    Per     Clo     Per     Clo \    ! idbio(10), TIC
-                    Per     Clo     Per     Clo \    ! idbio(11), alkalinity
-                    Per     Clo     Per     Clo      ! idbio(12), oxygen
+                    Per     Clo     Per     Clo \    ! idbio( 8), oxygen
+                    Per     Clo     Per     Clo \    ! idbio( 9), PO4
+                    Per     Clo     Per     Clo \    ! idbio(10), LdetritusP
+                    Per     Clo     Per     Clo \    ! idbio(11), SdetritusP
+                    Per     Clo     Per     Clo \    ! idbio(12), COD
+                    Per     Clo     Per     Clo      ! idbio(13), H2S
+
+!                    Per     Clo     Per     Clo \    ! idbio( 8), LdetritusC
+!                    Per     Clo     Per     Clo \    ! idbio( 9), SdetritusC
+!                    Per     Clo     Per     Clo \    ! idbio(10), TIC
+!                    Per     Clo     Per     Clo \    ! idbio(11), alkalinity
 
 ! Adjoint-based algorithms can have different lateral boundary
 ! conditions keywords.
@@ -275,24 +329,25 @@ ad_LBC(isTvar) ==   Per     Clo     Per     Clo \    ! idbio( 1), NO3
                     Per     Clo     Per     Clo \    ! idbio( 5), zooplankton
                     Per     Clo     Per     Clo \    ! idbio( 6), LdetritusN
                     Per     Clo     Per     Clo \    ! idbio( 7), SdetritusN
-                    Per     Clo     Per     Clo \    ! idbio( 8), LdetritusC
-                    Per     Clo     Per     Clo \    ! idbio( 9), SdetritusC
-                    Per     Clo     Per     Clo \    ! idbio(10), TIC
-                    Per     Clo     Per     Clo \    ! idbio(11), alkalinity
-                    Per     Clo     Per     Clo      ! idbio(12), oxygen
+                    Per     Clo     Per     Clo \    ! idbio( 8), oxygen
+                    Per     Clo     Per     Clo \    ! idbio( 9), PO4
+                    Per     Clo     Per     Clo \    ! idbio(10), LdetritusP
+                    Per     Clo     Per     Clo \    ! idbio(11), SdetritusP
+                    Per     Clo     Per     Clo \    ! idbio(12), COD
+                    Per     Clo     Per     Clo      ! idbio(13), H2S
 
 ! Logical switches (TRUE/FALSE) to activate biological tracers point
 ! Sources/Sinks (like river runoff) and to specify which tracer variables
 ! to consider: [NBT,Ngrids] values are expected. See glossary below for
 ! details.
 
-  LtracerSrc == 12*F
+  LtracerSrc == 13*F
 
 ! Logical switches (TRUE/FALSE) to read and process biological tracer
 ! climatology fields: [NBT,Ngrids] values are expected. See glossary below
 ! for details.
 
-  LtracerCLM == 12*F
+  LtracerCLM == 13*F
 
 ! Logical switches (TRUE/FALSE) to nudge the desired biological tracer
 ! climatology field. If not analytical climatology fields, users need to
@@ -300,39 +355,39 @@ ad_LBC(isTvar) ==   Per     Clo     Per     Clo \    ! idbio( 1), NO3
 ! climatology NetCDF file that are needed for nudging; [NBT,Ngrids]
 ! values are expected. See glossary below for details.
 
-  LnudgeTCLM == 12*F
+  LnudgeTCLM == 13*F
 
 ! Logical switches (TRUE/FALSE) to activate writing of biological fields
 ! into HISTORY output file: [1:NBT,Ngrids].
 
-Hout(idTvar) == 12*T    ! ..., NO3, ...           biological tracer
-Hout(idTsur) == 12*F    ! ..., NO3_sflux, ...     surface tracer flux
+Hout(idTvar) == 13*T    ! ..., NO3, ...           biological tracer
+Hout(idTsur) == 13*F    ! ..., NO3_sflux, ...     surface tracer flux
 
 ! Logical switches (TRUE/FALSE) to activate writing of time-averaged fields
 ! into AVERAGE output file: [1:NBT,Ngrids].
 
-Aout(idTvar) == 12*T    ! ..., NO3, ...           biological tracer
+Aout(idTvar) == 13*T    ! ..., NO3, ...           biological tracer
 
-Aout(idTTav) == 12*F    ! ..., NO3_2, ...         quadratic <t*t> tracer terms
-Aout(idUTav) == 12*F    ! ..., u_NO3, ...         quadratic <u*t> tracer terms
-Aout(idVTav) == 12*F    ! ..., v_NO3, ...         quadratic <v*t> tracer terms
-Aout(iHUTav) == 12*F    ! ..., Huon_NO3, ...      tracer volume flux, <Huon*t>
-Aout(iHVTav) == 12*F    ! ..., Hvom_NO3, ...      tracer volume flux, <Hvom*t>
+Aout(idTTav) == 13*F    ! ..., NO3_2, ...         quadratic <t*t> tracer terms
+Aout(idUTav) == 13*F    ! ..., u_NO3, ...         quadratic <u*t> tracer terms
+Aout(idVTav) == 13*F    ! ..., v_NO3, ...         quadratic <v*t> tracer terms
+Aout(iHUTav) == 13*F    ! ..., Huon_NO3, ...      tracer volume flux, <Huon*t>
+Aout(iHVTav) == 13*F    ! ..., Hvom_NO3, ...      tracer volume flux, <Hvom*t>
 
 ! Logical switches (TRUE/FALSE) to activate writing of time-averaged,
 ! biological tracer diagnostic terms into DIAGNOSTIC output file:
 ! [1:NBT,Ngrids].
 
-Dout(iTrate) == 12*T    ! ..., NO3_rate, ...      time rate of change
-Dout(iThadv) == 12*T    ! ..., NO3_hadv, ...      horizontal total advection
-Dout(iTxadv) == 12*T    ! ..., NO3_xadv, ...      horizontal XI-advection
-Dout(iTyadv) == 12*T    ! ..., NO3_yadv, ...      horizontal ETA-advection
-Dout(iTvadv) == 12*T    ! ..., NO3_vadv, ...      vertical advection
-Dout(iThdif) == 12*T    ! ..., NO3_hdiff, ...     horizontal total diffusion
-Dout(iTxdif) == 12*T    ! ..., NO3_xdiff, ...     horizontal XI-diffusion
-Dout(iTydif) == 12*T    ! ..., NO3_ydiff, ...     horizontal ETA-diffusion
-Dout(iTsdif) == 12*T    ! ..., NO3_sdiff, ...     horizontal S-diffusion
-Dout(iTvdif) == 12*T    ! ..., NO3_vdiff, ...     vertical diffusion
+Dout(iTrate) == 13*T    ! ..., NO3_rate, ...      time rate of change
+Dout(iThadv) == 13*T    ! ..., NO3_hadv, ...      horizontal total advection
+Dout(iTxadv) == 13*T    ! ..., NO3_xadv, ...      horizontal XI-advection
+Dout(iTyadv) == 13*T    ! ..., NO3_yadv, ...      horizontal ETA-advection
+Dout(iTvadv) == 13*T    ! ..., NO3_vadv, ...      vertical advection
+Dout(iThdif) == 13*T    ! ..., NO3_hdiff, ...     horizontal total diffusion
+Dout(iTxdif) == 13*T    ! ..., NO3_xdiff, ...     horizontal XI-diffusion
+Dout(iTydif) == 13*T    ! ..., NO3_ydiff, ...     horizontal ETA-diffusion
+Dout(iTsdif) == 13*T    ! ..., NO3_sdiff, ...     horizontal S-diffusion
+Dout(iTvdif) == 13*T    ! ..., NO3_vdiff, ...     vertical diffusion
 
 ! Logical switches (TRUE/FALSE) to activate writing of time-averaged,
 ! biological processes diagnostics terms into DIAGNOSTIC output file [Ngrids].

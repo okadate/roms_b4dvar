@@ -2797,6 +2797,232 @@
 
 !
 !---------------------------------------------------------------------
+!  Define names of variables associated with Okada additional variables.
+!---------------------------------------------------------------------
+!
+
+'PO4'                                              ! Input/Output
+  'phosphate concentration'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'PO4, scalar, series'
+  'ocean_time'
+  'idTvar(iPO4_)'
+  'r3dvar'
+  1.0d0
+
+'PO4'                                              ! Input/Output
+  'phosphate concentration functional'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'PO4, scalar, series'
+  'ocean_time'
+  'idTads(iPO4_)'
+  'r3dvar'
+  1.0d0
+
+'LdetritusP'                                       ! Input/Output
+  'large fraction phosphorus detritus concentration'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'LdetritusP, scalar, series'
+  'ocean_time'
+  'idTvar(iLDeP)'
+  'r3dvar'
+  1.0d0
+
+'LdetritusP'                                       ! Input
+  'large fraction phosphorus detritus concentration functional'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'LdetritusP, scalar, series'
+  'ocean_time'
+  'idTads(iLDeP)'
+  'r3dvar'
+  1.0d0
+
+'SdetritusP'                                       ! Input/Output
+  'small fraction phosphorus detritus concentration'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'SdetritusP, scalar, series'
+  'ocean_time'
+  'idTvar(iSDeP)'
+  'r3dvar'
+  1.0d0
+
+'SdetritusP'                                       ! Input
+  'small fraction phosphorus detritus concentration functional'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'SdetritusP, scalar, series'
+  'ocean_time'
+  'idTads(iSDeP)'
+  'r3dvar'
+  1.0d0
+
+'H2S'                                              ! Input/Output
+  'hydrogen sulfade concentration'
+  'millimole_sulfur meter-3'                       ! [millimole/m3]
+  'H2S, scalar, series'
+  'ocean_time'
+  'idTvar(iH2S_)'
+  'r3dvar'
+  1.0d0
+
+'H2S'                                              ! Input/Output
+  'hydrogen sulfade concentration functional'
+  'millimole_sulfur meter-3'                       ! [millimole/m3]
+  'H2S, scalar, series'
+  'ocean_time'
+  'idTads(iH2S_)'
+  'r3dvar'
+  1.0d0
+
+!
+!  Boundary variables.
+!
+
+'PO4_east'                                         ! Input
+  'phosphate eastern boundary condition'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'PO4_east, scalar, series'
+  'PO4_time'
+  'idTbry(ieast,iPO4_)'
+  'nulvar'
+  1.0d0
+
+'PO4_west'                                         ! Input
+  'phosphate western boundary condition'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'PO4_west, scalar, series'
+  'PO4_time'
+  'idTbry(iwest,iPO4_)'
+  'nulvar'
+  1.0d0
+
+'PO4_south'                                        ! Input
+  'phosphate southern boundary condition'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'PO4_south, scalar, series'
+  'PO4_time'
+  'idTbry(isouth,iPO4_)'
+  'nulvar'
+  1.0d0
+
+'PO4_north'                                        ! Input
+  'phosphate northern boundary condition'
+  'millimole_phosphorus meter-3'                   ! [millimole/m3]
+  'PO4_north, scalar, series'
+  'PO4_time'
+  'idTbry(inorth,iPO4_)'
+  'nulvar'
+  1.0d0
+
+'LDeP_east'                                         ! Input
+  'LDeP eastern boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'LDeP_east, scalar, series'
+  'LDeP_time'
+  'idTbry(ieast,iLDeP)'
+  'nulvar'
+  1.0d0
+
+'LDeP_west'                                         ! Input
+  'LDeP western boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'LDeP_west, scalar, series'
+  'LDeP_time'
+  'idTbry(iwest,iLDeP)'
+  'nulvar'
+  1.0d0
+
+'LDeP_south'                                        ! Input
+  'LDeP southern boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'LDeP_south, scalar, series'
+  'LDeP_time'
+  'idTbry(isouth,iLDeP)'
+  'nulvar'
+  1.0d0
+
+'LDeP_north'                                        ! Input
+  'LDeP northern boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'LDeP_north, scalar, series'
+  'LDeP_time'
+  'idTbry(inorth,iLDeP)'
+  'nulvar'
+  1.0d0
+
+'SDeP_east'                                         ! Input
+  'SDeP eastern boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'SDeP_east, scalar, series'
+  'SDeP_time'
+  'idTbry(ieast,iSDeP)'
+  'nulvar'
+  1.0d0
+
+'SDeP_west'                                         ! Input
+  'SDeP western boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'SDeP_west, scalar, series'
+  'SDeP_time'
+  'idTbry(iwest,iSDeP)'
+  'nulvar'
+  1.0d0
+
+'SDeP_south'                                        ! Input
+  'SDeP southern boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'SDeP_south, scalar, series'
+  'SDeP_time'
+  'idTbry(isouth,iSDeP)'
+  'nulvar'
+  1.0d0
+
+'SDeP_north'                                        ! Input
+  'SDeP northern boundary condition'
+  'millimole_phosphorus meter-3'                    ! [millimole/m3]
+  'SDeP_north, scalar, series'
+  'SDeP_time'
+  'idTbry(inorth,iSDeP)'
+  'nulvar'
+  1.0d0
+
+'H2S_east'                                         ! Input
+  'H2S eastern boundary condition'
+  'millimole_sulfur meter-3'                       ! [millimole/m3]
+  'H2S_east, scalar, series'
+  'H2S_time'
+  'idTbry(ieast,iH2S_)'
+  'nulvar'
+  1.0d0
+
+'H2S_west'                                         ! Input
+  'H2S western boundary condition'
+  'millimole_sulfur meter-3'                       ! [millimole/m3]
+  'H2S_west, scalar, series'
+  'H2S_time'
+  'idTbry(iwest,iH2S_)'
+  'nulvar'
+  1.0d0
+
+'H2S_south'                                        ! Input
+  'H2S southern boundary condition'
+  'millimole_sulfur meter-3'                       ! [millimole/m3]
+  'H2S_south, scalar, series'
+  'H2S_time'
+  'idTbry(isouth,iH2S_)'
+  'nulvar'
+  1.0d0
+
+'H2S_north'                                        ! Input
+  'H2S northern boundary condition'
+  'millimole_sulfur meter-3'                       ! [millimole/m3]
+  'H2S_north, scalar, series'
+  'H2S_time'
+  'idTbry(inorth,iH2S_)'
+  'nulvar'
+  1.0d0
+
+!
+!---------------------------------------------------------------------
 !  Define names of variables associated with Fennel et al (2006),
 !  NEMURO or NPZD ecosystem models.
 !---------------------------------------------------------------------
@@ -3208,6 +3434,42 @@
   'NO3_uptake, scalar, series'
   'ocean_time'
   'iDbio3(iNO3u)'
+  'r3dvar'
+  1.0d0
+
+'LNH4'                                             ! Input/Output
+  'LNH4'
+  'nondimensional'                                 ! [millimole/m3/day]
+  'LNH4, scalar, series'
+  'ocean_time'
+  'iDbio3(iLNH4)'
+  'r3dvar'
+  1.0d0
+
+'LNO3'                                             ! Input/Output
+  'LNO3'
+  'nondimensional'                                 ! [millimole/m3/day]
+  'LNO3, scalar, series'
+  'ocean_time'
+  'iDbio3(iLNO3)'
+  'r3dvar'
+  1.0d0
+
+'LPO4'                                             ! Input/Output
+  'LPO4'
+  'nondimensional'                                 ! [millimole/m3/day]
+  'LPO4, scalar, series'
+  'ocean_time'
+  'iDbio3(iLPO4)'
+  'r3dvar'
+  1.0d0
+
+'COD'                                              ! Input/Output
+  'chemical oxygen comsumption'
+  'millimole_oxygen meter-3'                       ! [millimole/m3]
+  'COD, scalar, series'
+  'ocean_time'
+  'iDbio3(iCOD_)'
   'r3dvar'
   1.0d0
 

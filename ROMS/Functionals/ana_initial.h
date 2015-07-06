@@ -730,6 +730,15 @@
           END DO
         END DO
       END DO
+# elif defined BIO_TOY
+      DO k=1,N(ng)
+        DO j=JstrT,JendT
+          DO i=IstrT,IendT
+            t(i,j,k,1,itemp)=T0(ng)+8.0_r8*EXP(z_r(i,j,k)/50.0_r8)
+            t(i,j,k,1,isalt)=S0(ng)
+          END DO
+        END DO
+      END DO
 # else
       DO k=1,N(ng)
         DO j=JstrT,JendT
