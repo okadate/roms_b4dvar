@@ -65,6 +65,42 @@
           SELECT CASE (TRIM(KeyWord))
             CASE ('Lbiology')
               Npts=load_l(Nval, Cval, Ngrids, Lbiology)
+
+            CASE ('K_PO4')
+              Npts=load_r(Nval, Rval, Ngrids, K_PO4)
+            CASE ('PhyPN')
+              Npts=load_r(Nval, Rval, Ngrids, PhyPN)
+            CASE ('ZooPN')
+              Npts=load_r(Nval, Rval, Ngrids, ZooPN)
+            CASE ('LDeRRP')
+              Npts=load_r(Nval, Rval, Ngrids, LDeRRP)
+            CASE ('SDeRRP')
+              Npts=load_r(Nval, Rval, Ngrids, SDeRRP)
+            CASE ('g_max')
+              Npts=load_r(Nval, Rval, Ngrids, g_max)
+            CASE ('t_opt')
+              Npts=load_r(Nval, Rval, Ngrids, t_opt)
+            CASE ('I_opt')
+              Npts=load_r(Nval, Rval, Ngrids, I_opt)
+            CASE ('K_Nitri')
+              Npts=load_r(Nval, Rval, Ngrids, K_Nitri)
+            CASE ('DenitR')
+              Npts=load_r(Nval, Rval, Ngrids, DenitR)
+            CASE ('K_Denit')
+              Npts=load_r(Nval, Rval, Ngrids, K_Denit)
+            CASE ('K_DO')
+              Npts=load_r(Nval, Rval, Ngrids, K_DO)
+            CASE ('H2SOR')
+              Npts=load_r(Nval, Rval, Ngrids, H2SOR)
+            CASE ('thNitriR')
+              Npts=load_r(Nval, Rval, Ngrids, thNitriR)
+            CASE ('thDenitR')
+              Npts=load_r(Nval, Rval, Ngrids, thDenitR)
+            CASE ('thPhyMR')
+              Npts=load_r(Nval, Rval, Ngrids, thPhyMR)
+            CASE ('thRRN')
+              Npts=load_r(Nval, Rval, Ngrids, thRRN)
+
             CASE ('BioIter')
               Npts=load_i(Nval, Rval, Ngrids, BioIter)
             CASE ('AttSW')
@@ -488,6 +524,54 @@
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
+            CASE ('Dout(iLNH4)')
+              IF (iDbio3(iLNH4).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iLNH4)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iLNH4)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iLNO3)')
+              IF (iDbio3(iLNO3).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iLNO3)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iLNO3)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+# ifdef PHOSPHORUS
+            CASE ('Dout(iLPO4)')
+              IF (iDbio3(iLPO4).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iLPO4)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iLPO4)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+# endif
+# ifdef COD
+            CASE ('Dout(iCOD_)')
+              IF (iDbio3(iCOD_).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iCOD_)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iCOD_)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+# endif
 #endif
           END SELECT
         END IF
@@ -505,6 +589,25 @@
         DO ng=1,Ngrids
           IF (Lbiology(ng)) THEN
             WRITE (out,60) ng
+
+            WRITE (out,80) K_PO4(ng), 'K_PO4', 'K_PO4'
+            WRITE (out,80) PhyPN(ng), 'PhyPN', 'PhyPN'
+            WRITE (out,80) ZooPN(ng), 'ZooPN', 'ZooPN'
+            WRITE (out,80) LDeRRP(ng), 'LDeRRP', 'LDeRRP'
+            WRITE (out,80) SDeRRP(ng), 'SDeRRP', 'SDeRRP'
+            WRITE (out,80) H2SOR(ng), 'H2SOR', 'H2SOR'
+            WRITE (out,80) K_DO(ng), 'K_DO', 'K_DO'
+            WRITE (out,80) K_Nitri(ng), 'K_Nitri', 'K_Nitri'
+            WRITE (out,80) thNitriR(ng), 'thNitriR', 'thNitriR'
+            WRITE (out,80) g_max(ng), 'g_max', 'g_max'
+            WRITE (out,80) t_opt(ng), 't_opt', 't_opt'
+            WRITE (out,80) I_opt(ng), 'I_opt', 'I_opt'
+            WRITE (out,80) DenitR(ng), 'DenitR', 'DenitR'
+            WRITE (out,80) K_Denit(ng), 'K_Denit', 'K_Denit'
+            WRITE (out,80) thDenitR(ng), 'thDenitR', 'thDenitR'
+            WRITE (out,80) thPhyMR(ng), 'thPhyMR', 'thPhyMR'
+            WRITE (out,80) thRRN(ng), 'thRRN', 'thRRN'
+
             WRITE (out,70) BioIter(ng), 'BioIter',                      &
      &            'Number of iterations for nonlinear convergence.'
             WRITE (out,80) AttSW(ng), 'AttSW',                          &

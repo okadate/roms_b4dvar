@@ -84,6 +84,15 @@
       integer :: iOxyg                  ! Dissolved oxygen concentration
 #endif
 
+#ifdef PHOSPHORUS
+      integer :: iPO4_                  ! 
+      integer :: iLDeP                  ! 
+      integer :: iSDeP                  ! 
+#endif
+#ifdef H2S
+      integer :: iH2S_                  ! 
+#endif
+
 #if defined DIAGNOSTICS && defined DIAGNOSTICS_BIO
 !
 !  Biological 2D diagnostic variable IDs.
@@ -101,11 +110,37 @@
 
       integer  :: iPPro = 1                   ! primary productivity
       integer  :: iNO3u = 2                   ! NO3 uptake
+      integer  :: iLNH4 = 3                   ! 
+      integer  :: iLNO3 = 4                   ! 
+# ifdef PHOSPHORUS
+      integer  :: iLPO4                       ! 
+# endif
+# ifdef COD
+      integer  :: iCOD_                       ! 
+# endif
 #endif
 !
 !  Biological parameters.
 !
       integer, allocatable :: BioIter(:)
+
+      real(r8), allocatable :: K_PO4(:)              ! 
+      real(r8), allocatable :: PhyPN(:)              ! 
+      real(r8), allocatable :: ZooPN(:)              ! 
+      real(r8), allocatable :: LDeRRP(:)             ! 
+      real(r8), allocatable :: SDeRRP(:)             ! 
+      real(r8), allocatable :: H2SOR(:)              ! 
+      real(r8), allocatable :: K_DO(:)               ! 
+      real(r8), allocatable :: K_Nitri(:)            ! 
+      real(r8), allocatable :: thNitriR(:)           ! 
+      real(r8), allocatable :: g_max(:)              ! 
+      real(r8), allocatable :: t_opt(:)              ! 
+      real(r8), allocatable :: I_opt(:)              ! 
+      real(r8), allocatable :: DenitR(:)             ! 
+      real(r8), allocatable :: K_Denit(:)            ! 
+      real(r8), allocatable :: thDenitR(:)           ! 
+      real(r8), allocatable :: thPhyMR(:)            ! 
+      real(r8), allocatable :: thRRN(:)              ! 
 
       real(r8), allocatable :: AttSW(:)              ! 1/m
       real(r8), allocatable :: AttChl(:)             ! 1/(mg_Chl m2)
@@ -176,6 +211,13 @@
 # endif
 #endif
 
+#ifdef PHOSPHORUS
+      NBT=NBT+3
+#endif
+#ifdef H2S
+      NBT=NBT+1
+#endif
+
 #if defined DIAGNOSTICS && defined DIAGNOSTICS_BIO
 !
 !-----------------------------------------------------------------------
@@ -184,7 +226,7 @@
 !
 !  Set number of diagnostics terms.
 !
-      NDbio3d=2
+      NDbio3d=4
       NDbio2d=0
 # ifdef DENITRIFICATION
       NDbio2d=NDbio2d+1
@@ -194,6 +236,12 @@
 # endif
 # ifdef OXYGEN
       NDbio2d=NDbio2d+1
+# endif
+# ifdef PHOSPHORUS
+      NDbio3d=NDbio3d+1
+# endif
+# ifdef COD
+      NDbio3d=NDbio3d+1
 # endif
 !
 !  Initialize biology diagnostic indices.
@@ -211,12 +259,76 @@
 # ifdef OXYGEN
       iO2fx=ic+1
 # endif
+      ic=4
+# ifdef PHOSPHORUS
+      iLPO4=ic+1
+      ic=ic+1
+# endif
+# ifdef COD
+      iCOD_=ic+1
+# endif
 #endif
 !
 !-----------------------------------------------------------------------
 !  Allocate various module variables.
 !-----------------------------------------------------------------------
 !
+      IF (.not.allocated(K_PO4)) THEN
+        allocate ( K_PO4(Ngrids) )
+      END IF
+      IF (.not.allocated(PhyPN)) THEN
+        allocate ( PhyPN(Ngrids) )
+      END IF
+      IF (.not.allocated(ZooPN)) THEN
+        allocate ( ZooPN(Ngrids) )
+      END IF
+      IF (.not.allocated(LDeRRP)) THEN
+        allocate ( LDeRRP(Ngrids) )
+      END IF
+      IF (.not.allocated(SDeRRP)) THEN
+        allocate ( SDeRRP(Ngrids) )
+      END IF
+
+      IF (.not.allocated(g_max)) THEN
+        allocate ( g_max(Ngrids) )
+      END IF
+      IF (.not.allocated(t_opt)) THEN
+        allocate ( t_opt(Ngrids) )
+      END IF
+      IF (.not.allocated(I_opt)) THEN
+        allocate ( I_opt(Ngrids) )
+      END IF
+
+      IF (.not.allocated(K_DO)) THEN
+        allocate ( K_DO(Ngrids) )
+      END IF
+      IF (.not.allocated(H2SOR)) THEN
+        allocate ( H2SOR(Ngrids) )
+      END IF
+
+      IF (.not.allocated(K_Nitri)) THEN
+        allocate ( K_Nitri(Ngrids) )
+      END IF
+      IF (.not.allocated(DenitR)) THEN
+        allocate ( DenitR(Ngrids) )
+      END IF
+      IF (.not.allocated(K_Denit)) THEN
+        allocate ( K_Denit(Ngrids) )
+      END IF
+
+      IF (.not.allocated(thNitriR)) THEN
+        allocate ( thNitriR(Ngrids) )
+      END IF
+      IF (.not.allocated(thDenitR)) THEN
+        allocate ( thDenitR(Ngrids) )
+      END IF
+      IF (.not.allocated(thPhyMR)) THEN
+        allocate ( thPhyMR(Ngrids) )
+      END IF
+      IF (.not.allocated(thRRN)) THEN
+        allocate ( thRRN(Ngrids) )
+      END IF
+
       IF (.not.allocated(BioIter)) THEN
         allocate ( BioIter(Ngrids) )
       END IF
@@ -369,6 +481,17 @@
 # endif
 # ifdef OXYGEN
       iOxyg=ic+1
+      ic=ic+1
+# endif
+
+# ifdef PHOSPHORUS
+      iPO4_=ic+1
+      iLDeP=ic+2
+      iSDeP=ic+3
+      ic=ic+3
+# endif
+# ifdef H2S
+      iH2S_=ic+1
       ic=ic+1
 # endif
 

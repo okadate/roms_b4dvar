@@ -174,6 +174,8 @@
       USE mod_biology
       USE mod_ncparam
       USE mod_scalars
+      USE mod_parallel  ! (okada)
+      USE mod_iounits   ! (okada)
 !
 !  Imported variable declarations.
 !
@@ -242,7 +244,9 @@
 !
 !  Local variable declarations.
 !
-#ifdef CARBON
+#if defined CARBON && defined PHOSPHORUS
+      integer, parameter :: Nsink = 8
+#elif defined CARBON || defined PHOSPHORUS
       integer, parameter :: Nsink = 6
 #else
       integer, parameter :: Nsink = 4
@@ -334,6 +338,7 @@
       real(r8) :: N_Flux_CoagD, N_Flux_CoagP
       real(r8) :: N_Flux_Egest
       real(r8) :: N_Flux_NewProd, N_Flux_RegProd
+      real(r8) :: N_Flux_SumProd                  ! (okada)
       real(r8) :: N_Flux_Nitrifi
       real(r8) :: N_Flux_Pmortal, N_Flux_Zmortal
       real(r8) :: N_Flux_Remine
@@ -362,6 +367,23 @@
       real(r8), dimension(IminS:ImaxS,N(ng)) :: bR
       real(r8), dimension(IminS:ImaxS,N(ng)) :: qc
 
+#ifdef PHOSPHORUS
+      real(r8) :: L_PO4
+      real(r8) :: P_Flux_SumProd
+      real(r8) :: P_Flux_Remine
+
+      real(r8), parameter :: rOxPO4 = 106.0_r8   ! 106/1
+#endif
+#ifdef H2S
+      real(r8) :: S_Flux
+
+      real(r8), parameter :: rOxH2S = 2.0_r8     !?
+#endif
+#ifdef COD
+      real(r8), parameter :: NH42COD = 2.0_r8    !?
+      real(r8), parameter :: PON2COD = 8.625_r8  !? 138/16
+      real(r8), parameter :: H2S2COD = 2.0_r8    !?
+#endif
 #include "set_bounds.h"
 #ifdef DIAGNOSTICS_BIO
 !
@@ -417,9 +439,17 @@
       idsink(2)=iChlo
       idsink(3)=iSDeN
       idsink(4)=iLDeN
-#ifdef CARBON
+#if defined CARBON && defined PHOSPHORUS
       idsink(5)=iSDeC
       idsink(6)=iLDeC
+      idsink(7)=iSDeP
+      idsink(8)=iLDeP
+#elif defined CARBON
+      idsink(5)=iSDeC
+      idsink(6)=iLDeC
+#elif defined PHOSPHORUS
+      idsink(5)=iSDeP
+      idsink(6)=iLDeP
 #endif
 !
 !  Set vertical sinking velocity vector in the same order as the
@@ -429,9 +459,14 @@
       Wbio(2)=wPhy(ng)                ! chlorophyll
       Wbio(3)=wSDet(ng)               ! small Nitrogen-detritus
       Wbio(4)=wLDet(ng)               ! large Nitrogen-detritus
-#ifdef CARBON
+#if defined CARBON && defined PHOSPHORUS
       Wbio(5)=wSDet(ng)               ! small Carbon-detritus
       Wbio(6)=wLDet(ng)               ! large Carbon-detritus
+      Wbio(7)=wSDet(ng)               ! small Phosphorus-detritus
+      Wbio(8)=wLDet(ng)               ! large Phosphorus-detritus
+#elif defined CARBON || defined PHOSPHORUS
+      Wbio(5)=wSDet(ng)               ! small Carbon- or Phosphorus-detritus
+      Wbio(6)=wLDet(ng)               ! large Carbon- or Phosphorus-detritus
 #endif
 !
 !  Compute inverse thickness to avoid repeated divisions.
@@ -591,6 +626,14 @@
                 cff=PhyCN(ng)*12.0_r8
                 Chl2C=MIN(Bio(i,k,iChlo)/(Bio(i,k,iPhyt)*cff+eps),      &
      &                    Chl2C_m(ng))
+#ifdef SIMPLE_GROWTH
+!
+!  Temperature-limited and light-limited growth rate (okada)
+!
+                fac1=cff1*exp(1.0_r8-Bio(i,k,itemp)/t_opt(ng))
+                fac2=cff2*exp(1.0_r8-PAR/I_opt(ng))
+                t_PPmax=g_max(ng)*fac1*fac2
+#else
 !
 !  Temperature-limited and light-limited growth rate (Eppley, R.W.,
 !  1972, Fishery Bulletin, 70: 1063-1085; here 0.59=ln(2)*0.851).
@@ -600,27 +643,69 @@
                 fac1=PAR*PhyIS(ng)
                 Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
                 t_PPmax=Epp*fac1
+#endif
+#ifdef PHOSPHORUS
+!
+!  Nutrient-limitation terms (Laurent et al. 2012).
+!
+#else
 !
 !  Nutrient-limitation terms (Parker 1993 Ecol Mod., 66, 113-120).
 !
+#endif
                 cff1=Bio(i,k,iNH4_)*K_NH4(ng)
                 cff2=Bio(i,k,iNO3_)*K_NO3(ng)
                 inhNH4=1.0_r8/(1.0_r8+cff1)
                 L_NH4=cff1/(1.0_r8+cff1)
                 L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 LTOT=L_NO3+L_NH4
+#ifdef DIAGNOSTICS_BIO
+                DiaBio3d(i,j,k,iLNH4)=L_NH4*fiter
+                DiaBio3d(i,j,k,iLNO3)=L_NO3*fiter
+#endif
+#ifdef PHOSPHORUS
+                cff3=Bio(i,k,iPO4_)*K_PO4(ng)
+                L_PO4=cff3/(1.0_r8+cff3)
+# ifdef DIAGNOSTICS_BIO
+                DiaBio3d(i,j,k,iLPO4)=L_PO4*fiter
+# endif
+!
+!  Nitrate, ammonium and phosphate uptake by Phytoplankton.
+!
+#else
 !
 !  Nitrate and ammonium uptake by Phytoplankton.
 !
+#endif
                 fac1=dtdays*t_PPmax
                 cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)*Bio(i,k,iPhyt)
                 cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)*Bio(i,k,iPhyt)
+                N_Flux_NewProd=Bio(i,k,iNO3_)/(1.0_r8+cff4)*cff4  ! (okada)
+                N_Flux_RegProd=Bio(i,k,iNH4_)/(1.0_r8+cff5)*cff5  ! (okada)
+                N_Flux_SumProd=N_Flux_NewProd+N_Flux_RegProd      ! (okada)
+#ifdef PHOSPHORUS
+                IF (LTOT.lt.L_PO4) THEN
+                  Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
+                  Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
+                  Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+N_Flux_SumProd
+                  Bio(i,k,iPO4_)=Bio(i,k,iPO4_)-                        &
+     &                           PhyPN(ng)*N_Flux_SumProd
+                ELSE IF (L_PO4.lt.LTOT) THEN
+                  cff4=fac1*K_PO4(ng)/(1.0_r8+cff3)*Bio(i,k,iPhyt)
+                  Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff4)
+                  P_Flux_SumProd=Bio(i,k,iPO4_)*cff4
+                  fac1=MIN(P_Flux_SumProd/PhyPN(ng)/N_Flux_SumProd,     &
+     &                     1.0_r8)
+                  Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+N_Flux_SumProd*fac1
+                  Bio(i,k,iNO3_)=Bio(i,k,iNO3_)-N_Flux_NewProd*fac1
+                  Bio(i,k,iNH4_)=Bio(i,k,iNH4_)-N_Flux_RegProd*fac1
+                  LTOT=L_PO4
+                ENDIF
+#else
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
-                N_Flux_NewProd=Bio(i,k,iNO3_)*cff4
-                N_Flux_RegProd=Bio(i,k,iNH4_)*cff5
-                Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
-     &                         N_Flux_NewProd+N_Flux_RegProd
+                Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+N_Flux_SumProd
+#endif
 !
                 Bio(i,k,iChlo)=Bio(i,k,iChlo)+                          &
      &                         (dtdays*t_PPmax*t_PPmax*LTOT*LTOT*       &
@@ -672,10 +757,13 @@
 !
 #ifdef OXYGEN
                 fac2=MAX(Bio(i,k,iOxyg),0.0_r8)     ! O2 max
-                fac3=MAX(fac2/(3.0_r8+fac2),0.0_r8) ! MM for O2 dependence
+                fac3=MAX(fac2/(K_Nitri(ng)+fac2),0.0_r8) ! MM for O2 dependence (okada)
                 fac1=dtdays*NitriR(ng)*fac3
 #else
                 fac1=dtdays*NitriR(ng)
+#endif
+#ifdef TEMP_DEPENDANCE
+                fac1=fac1*thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
 #endif
                 cff1=(PAR-I_thNH4(ng))/                                 &
      &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
@@ -700,8 +788,23 @@
 !  If PARsur=0, nitrification occurs at the maximum rate (NitriR).
 !
             ELSE
+#if defined OXYGEN && (defined NITRI_PAR0 || defined TEMP_DEPENDANCE)
+              DO k=N(ng),1,-1
+# ifdef NITRI_PAR0
+                fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
+                fac3=MAX(fac2/(K_Nitri(ng)+fac2),0.0_r8)
+                fac1=dtdays*NitriR(ng)*fac3
+# else
+                fac1=dtdays*NitriR(ng)
+# endif
+# ifdef TEMP_DEPENDANCE
+                fac1=fac1*thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
+# endif
+                cff3=fac1*cff2
+#else
               cff3=dtdays*NitriR(ng)
               DO k=N(ng),1,-1
+#endif
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
@@ -714,6 +817,24 @@
               END DO
             END IF
           END DO
+#if defined OXYGEN && defined DENIT_WATER
+!
+!-----------------------------------------------------------------------
+! Denitrification in anoxic water                       Okada 2014/02/13
+!-----------------------------------------------------------------------
+!
+          DO i=Istr,Iend
+            DO k=N(ng),1,-1
+              fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
+              fac3=MAX(fac2/(K_Denit(ng)+fac2),0.0_r8)
+              fac1=dtdays*DenitR(ng)*fac3
+# ifdef TEMP_DEPENDANCE
+              fac1=fac1*thDenitR(ng)**(Bio(i,k,itemp)-20.0_r8)
+# endif
+              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+fac1)
+            END DO
+          END DO
+#endif
 !
 !-----------------------------------------------------------------------
 !  Phytoplankton grazing by zooplankton (rate: ZooGR), phytoplankton
@@ -723,7 +844,11 @@
 !-----------------------------------------------------------------------
 !
           fac1=dtdays*ZooGR(ng)
+#ifdef TEMP_DEPENDANCE
+          cff2=dtdays*PhyMR(ng)*thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8)
+#else
           cff2=dtdays*PhyMR(ng)
+#endif
           DO k=1,N(ng)
             DO i=Istr,Iend
 !
@@ -757,6 +882,11 @@
               Bio(i,k,iSDeC)=Bio(i,k,iSDeC)+                            &
      &                       PhyCN(ng)*(N_Flux_Egest+N_Flux_Pmortal)+   &
      &                       (PhyCN(ng)-ZooCN(ng))*N_Flux_Assim
+#endif
+#ifdef PHOSPHORUS
+              Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+                            &
+     &                       PhyPN(ng)*(N_Flux_Egest+N_Flux_Pmortal)+   &
+     &                       (PhyPN(ng)-ZooPN(ng))*N_Flux_Assim
 #endif
             END DO
           END DO
@@ -801,6 +931,12 @@
               Bio(i,k,iTIC_)=Bio(i,k,iTIC_)+                            &
      &                       ZooCN(ng)*(N_Flux_Zmetabo+N_Flux_Zexcret)
 #endif
+#ifdef PHOSPHORUS
+              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+                            &
+     &                       ZooPN(ng)*(N_Flux_Zmetabo+N_Flux_Zexcret)
+              Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+                            &
+     &                       ZooPN(ng)*N_Flux_Zmortal
+#endif
             END DO
           END DO
 !
@@ -825,6 +961,11 @@
               Bio(i,k,iLDeC)=Bio(i,k,iLDeC)+                            &
      &                       PhyCN(ng)*(N_Flux_CoagP+N_Flux_CoagD)
 #endif
+#ifdef PHOSPHORUS
+              Bio(i,k,iSDeP)=Bio(i,k,iSDeP)-PhyPN(ng)*N_Flux_CoagD
+              Bio(i,k,iLDeP)=Bio(i,k,iLDeP)+                            &
+     &                       PhyPN(ng)*(N_Flux_CoagP+N_Flux_CoagD)
+#endif
             END DO
           END DO
 !
@@ -836,7 +977,10 @@
           DO k=1,N(ng)
             DO i=Istr,Iend
               fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
-              fac2=MAX(fac1/(3.0_r8+fac1),0.0_r8) ! MM for O2 dependence
+              fac2=MAX(fac1/(K_DO(ng)+fac1),0.0_r8) ! MM for O2 dependence (okada)
+# ifdef TEMP_DEPENDANCE
+              fac2=fac2*(thRRN(ng)**(Bio(i,k,iTemp)-20.0_r8))
+# endif
               cff1=dtdays*SDeRRN(ng)*fac2
               cff2=1.0_r8/(1.0_r8+cff1)
               cff3=dtdays*LDeRRN(ng)*fac2
@@ -846,6 +990,16 @@
               N_Flux_Remine=Bio(i,k,iSDeN)*cff1+Bio(i,k,iLDeN)*cff3
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Remine
               Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-N_Flux_Remine*rOxNH4
+# ifdef PHOSPHORUS
+              cff1=dtdays*SDeRRP(ng)*fac2
+              cff2=1.0_r8/(1.0_r8+cff1)
+              cff3=dtdays*LDeRRP(ng)*fac2
+              cff4=1.0_r8/(1.0_r8+cff3)
+              Bio(i,k,iSDeP)=Bio(i,k,iSDeP)*cff2
+              Bio(i,k,iLDeP)=Bio(i,k,iLDeP)*cff4
+              P_Flux_Remine=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
+              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux_Remine
+# endif
             END DO
           END DO
 #else
@@ -859,6 +1013,41 @@
               Bio(i,k,iLDeN)=Bio(i,k,iLDeN)*cff4
               N_Flux_Remine=Bio(i,k,iSDeN)*cff1+Bio(i,k,iLDeN)*cff3
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Remine
+            END DO
+          END DO
+# ifdef PHOSPHORUS
+          cff1=dtdays*SDeRRP(ng)
+          cff2=1.0_r8/(1.0_r8+cff1)
+          cff3=dtdays*LDeRRP(ng)
+          cff4=1.0_r8/(1.0_r8+cff3)
+          DO k=1,N(ng)
+            DO i=Istr,Iend
+              Bio(i,k,iSDeP)=Bio(i,k,iSDeP)*cff2
+              Bio(i,k,iLDeP)=Bio(i,k,iLDeP)*cff4
+              P_Flux_Remine=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
+              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux_Remine
+            END DO
+          END DO
+# endif
+#endif
+#if defined H2S && defined OXYGEN
+!
+!-----------------------------------------------------------------------
+!  H2S Oxidation. okada
+!-----------------------------------------------------------------------
+!
+          DO k=1,N(ng)
+            DO i=Istr,Iend
+              fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
+              fac2=MAX(fac1/(K_DO(ng)+fac1),0.0_r8) ! MM for O2 dependence
+# ifdef TEMP_DEPENDANCE
+              !fac2=fac2*(th  **(Bio(i,k,iTemp)-20.0_r8))
+# endif
+              cff1=dtdays*H2SOR(ng)*fac2
+              cff2=1.0_r8/(1.0_r8+cff1)
+              Bio(i,k,iH2S_)=Bio(i,k,iH2S_)*cff2
+              S_Flux=Bio(i,k,iH2S_)*cff1
+              Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-S_Flux*rOxH2S
             END DO
           END DO
 #endif
@@ -1276,9 +1465,73 @@
               END DO
             END IF
 # endif
+# ifdef PHOSPHORUS
+            IF ((ibio.eq.iLDeP).or.                                     &
+     &          (ibio.eq.iSDeP)) THEN
+              DO i=Istr,Iend
+                cff1=FC(i,0)*Hz_inv(i,1)
+                Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1
+              END DO
+            END IF
+            IF (ibio.eq.iPhyt)THEN
+              DO i=Istr,Iend
+                cff1=FC(i,0)*Hz_inv(i,1)
+                Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*PhyPN(ng)
+              END DO
+            END IF
+# endif
+# if defined H2S && defined OXYGEN
+            IF ((ibio.eq.iPhyt).or.                                     &
+     &          (ibio.eq.iSDeN).or.                                     &
+     &          (ibio.eq.iLDeN)) THEN
+              DO i=Istr,Iend
+                Bio(i,1,iH2S_)=Bio(i,1,iH2S_)-                          &
+     &                         0.5_r8*MIN(Bio(i,1,iOxyg),0.0_r8)
+                Bio(i,1,iOxyg)=MAX(Bio(i,1,iOxyg),0.0_r8)
+              END DO
+            END IF
+# endif
 #endif
           END DO SINK_LOOP
+#ifdef BIO_SEDIMENT_PARAMETER
+!
+!  Elution and oxygen consumption parameters (okada)
+!
+!    SOD 0.2-4.0 g/m2/day  Sediment Oxygen Demand (WASP6)
+!    NH4 15.3    mg/m2/day Average Nishimoto (2012)
+!    PO4 2.0     mg/m2/day Average Nishimoto (2012)
+!
+          cff1=2100.0_r8/32.0_r8  !H2S elution flux from sediment
+          cff2=15.3_r8/14.0_r8    !NH4 elution flux from sediment
+          cff3=2.0_r8/31.0_r8     !PO4 elution flux from sediment
+!
+!-----------------------------------------------------------------------
+!  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)
+!-----------------------------------------------------------------------
+!
+          DO i=Istr,Iend
+            fac1=dtdays*1.05_r8**(Bio(i,1,itemp)-20.0_r8)
+            cff1=fac1*Hz_inv(i,1)
+            Bio(i,1,iH2S_)=Bio(i,1,iH2S_)+cff1*cff8
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1*cff9  !*0.7_r8
+            Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*cff10 !*0.7_r8
+          END DO
+#endif
         END DO ITER_LOOP
+#ifdef COD
+        DO k=1,N(ng)
+          DO i=Istr,Iend
+            DiaBio3d(i,j,k,iCOD_)=Bio(i,k,iNH4_)*NH42COD+               &
+# ifdef H2S
+            &                     Bio(i,k,iH2S_)*H2S2COD+               &
+# endif
+            &                     Bio(i,k,iSDeN)*PON2COD+               &
+            &                     Bio(i,k,iLDeN)*PON2COD+               &
+            &                     Bio(i,k,iPhyt)*PON2COD+               &
+            &                     Bio(i,k,iZoop)*PON2COD
+          END DO
+        END DO
+#endif
 !
 !-----------------------------------------------------------------------
 !  Update global tracer variables: Add increment due to BGC processes

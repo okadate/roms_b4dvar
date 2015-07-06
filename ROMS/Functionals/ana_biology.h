@@ -83,6 +83,38 @@
 !  Fennel et al. (2006), nitrogen-based biology model.
 !-----------------------------------------------------------------------
 !
+# ifdef BIO_TOY
+      DO k=1,N(ng)
+        DO j=JstrT,JendT
+          DO i=IstrT,IendT
+            t(i,j,k,1,iNO3_)=15.0_r8
+            t(i,j,k,1,iNH4_)=0.19_r8
+            t(i,j,k,1,iPhyt)=0.03_r8
+            t(i,j,k,1,iZoop)=0.0007_r8
+            t(i,j,k,1,iChlo)=0.01_r8
+            t(i,j,k,1,iLDeN)=0.0005_r8
+            t(i,j,k,1,iSDeN)=0.04_r8
+#  ifdef CARBON
+            t(i,j,k,1,iSDeC)=t(i,j,k,1,iLDeN)*PhyCN(ng)
+            t(i,j,k,1,iLDeC)=t(i,j,k,1,iSDeN)*PhyCN(ng)
+            t(i,j,k,1,iTIC_)=2110.0_r8
+            t(i,j,k,1,iTAlk)=2350.0_r8
+#  endif
+#  ifdef OXYGEN
+            t(i,j,k,1,iOxyg)=260.0_r8
+#  endif
+#  ifdef PHOSPHORUS
+            t(i,j,k,1,iPO4_)=1.0_r8 !t(i,j,k,1,iNO3_)*PhyPN(ng)
+            t(i,j,k,1,iLDeP)=t(i,j,k,1,iLDeN)*PhyPN(ng)
+            t(i,j,k,1,iSDeP)=t(i,j,k,1,iSDeN)*PhyPN(ng)
+#  endif
+#  ifdef H2S 
+            t(i,j,k,1,iH2S_)=0.0_r8
+#  endif
+          END DO
+        END DO
+      END DO
+# else
       cff1=20.0_r8/3.0_r8
       cff2= 2.0_r8/3.0_r8
       DO k=1,N(ng)
@@ -109,27 +141,25 @@
             t(i,j,k,1,iLDeN)=0.02_r8
             t(i,j,k,1,iSDeN)=0.04_r8
             t(i,j,k,1,iChlo)=0.02_r8
-#ifdef CARBON
+#  ifdef CARBON
             t(i,j,k,1,iTIC_)=2100.0_r8
             t(i,j,k,1,iTAlk)=2350.0_r8
             t(i,j,k,1,iLDeC)=0.002_r8
             t(i,j,k,1,iSDeC)=0.06_r8
-#endif
-#ifdef OXYGEN
+#  endif
+#  ifdef OXYGEN
             t(i,j,k,1,iOxyg)=10.0_r8/0.02241_r8
-#endif
+#  endif
           END DO
         END DO
       END DO
-
+# endif
 #elif defined NEMURO
 !
 !-----------------------------------------------------------------------
 !  Nemuro lower trophic level ecosystem model.
 !-----------------------------------------------------------------------
 !
-      cff1=20.0_r8/3.0_r8
-      cff2= 2.0_r8/3.0_r8
       DO k=1,N(ng)
         DO j=JstrT,JendT
           DO i=IstrT,IendT
