@@ -456,6 +456,8 @@
 !
         IF (.not.(ANY(LBC(:,isUbar,ng)%radiation).or.                   &
      &            ANY(LBC(:,isVbar,ng)%radiation).or.                   &
+     &            ANY(LBC(:,isUbar,ng)%Reduced).or.                     &  ! (okada)
+     &            ANY(LBC(:,isVbar,ng)%Reduced).or.                     &  ! (okada)
      &            ANY(LBC(:,isUbar,ng)%Flather).or.                     &
      &            ANY(LBC(:,isVbar,ng)%Flather))) THEN
           CALL u2dbc_tile (ng, tile,                                    &
@@ -546,6 +548,8 @@
 !
         IF (.not.(ANY(LBC(:,isUbar,ng)%radiation).or.                   &
      &            ANY(LBC(:,isVbar,ng)%radiation).or.                   &
+     &            ANY(LBC(:,isUbar,ng)%Reduced).or.                     &  ! (okada)
+     &            ANY(LBC(:,isVbar,ng)%Reduced).or.                     &  ! (okada)
      &            ANY(LBC(:,isUbar,ng)%Flather).or.                     &
      &            ANY(LBC(:,isVbar,ng)%Flather))) THEN
           CALL u2dbc_tile (ng, tile,                                    &
