@@ -24,7 +24,7 @@
 # First the defaults
 #
                FC := ifort
-           FFLAGS := -heap-arrays -fp-model precise
+           FFLAGS := -heap-arrays -fp-model precise -mcmodel=large -shared-intel
               CPP := /usr/bin/cpp
          CPPFLAGS := -P -traditional
           LDFLAGS :=
@@ -47,24 +47,24 @@ ifdef USE_NETCDF4
     NETCDF_INCDIR ?= $(shell $(NC_CONFIG) --prefix)/include
              LIBS := $(shell $(NC_CONFIG) --flibs)
 else
-    NETCDF_INCDIR ?= /usr/local/include
-    NETCDF_LIBDIR ?= /usr/local/lib
+    NETCDF_INCDIR ?= /opt/clustertool/netcdf3/include
+    NETCDF_LIBDIR ?= /opt/clustertool/netcdf3/lib
              LIBS := -L$(NETCDF_LIBDIR) -lnetcdf
 endif
 
 ifdef USE_ARPACK
  ifdef USE_MPI
-   PARPACK_LIBDIR ?= /opt/intelsoft/PARPACK
+   PARPACK_LIBDIR ?= /opt/clustertool/ARPACK
              LIBS += -L$(PARPACK_LIBDIR) -lparpack
  endif
-    ARPACK_LIBDIR ?= /opt/intelsoft/PARPACK
+    ARPACK_LIBDIR ?= /opt/clustertool/ARPACK
              LIBS += -L$(ARPACK_LIBDIR) -larpack
 endif
 
 ifdef USE_MPI
          CPPFLAGS += -DMPI
  ifdef USE_MPIF90
-               FC := mpif90
+               FC := mpiifort
  else
              LIBS += -lfmpi-pgi -lmpi-pgi
  endif
@@ -80,7 +80,7 @@ ifdef USE_DEBUG
            FFLAGS += -g -check bounds -traceback -check uninit -warn interfaces,nouncalled -gen-interfaces
 #          FFLAGS += -g -check uninit -ftrapuv -traceback
 else
-           FFLAGS += -ip -O3
+           FFLAGS += -ip -O2
 endif
 
 ifdef USE_MCT
