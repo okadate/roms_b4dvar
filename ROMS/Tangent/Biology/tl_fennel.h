@@ -1,4 +1,4 @@
-      SUBROUTINE biology (ng,tile)
+      SUBROUTINE tl_biology (ng,tile)
 !
 !svn $Id$
 !***********************************************************************
@@ -78,7 +78,7 @@
 #ifdef PROFILE
       CALL wclock_on (ng, iNLM, 15)
 #endif
-      CALL biology_tile (ng, tile,                                      &
+      CALL tl_biology_tile (ng, tile,                                   &
      &                   LBi, UBi, LBj, UBj, N(ng), NT(ng),             &
      &                   IminS, ImaxS, JminS, JmaxS,                    &
      &                   nstp(ng), nnew(ng),                            &
@@ -86,44 +86,55 @@
      &                   GRID(ng) % rmask,                              &
 #endif
      &                   GRID(ng) % Hz,                                 &
+     &                   GRID(ng) % tl_Hz,                              &
      &                   GRID(ng) % z_r,                                &
+     &                   GRID(ng) % tl_z_r,                             &
      &                   GRID(ng) % z_w,                                &
+     &                   GRID(ng) % tl_z_w,                             &
      &                   FORCES(ng) % srflx,                            &
+     &                   FORCES(ng) % tl_srflx,                         &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
      &                   FORCES(ng) % Uwind,                            &
      &                   FORCES(ng) % Vwind,                            &
 # else
      &                   FORCES(ng) % sustr,                            &
+     &                   FORCES(ng) % tl_sustr,                         &
      &                   FORCES(ng) % svstr,                            &
+     &                   FORCES(ng) % tl_svstr,                         &
 # endif
 #endif
-     &                   OCEAN(ng) % t)
+     &                   OCEAN(ng) % t,
+     &                   OCEAN(ng) % tl_t)
 
 #ifdef PROFILE
       CALL wclock_off (ng, iNLM, 15)
 #endif
 
       RETURN
-      END SUBROUTINE biology
+      END SUBROUTINE tl_biology
 !
 !-----------------------------------------------------------------------
-      SUBROUTINE biology_tile (ng, tile,                                &
+      SUBROUTINE tl_biology_tile (ng, tile,                             &
      &                         LBi, UBi, LBj, UBj, UBk, UBt,            &
      &                         IminS, ImaxS, JminS, JmaxS,              &
      &                         nstp, nnew,                              &
 #ifdef MASKING
      &                         rmask,                                   &
 #endif
-     &                         Hz, z_r, z_w, srflx,                     &
+     &                         Hz, tl_Hz,                               &
+     &                         z_r, tl_z_r,                             &
+     &                         z_w, tl_z_w,                             &
+     &                         srflx, tl_srflx                          &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
      &                         Uwind, Vwind,                            &
 # else
-     &                         sustr, svstr,                            &
+     &                         sustr, tl_sustr,                         &
+     &                         svstr, tl_svstr,                         &
 # endif
 #endif
-     &                         t)
+     &                         t, tl_t)
 !-----------------------------------------------------------------------
 !
       USE mod_param
@@ -148,6 +159,11 @@
       real(r8), intent(in) :: z_r(LBi:,LBj:,:)
       real(r8), intent(in) :: z_w(LBi:,LBj:,0:)
       real(r8), intent(in) :: srflx(LBi:,LBj:)
+
+      real(r8), intent(in) :: tl_Hz(LBi:,LBj:,:)
+      real(r8), intent(in) :: tl_z_r(LBi:,LBj:,:)
+      real(r8), intent(in) :: tl_z_w(LBi:,LBj:,0:)
+      real(r8), intent(in) :: tl_srflx(LBi:,LBj:)
 # ifdef OXYGEN
 #  ifdef BULK_FLUXES
       real(r8), intent(in) :: Uwind(LBi:,LBj:)
@@ -155,9 +171,14 @@
 #  else
       real(r8), intent(in) :: sustr(LBi:,LBj:)
       real(r8), intent(in) :: svstr(LBi:,LBj:)
+
+      real(r8), intent(in) :: tl_sustr(LBi:,LBj:)
+      real(r8), intent(in) :: tl_svstr(LBi:,LBj:)
 #  endif
 # endif
-      real(r8), intent(inout) :: t(LBi:,LBj:,:,:,:)
+      real(r8), intent(in) :: t(LBi:,LBj:,:,:,:)
+
+      real(r8), intent(inout) :: tl_t(LBi:,LBj:,:,:,:)
 #else
 # ifdef MASKING
       real(r8), intent(in) :: rmask(LBi:UBi,LBj:UBj)
@@ -166,6 +187,11 @@
       real(r8), intent(in) :: z_r(LBi:UBi,LBj:UBj,UBk)
       real(r8), intent(in) :: z_w(LBi:UBi,LBj:UBj,0:UBk)
       real(r8), intent(in) :: srflx(LBi:UBi,LBj:UBj)
+
+      real(r8), intent(in) :: tl_Hz(LBi:UBi,LBj:UBj,UBk)
+      real(r8), intent(in) :: tl_z_r(LBi:UBi,LBj:UBj,UBk)
+      real(r8), intent(in) :: tl_z_w(LBi:UBi,LBj:UBj,0:UBk)
+      real(r8), intent(in) :: tl_srflx(LBi:UBi,LBj:UBj)
 # ifdef OXYGEN
 #  ifdef BULK_FLUXES
       real(r8), intent(in) :: Uwind(LBi:UBi,LBj:UBj)
@@ -173,9 +199,14 @@
 #  else
       real(r8), intent(in) :: sustr(LBi:UBi,LBj:UBj)
       real(r8), intent(in) :: svstr(LBi:UBi,LBj:UBj)
+
+      real(r8), intent(in) :: tl_sustr(LBi:UBi,LBj:UBj)
+      real(r8), intent(in) :: tl_svstr(LBi:UBi,LBj:UBj)
 #  endif
 # endif
-      real(r8), intent(inout) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
+      real(r8), intent(in) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
+
+      real(r8), intent(inout) :: tl_t(LBi:UBi,LBj:UBj,UBk,3,UBt)
 #endif
 !
 !  Local variable declarations.
@@ -187,6 +218,7 @@
 #endif
 
       integer :: Iter, i, ibio, isink, itrc, ivar, j, k, ks
+      integer :: Iteradj
 
       integer, dimension(Nsink) :: idsink
 
@@ -194,6 +226,7 @@
 
 #ifdef OXYGEN
       real(r8) :: u10squ
+      real(r8) :: tl_u10squ
 #endif
 #ifdef OXYGEN
       real(r8), parameter :: OA0 = 2.00907_r8       ! Oxygen
@@ -216,17 +249,27 @@
       real(r8) :: Epp, L_NH4, L_NO3, LTOT, Vp
       real(r8) :: Chl2C, dtdays, t_PPmax, inhNH4
 
+      real(r8) :: tl_Att, tl_AttFac, tl_ExpAtt, tl_Itop, tl_PAR
+      real(r8) :: tl_Epp, tl_L_NH4, tl_L_NO3, tl_LTOT, tl_Vp
+      real(r8) :: tl_Chl2C, tl_t_PPmax, tl_inhNH4
+
       real(r8) :: cff, cff1, cff2, cff3, cff4, cff5
       real(r8) :: fac1, fac2, fac3
       real(r8) :: cffL, cffR, cu, dltL, dltR
 
-      real(r8) :: total_N
+      real(r8) :: tl_cff, tl_cff1, tl_cff2, tl_cff3, tl_cff4, tl_cff5
+      real(r8) :: tl_fac1, tl_fac2, tl_fac3
+      real(r8) :: tl_cffL, tl_cffR, tl_cu, tl_dltL, tl_dltR
 
+      real(r8) :: total_N
+      real(r8) :: tl_total_N
 
 #ifdef OXYGEN
       real(r8) :: SchmidtN_Ox, O2satu, O2_Flux
       real(r8) :: TS, AA
 
+      real(r8) :: tl_SchmidtN_Ox, tl_O2satu, tl_O2_Flux
+      real(r8) :: tl_TS, tl_AA
 #endif
 
       real(r8) :: N_Flux_Assim
@@ -239,16 +282,34 @@
       real(r8) :: N_Flux_Remine
       real(r8) :: N_Flux_Zexcret, N_Flux_Zmetabo
 
+      real(r8) :: tl_N_Flux_Assim
+      real(r8) :: tl_N_Flux_CoagD, tl_N_Flux_CoagP
+      real(r8) :: tl_N_Flux_Egest
+      real(r8) :: tl_N_Flux_NewProd, tl_N_Flux_RegProd
+      real(r8) :: tl_N_Flux_SumProd                  ! (okada)
+      real(r8) :: tl_N_Flux_Nitrifi
+      real(r8) :: tl_N_Flux_Pmortal, tl_N_Flux_Zmortal
+      real(r8) :: tl_N_Flux_Remine
+      real(r8) :: tl_N_Flux_Zexcret, tl_N_Flux_Zmetabo
+
       real(r8), dimension(Nsink) :: Wbio
+      real(r8), dimension(Nsink) :: tl_Wbio
 
       integer, dimension(IminS:ImaxS,N(ng)) :: ksource
+      integer, dimension(IminS:ImaxS,N(ng)) :: tl_ksource
 
       real(r8), dimension(IminS:ImaxS) :: PARsur
+      real(r8), dimension(IminS:ImaxS) :: tl_PARsur
 
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio
+      real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio1
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio_old
 
+      real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: tl_Bio
+      real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: tl_Bio_old
+
       real(r8), dimension(IminS:ImaxS,0:N(ng)) :: FC
+      real(r8), dimension(IminS:ImaxS,0:N(ng)) :: tl_FC
 
       real(r8), dimension(IminS:ImaxS,N(ng)) :: Hz_inv
       real(r8), dimension(IminS:ImaxS,N(ng)) :: Hz_inv2
@@ -256,18 +317,34 @@
       real(r8), dimension(IminS:ImaxS,N(ng)) :: WL
       real(r8), dimension(IminS:ImaxS,N(ng)) :: WR
       real(r8), dimension(IminS:ImaxS,N(ng)) :: bL
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: bL1
       real(r8), dimension(IminS:ImaxS,N(ng)) :: bR
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: bR1
       real(r8), dimension(IminS:ImaxS,N(ng)) :: qc
+
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_Hz_inv
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_Hz_inv2
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_Hz_inv3
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_WL
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_WR
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_bL
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_bR
+      real(r8), dimension(IminS:ImaxS,N(ng)) :: tl_qc
 
 #ifdef PHOSPHORUS
       real(r8) :: L_PO4
       real(r8) :: P_Flux_SumProd
       real(r8) :: P_Flux_Remine
 
+      real(r8) :: tl_L_PO4
+      real(r8) :: tl_P_Flux_SumProd
+      real(r8) :: tl_P_Flux_Remine
+
       real(r8), parameter :: rOxPO4 = 106.0_r8   ! 106/1
 #endif
 #ifdef H2S
       real(r8) :: S_Flux
+      real(r8) :: tl_S_Flux
 
       real(r8), parameter :: rOxH2S = 2.0_r8     !?
 #endif
@@ -291,7 +368,7 @@
       idsink(2)=iChlo
       idsink(3)=iSDeN
       idsink(4)=iLDeN
-#elif defined PHOSPHORUS
+#ifdef defined PHOSPHORUS
       idsink(5)=iSDeP
       idsink(6)=iLDeP
 #endif
@@ -1073,7 +1150,7 @@
               END DO
             END DO
 
-#elif defined BIO_SEDIMENT
+#ifdef defined BIO_SEDIMENT
 !
 !  Particulate flux reaching the seafloor is remineralized and returned
 !  to the dissolved nitrate pool. Without this conversion, particulate
@@ -1133,7 +1210,7 @@
 # endif
 #endif
           END DO SINK_LOOP
-#elif defined BIO_SEDIMENT_PARAMETER
+#ifdef defined BIO_SEDIMENT_PARAMETER
 !
 !  Elution and oxygen consumption parameters (okada)
 !
@@ -1187,7 +1264,4 @@
       END DO J_LOOP
 
       RETURN
-      END SUBROUTINE biology_tile
-
-      END DO I_LOOP
-      RETURN
+      END SUBROUTINE tl_biology_tile
