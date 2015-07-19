@@ -83,29 +83,29 @@
      &                      IminS, ImaxS, JminS, JmaxS,                 &
      &                      nstp(ng), nnew(ng),                         &
 #ifdef MASKING
-     &                   GRID(ng) % rmask,                              &
+     &                      GRID(ng) % rmask,                           &
 #endif
-     &                   GRID(ng) % Hz,                                 &
-     &                   GRID(ng) % tl_Hz,                              &
-     &                   GRID(ng) % z_r,                                &
-     &                   GRID(ng) % tl_z_r,                             &
-     &                   GRID(ng) % z_w,                                &
-     &                   GRID(ng) % tl_z_w,                             &
-     &                   FORCES(ng) % srflx,                            &
-     &                   FORCES(ng) % tl_srflx,                         &
+     &                      GRID(ng) % Hz,                              &
+     &                      GRID(ng) % tl_Hz,                           &
+     &                      GRID(ng) % z_r,                             &
+     &                      GRID(ng) % tl_z_r,                          &
+     &                      GRID(ng) % z_w,                             &
+     &                      GRID(ng) % tl_z_w,                          &
+     &                      FORCES(ng) % srflx,                         &
+     &                      FORCES(ng) % tl_srflx,                      &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
-     &                   FORCES(ng) % Uwind,                            &
-     &                   FORCES(ng) % Vwind,                            &
+     &                      FORCES(ng) % Uwind,                         &
+     &                      FORCES(ng) % Vwind,                         &
 # else
-     &                   FORCES(ng) % sustr,                            &
-     &                   FORCES(ng) % tl_sustr,                         &
-     &                   FORCES(ng) % svstr,                            &
-     &                   FORCES(ng) % tl_svstr,                         &
+     &                      FORCES(ng) % sustr,                         &
+     &                      FORCES(ng) % tl_sustr,                      &
+     &                      FORCES(ng) % svstr,                         &
+     &                      FORCES(ng) % tl_svstr,                      &
 # endif
 #endif
-     &                   OCEAN(ng) % t,
-     &                   OCEAN(ng) % tl_t)
+     &                      OCEAN(ng) % t,                              &
+     &                      OCEAN(ng) % tl_t)
 
 #ifdef PROFILE
       CALL wclock_off (ng, iTLM, 15)
@@ -119,21 +119,21 @@
      &                            IminS, ImaxS, JminS, JmaxS,           &
      &                            nstp, nnew,                           &
 #ifdef MASKING
-     &                         rmask,                                   &
+     &                            rmask,                                &
 #endif
-     &                         Hz, tl_Hz,                               &
-     &                         z_r, tl_z_r,                             &
-     &                         z_w, tl_z_w,                             &
-     &                         srflx, tl_srflx                          &
+     &                            Hz, tl_Hz,                            &
+     &                            z_r, tl_z_r,                          &
+     &                            z_w, tl_z_w,                          &
+     &                            srflx, tl_srflx                       &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
-     &                         Uwind, Vwind,                            &
+     &                            Uwind, Vwind,                         &
 # else
-     &                         sustr, tl_sustr,                         &
-     &                         svstr, tl_svstr,                         &
+     &                            sustr, tl_sustr,                      &
+     &                            svstr, tl_svstr,                      &
 # endif
 #endif
-     &                         t, tl_t)
+     &                            t, tl_t)
 !-----------------------------------------------------------------------
 !
       USE mod_param
