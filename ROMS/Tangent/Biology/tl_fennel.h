@@ -643,7 +643,11 @@
                   N_Flux_NewProd=Bio(i,k,iNO3_)/(1.0_r8+cff4)*cff4
                   N_Flux_RegProd=Bio(i,k,iNH4_)/(1.0_r8+cff5)*cff5
                   N_Flux_SumProd=N_Flux_NewProd+N_Flux_RegProd
+                  Bio1(i,k,iNO3_)=Bio(i,k,iNO3_)
+                  Bio1(i,k,iNH4_)=Bio(i,k,iNH4_)
+                  Bio1(i,k,iPhyt)=Bio(i,k,iPhyt)
 #ifdef PHOSPHORUS
+                  Bio1(i,k,iPO4_)=Bio(i,k,iPO4_)
                   IF (LTOT.lt.L_PO4) THEN
                     Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
                     Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
@@ -667,11 +671,13 @@
                   Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+N_Flux_SumProd
 #endif
 !
+                  Bio1(i,k,iChlo)=Bio(i,k,iChlo)
                   Bio(i,k,iChlo)=Bio(i,k,iChlo)+                        &
      &                           (dtdays*t_PPmax*t_PPmax*LTOT*LTOT*     &
      &                            Chl2C_m(ng)*Bio(i,k,iChlo))/          &
      &                           (PhyIS(ng)*MAX(Chl2C,eps)*PAR+eps)
 #ifdef OXYGEN
+                  Bio1(i,k,iOxyg)=Bio(i,k,iOxyg)
                   Bio(i,k,iOxyg)=Bio(i,k,iOxyg)+                        &
      &                           N_Flux_NewProd*rOxNO3+                 &
      &                           N_Flux_RegProd*rOxNH4
@@ -700,10 +706,13 @@
      &                 (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
                   cff2=1.0_r8-MAX(0.0_r8,cff1)
                   cff3=fac1*cff2
+                  Bio1(i,k,iNH4_)=Bio(i,k,iNH4_)
                   Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                   N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
+                  Bio1(i,k,iNO3_)=Bio(i,k,iNO3_)
                   Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
 #ifdef OXYGEN
+                  Bio1(i,k,iOxyg)=Bio(i,k,iOxyg)
                   Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
 #endif
 !
@@ -718,10 +727,13 @@
               ELSE
                 cff3=dtdays*NitriR(ng)
                 DO k=N(ng),1,-1
+                  Bio1(i,k,iNH4_)=Bio(i,k,iNH4_)
                   Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                   N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
+                  Bio1(i,k,iNO3_)=Bio(i,k,iNO3_)
                   Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
 #ifdef OXYGEN
+                  Bio1(i,k,iOxyg)=Bio(i,k,iOxyg)
                   Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
 #endif
                 END DO
