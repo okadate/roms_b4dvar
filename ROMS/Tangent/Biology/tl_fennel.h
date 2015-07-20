@@ -442,7 +442,9 @@
           DO k=1,N(ng)
             DO i=Istr,Iend
               Bio_old(i,k,ibio)=MAX(0.0_r8,t(i,j,k,nstp,ibio))
-              tl_Bio_old(i,k,ibio)=MAX(0.0_r8,tl_t(i,j,k,nstp,ibio))
+              tl_Bio_old(i,k,ibio)=(0.5_r8-                             &
+                                    SIGN(0.5_r8,-t(i,j,k,nstp,ibio)))*  &
+                                    tl_t(i,j,k,nstp,ibio)
               Bio(i,k,ibio)=Bio_old(i,k,ibio)
               tl_Bio(i,k,ibio)=tl_Bio_old(i,k,ibio)
             END DO
@@ -1282,7 +1284,7 @@
      &               (z_w(i,j,k)-z_w(i,j,k-1))
                 tl_Att=AttChl(ng)*tl_Bio(i,k,iPhyt)*                    &
      &                 (z_w(i,j,k)-z_w(i,j,k-1))+                       &
-     &                 (AttSW(ng)+AttChl(ng)*Bio1(i,k,iPhyt)+AttFac)*   &
+     &                 (AttSW(ng)+AttChl(ng)*Bio1(i,k,iChlo)+AttFac)*   &
      &                 (tl_z_w(i,j,k)-tl_z_w(i,j,k-1))
                 ExpAtt=EXP(-Att)
                 tl_ExpAtt=-ExpAtt*tl_Att
@@ -1295,7 +1297,7 @@
 !  Compute Chlorophyll-a phytoplankton ratio, [mg Chla / (mg C)].
 !
                 cff=PhyCN(ng)*12.0_r8
-                Chl2C=MIN(Bio(i,k,iChlo)/(Bio(i,k,iPhyt)*cff+eps),      &
+                Chl2C=MIN(Bio1(i,k,iChlo)/(Bio1(i,k,iPhyt)*cff+eps),    &
      &                    Chl2C_m(ng))
 !
 !  Temperature-limited and light-limited growth rate (Eppley, R.W.,
