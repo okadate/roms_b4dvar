@@ -207,8 +207,26 @@
       real(r8), allocatable :: SDeRRC(:)             ! 1/day
       real(r8), allocatable :: Vp0(:)                ! nondimensional
       real(r8), allocatable :: wLDet(:)              ! m/day
+#ifdef TANGENT
+      real(r8), allocatable :: tl_wLDet(:)
+#endif
+#ifdef ADJOINT
+      real(r8), allocatable :: ad_wLDet(:)
+#endif
       real(r8), allocatable :: wPhy(:)               ! m/day
+#ifdef TANGENT
+      real(r8), allocatable :: tl_wPhy(:)
+#endif
+#ifdef ADJOINT
+      real(r8), allocatable :: ad_wPhy(:)
+#endif
       real(r8), allocatable :: wSDet(:)              ! m/day
+#ifdef TANGENT
+      real(r8), allocatable :: tl_wSDet(:)
+#endif
+#ifdef ADJOINT
+      real(r8), allocatable :: ad_wSDet(:)
+#endif
       real(r8), allocatable :: ZooAE_N(:)            ! nondimensional
       real(r8), allocatable :: ZooBM(:)              ! 1/day
       real(r8), allocatable :: ZooCN(:)              ! mol_C/mol_N
@@ -447,12 +465,42 @@
       IF (.not.allocated(wLDet)) THEN
         allocate ( wLDet(Ngrids) )
       END IF
+#ifdef TANGENT
+      IF (.not.allocated(tl_wLDet)) THEN
+        allocate ( tl_wLDet(Ngrids) )
+      END IF
+#endif
+#ifdef ADJOINT
+      IF (.not.allocated(ad_wLDet)) THEN
+        allocate ( ad_wLDet(Ngrids) )
+      END IF
+#endif
       IF (.not.allocated(wPhy)) THEN
         allocate ( wPhy(Ngrids) )
       END IF
+#ifdef TANGENT
+      IF (.not.allocated(tl_wPhy)) THEN
+        allocate ( tl_wPhy(Ngrids) )
+      END IF
+#endif
+#ifdef ADJOINT
+      IF (.not.allocated(ad_wPhy)) THEN
+        allocate ( ad_wPhy(Ngrids) )
+      END IF
+#endif
       IF (.not.allocated(wSDet)) THEN
         allocate ( wSDet(Ngrids) )
       END IF
+#ifdef TANGENT
+      IF (.not.allocated(tl_wSDet)) THEN
+        allocate ( tl_wSDet(Ngrids) )
+      END IF
+#endif
+#ifdef ADJOINT
+      IF (.not.allocated(ad_wSDet)) THEN
+        allocate ( ad_wSDet(Ngrids) )
+      END IF
+#endif
       IF (.not.allocated(ZooAE_N)) THEN
         allocate ( ZooAE_N(Ngrids) )
       END IF
