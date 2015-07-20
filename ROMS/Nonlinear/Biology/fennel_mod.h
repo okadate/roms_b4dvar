@@ -196,6 +196,12 @@
       real(r8), allocatable :: LDeRRC(:)             ! 1/day
       real(r8), allocatable :: NitriR(:)             ! 1/day
       real(r8), allocatable :: PARfrac(:)            ! nondimensional
+#ifdef TANGENT
+      real(r8), allocatable :: tl_PARfrac(:)
+#endif
+#ifdef ADJOINT
+      real(r8), allocatable :: ad_PARfrac(:)
+#endif
       real(r8), allocatable :: PhyCN(:)              ! mol_C/mol_N
       real(r8), allocatable :: PhyIP(:)              ! 1/mmol_N
       real(r8), allocatable :: PhyIS(:)              ! 1/(Watts m-2 day)
@@ -432,6 +438,16 @@
       IF (.not.allocated(PARfrac)) THEN
         allocate ( PARfrac(Ngrids) )
       END IF
+#ifdef TANGENT
+      IF (.not.allocated(tl_PARfrac)) THEN
+        allocate ( tl_PARfrac(Ngrids) )
+      END IF
+#endif
+#ifdef ADJOINT
+      IF (.not.allocated(ad_PARfrac)) THEN
+        allocate ( ad_PARfrac(Ngrids) )
+      END IF
+#endif
       IF (.not.allocated(PhyCN)) THEN
         allocate ( PhyCN(Ngrids) )
       END IF
