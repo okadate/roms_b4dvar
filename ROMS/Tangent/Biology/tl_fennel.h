@@ -124,7 +124,7 @@
      &                            Hz, tl_Hz,                            &
      &                            z_r, tl_z_r,                          &
      &                            z_w, tl_z_w,                          &
-     &                            srflx, tl_srflx                       &
+     &                            srflx, tl_srflx,                      &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
      &                            Uwind, Vwind,                         &
@@ -2222,7 +2222,7 @@
      &             (K_Phy(ng)+Bio1(i,k,iPhyt)*Bio1(i,k,iPhyt))
               tl_cff1=(fac1*(tl_Bio(i,k,iZoop)*Bio1(i,k,iPhyt)+         &
      &                       Bio1(i,k,iZoop)*tl_Bio(i,k,iPhyt))-        &
-     &                 2.0_r8*Bio1(i,k,iPhyt)*tl_Bio(i,k,iPhyt)*cff1/   &
+     &                 2.0_r8*Bio1(i,k,iPhyt)*tl_Bio(i,k,iPhyt)*cff1)/  &
      &                (K_Phy(ng)+Bio1(i,k,iPhyt)*Bio1(i,k,iPhyt))
               cff3=1.0_r8/(1.0_r8+cff1)
               tl_cff3=-cff3*cff3*tl_cff1

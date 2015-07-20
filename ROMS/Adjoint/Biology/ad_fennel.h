@@ -124,7 +124,7 @@
      &                            Hz, ad_Hz,                            &
      &                            z_r, ad_z_r,                          &
      &                            z_w, ad_z_w,                          &
-     &                            srflx, ad_srflx                       &
+     &                            srflx, ad_srflx,                      &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
      &                            Uwind, Vwind,                         &
@@ -257,6 +257,7 @@
       real(r8) :: ad_cff, ad_cff1, ad_cff2, ad_cff3, ad_cff4, ad_cff5
       real(r8) :: ad_fac1, ad_fac2, ad_fac3
       real(r8) :: ad_cffL, ad_cffR, ad_cu, ad_dltL, ad_dltR
+      real(r8) :: fac, adfac, adfac1, adfac2, adfac3
 
       real(r8) :: total_N
       real(r8) :: ad_total_N
@@ -4737,7 +4738,7 @@
 !>              tl_cff3=tl_Bio(i,k,iPO4_)*K_PO4(ng)
                 ad_Bio(i,k,iPO4_)=ad_Bio(i,k,iPO4_)+ad_cff3*K_PO4(ng)
                 ad_cff3=0.0_r8
-                
+
                 L_PO4=cff3/(1.0_r8+cff3)
 !
 !  Nitrate, ammonium and phosphate uptake by Phytoplankton.
