@@ -611,6 +611,22 @@
               END DO
 # endif
 #endif
+#ifdef STATIONS
+            CASE ('Sout(idTvar)')
+              Npts=load_l(Nval, Cval, NBT*Ngrids, Lsta)
+              DO ng=1,Ngrids
+                DO itrc=1,NBT
+                  i=idTvar(idbio(itrc))
+                  IF (i.eq.0) THEN
+                    IF (Master) WRITE (out,30)                          &
+     &                                'idTvar(idbio(', itrc, '))'
+                    exit_flag=5
+                    RETURN
+                  END IF
+                  Sout(i,ng)=Lsta(itrc,ng)
+                END DO
+              END DO
+#endif
           END SELECT
         END IF
       END DO
