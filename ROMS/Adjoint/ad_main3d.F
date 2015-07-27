@@ -38,7 +38,7 @@
 # ifdef ANA_VMIX
       USE analytical_mod, ONLY : ana_vmix
 # endif
-# ifdef BIOLOGY
+# if defined BIOLOGY && defined ADJUST_BIOLOGY
       USE ad_biology_mod, ONLY : ad_biology
 # endif
 # ifdef BBL_MODEL_NOT_YET
@@ -300,7 +300,7 @@
 # ifdef SEDIMENT_NOT_YET
               CALL ad_sediment (ng, tile)
 # endif
-# ifdef BIOLOGY
+# if defined BIOLOGY && defined ADJUST_BIOLOGY
               CALL ad_biology (ng, tile)
 # endif
 # ifdef MY25_MIXING_NOT_YET
