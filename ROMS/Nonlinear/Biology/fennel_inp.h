@@ -613,7 +613,7 @@
 #endif
 #ifdef STATIONS
             CASE ('Sout(idTvar)')
-              Npts=load_l(Nval, Cval, NBT*Ngrids, Lsta)
+              Npts=load_l(Nval, Cval, NBT*Ngrids, Ltrc)
               DO ng=1,Ngrids
                 DO itrc=1,NBT
                   i=idTvar(idbio(itrc))
@@ -623,7 +623,7 @@
                     exit_flag=5
                     RETURN
                   END IF
-                  Sout(i,ng)=Lsta(itrc,ng)
+                  Sout(i,ng)=Ltrc(itrc,ng)
                 END DO
               END DO
 #endif
