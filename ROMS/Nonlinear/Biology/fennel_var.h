@@ -420,6 +420,8 @@
 # ifdef OXYGEN
               CASE ('iDbio2(iO2fx)')
                 iDbio2(iO2fx)=varid
+              CASE ('iDbio2(iSOD_)')
+                iDbio2(iSOD_)=varid
 # endif
               CASE ('iDbio3(iPPro)')
                 iDbio3(iPPro)=varid

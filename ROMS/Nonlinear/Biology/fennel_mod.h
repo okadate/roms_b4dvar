@@ -143,6 +143,7 @@
       integer  :: iDNIT                       ! denitrification flux
       integer  :: ipCO2                       ! partial pressure of CO2
       integer  :: iO2fx                       ! air-sea O2 flux
+      integer  :: iSOD_                       ! sediment oxygen demand flux
 !
 !  Biological 3D diagnostic variable IDs.
 !
@@ -299,7 +300,7 @@
       NDbio2d=NDbio2d+2
 # endif
 # ifdef OXYGEN
-      NDbio2d=NDbio2d+1
+      NDbio2d=NDbio2d+2
 # endif
 # ifdef PHOSPHORUS
       NDbio3d=NDbio3d+1
@@ -322,6 +323,7 @@
 # endif
 # ifdef OXYGEN
       iO2fx=ic+1
+      iSOD_=ic+2
 # endif
       ic=4
 # ifdef PHOSPHORUS

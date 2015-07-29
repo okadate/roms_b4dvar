@@ -539,6 +539,17 @@
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
+            CASE ('Dout(iSOD_)')
+              IF (iDbio2(iSOD_).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio2(iSOD_)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio2(iSOD_)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
 # endif
             CASE ('Dout(iPPro)')
               IF (iDbio3(iPPro).eq.0) THEN
