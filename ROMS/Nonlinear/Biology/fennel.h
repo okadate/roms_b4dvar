@@ -1502,6 +1502,10 @@
                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
 #  endif
 # endif
+# if defined OXYGEN && defined DIAGNOSTICS_BIO
+                DiaBio2d(i,j,iSOD_)=DiaBio2d(i,j,iSOD_)-                &
+     &                              cff1*cff4*Hz(i,j,1)*fiter
+# endif
               END DO
             END IF
 # ifdef CARBON
