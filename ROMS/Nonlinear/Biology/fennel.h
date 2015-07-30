@@ -408,7 +408,7 @@
 
       real(r8), parameter :: rOxH2S = 2.0_r8     !?
 #endif
-#ifdef COD
+#if defined OXYGEN && defined DIAGNOSTICS_BIO
       real(r8), parameter :: NH42COD = 2.0_r8    !?
       real(r8), parameter :: PON2COD = 8.625_r8  !? 138/16
       real(r8), parameter :: H2S2COD = 2.0_r8    !?
@@ -1495,16 +1495,20 @@
 #  endif
 #  ifdef OXYGEN
                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
+#   ifdef DIAGNOSTICS_BIO
+                DiaBio2d(i,j,iSOD_)=DiaBio2d(i,j,iSOD_)-                &
+     &                              cff1*cff3*Hz(i,j,1)*fiter
+#   endif
 #  endif
 # else
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
 #  ifdef OXYGEN
                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
-#  endif
-# endif
-# if defined OXYGEN && defined DIAGNOSTICS_BIO
+#   ifdef DIAGNOSTICS_BIO
                 DiaBio2d(i,j,iSOD_)=DiaBio2d(i,j,iSOD_)-                &
      &                              cff1*cff4*Hz(i,j,1)*fiter
+#   endif
+#  endif
 # endif
               END DO
             END IF
@@ -1604,7 +1608,7 @@
           END DO
 #endif
         END DO ITER_LOOP
-#ifdef COD
+#if defined OXYGEN && defined DIAGNOSTICS_BIO
         DO k=1,N(ng)
           DO i=Istr,Iend
             DiaBio3d(i,j,k,iCOD_)=Bio(i,k,iNH4_)*NH42COD+               &

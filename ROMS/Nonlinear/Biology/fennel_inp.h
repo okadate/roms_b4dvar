@@ -608,7 +608,7 @@
                 Dout(i,ng)=Lbio(ng)
               END DO
 # endif
-# ifdef COD
+# ifdef OXYGEN
             CASE ('Dout(iCOD_)')
               IF (iDbio3(iCOD_).eq.0) THEN
                 IF (Master) WRITE (out,40) 'iDbio3(iCOD_)'

@@ -435,7 +435,7 @@
               CASE ('iDbio3(iLPO4)')
                 iDbio3(iLPO4)=varid
 # endif
-# ifdef COD
+# ifdef OXYGEN
               CASE ('iDbio3(iCOD_)')
                 iDbio3(iCOD_)=varid
 # endif
