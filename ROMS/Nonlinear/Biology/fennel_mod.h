@@ -156,7 +156,7 @@
 # ifdef PHOSPHORUS
       integer  :: iLPO4                       ! 
 # endif
-# ifdef COD
+# ifdef OXYGEN
       integer  :: iCOD_                       ! 
 # endif
 #endif
@@ -305,7 +305,7 @@
 # ifdef PHOSPHORUS
       NDbio3d=NDbio3d+1
 # endif
-# ifdef COD
+# ifdef OXYGEN
       NDbio3d=NDbio3d+1
 # endif
 !
@@ -330,7 +330,7 @@
       iLPO4=ic+1
       ic=ic+1
 # endif
-# ifdef COD
+# ifdef OXYGEN
       iCOD_=ic+1
 # endif
 #endif
