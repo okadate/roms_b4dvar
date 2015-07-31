@@ -427,10 +427,10 @@
                 iDbio3(iPPro)=varid
               CASE ('iDbio3(iNO3u)')
                 iDbio3(iNO3u)=varid
-              CASE ('iDbio3(iLNH4)')
-                iDbio3(iLNH4)=varid
-              CASE ('iDbio3(iLNO3)')
-                iDbio3(iLNO3)=varid
+              CASE ('iDbio3(iPmax)')
+                iDbio3(iPmax)=varid
+              CASE ('iDbio3(iLDIN)')
+                iDbio3(iLDIN)=varid
 # ifdef PHOSPHORUS
               CASE ('iDbio3(iLPO4)')
                 iDbio3(iLPO4)=varid

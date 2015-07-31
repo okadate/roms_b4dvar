@@ -151,8 +151,8 @@
 
       integer  :: iPPro = 1                   ! primary productivity
       integer  :: iNO3u = 2                   ! NO3 uptake
-      integer  :: iLNH4 = 3                   ! 
-      integer  :: iLNO3 = 4                   ! 
+      integer  :: iPmax = 3                   ! 
+      integer  :: iLDIN = 4                   ! 
 # ifdef PHOSPHORUS
       integer  :: iLPO4                       ! 
 # endif
