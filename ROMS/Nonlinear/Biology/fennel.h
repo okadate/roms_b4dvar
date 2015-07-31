@@ -668,8 +668,9 @@
                 ELSE
                   fac1=EXP(-beta2(ng)*cff)
                 END IF
-                cff=PAR/I_opt(ng)
-                fac2=EXP(1.0_r8)/Att*(EXP(-cff*ExpAtt-EXP(-cff)))
+                Att=Att/2.0_r8
+                cff=Itop/I_opt(ng)
+                fac2=EXP(1.0_r8)/Att*(EXP(-cff*Exp(-Att))-EXP(-cff))
                 t_PPmax=g_max(ng)*fac1*fac2
 #else
 !
