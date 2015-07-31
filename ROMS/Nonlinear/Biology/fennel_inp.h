@@ -577,25 +577,25 @@
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
-            CASE ('Dout(iLNH4)')
-              IF (iDbio3(iLNH4).eq.0) THEN
-                IF (Master) WRITE (out,40) 'iDbio3(iLNH4)'
+            CASE ('Dout(iPmax)')
+              IF (iDbio3(iPmax).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iPmax)'
                 exit_flag=5
                 RETURN
               END IF
               Npts=load_l(Nval, Cval, Ngrids, Lbio)
-              i=iDbio3(iLNH4)
+              i=iDbio3(iPmax)
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
-            CASE ('Dout(iLNO3)')
-              IF (iDbio3(iLNO3).eq.0) THEN
-                IF (Master) WRITE (out,40) 'iDbio3(iLNO3)'
+            CASE ('Dout(iLDIN)')
+              IF (iDbio3(iLDIN).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iLDIN)'
                 exit_flag=5
                 RETURN
               END IF
               Npts=load_l(Nval, Cval, Ngrids, Lbio)
-              i=iDbio3(iLNO3)
+              i=iDbio3(iLDIN)
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
