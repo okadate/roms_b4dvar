@@ -99,6 +99,20 @@
      &               SetParAccess = .FALSE.)
       IF (exit_flag.ne.NoError) RETURN
       
+      Vinfo( 1)='beta1'
+      Vinfo( 2)='beta1'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (exit_flag.ne.NoError) RETURN
+      
+      Vinfo( 1)='beta2'
+      Vinfo( 2)='beta2'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (exit_flag.ne.NoError) RETURN
+      
       Vinfo( 1)='DenitR'
       Vinfo( 2)='DenitR'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &

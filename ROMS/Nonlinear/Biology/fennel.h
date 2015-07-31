@@ -662,8 +662,14 @@
 !
 !  Temperature-limited and light-limited growth rate (okada)
 !
-                fac1=cff1*exp(1.0_r8-Bio(i,k,itemp)/t_opt(ng))
-                fac2=cff2*exp(1.0_r8-PAR/I_opt(ng))
+                cff=(Bio(i,k,itemp)-t_opt(ng))**2.0_r8
+                IF (Bio(i,k,itemp).le.t_opt) THEN
+                  fac1=EXP(-beta1(ng)*cff)
+                ELSE
+                  fac1=EXP(-beta2(ng)*cff)
+                END IF
+                cff=PAR/I_opt
+                fac2=EXP(1.0_r8)/Att*(EXP(-cff*ExpAtt-EXP(-cff))
                 t_PPmax=g_max(ng)*fac1*fac2
 #else
 !

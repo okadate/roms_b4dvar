@@ -75,6 +75,16 @@
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 
+      CALL netcdf_put_fvar (ng, model, ncname, 'beta1',                 &
+     &                      beta1(ng), (/0/), (/0/),                    &
+     &                      ncid = ncid)
+      IF (exit_flag.ne.NoError) RETURN
+
+      CALL netcdf_put_fvar (ng, model, ncname, 'beta2',                 &
+     &                      beta2(ng), (/0/), (/0/),                    &
+     &                      ncid = ncid)
+      IF (exit_flag.ne.NoError) RETURN
+
       CALL netcdf_put_fvar (ng, model, ncname, 'DenitR',                &
      &                      DenitR(ng), (/0/), (/0/),                   &
      &                      ncid = ncid)
