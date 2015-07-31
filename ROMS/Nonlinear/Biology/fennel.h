@@ -701,7 +701,7 @@
                 L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 LTOT=L_NO3+L_NH4
 #ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iLDIN)=L_TOT*fiter
+                DiaBio3d(i,j,k,iLDIN)=LTOT*fiter
 #endif
 #ifdef PHOSPHORUS
                 cff3=Bio(i,k,iPO4_)*K_PO4(ng)
