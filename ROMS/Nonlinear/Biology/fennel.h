@@ -671,9 +671,6 @@
                 cff=PAR/I_opt(ng)
                 fac2=EXP(1.0_r8)/Att*(EXP(-cff*ExpAtt-EXP(-cff)))
                 t_PPmax=g_max(ng)*fac1*fac2
-# ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iPmax)=t_PPmax*fiter
-# endif
 #else
 !
 !  Temperature-limited and light-limited growth rate (Eppley, R.W.,
@@ -684,6 +681,9 @@
                 fac1=PAR*PhyIS(ng)
                 Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
                 t_PPmax=Epp*fac1
+#endif
+#ifdef DIAGNOSTICS_BIO
+                DiaBio3d(i,j,k,iPmax)=t_PPmax*fiter
 #endif
 #ifdef PHOSPHORUS
 !
