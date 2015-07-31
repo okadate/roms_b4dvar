@@ -683,7 +683,7 @@
                 t_PPmax=Epp*fac1
 #endif
 #ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iPmax)=DiaBio3d(i,j,k,iPmax)+t_PPmax*fiter
+                DiaBio3d(i,j,k,iPmax)=t_PPmax
 #endif
 #ifdef PHOSPHORUS
 !
@@ -701,13 +701,13 @@
                 L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 LTOT=L_NO3+L_NH4
 #ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iLDIN)=DiaBio3d(i,j,k,iLDIN)+LTOT*fiter
+                DiaBio3d(i,j,k,iLDIN)=LTOT
 #endif
 #ifdef PHOSPHORUS
                 cff3=Bio(i,k,iPO4_)*K_PO4(ng)
                 L_PO4=cff3/(1.0_r8+cff3)
 # ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iLPO4)=DiaBio3d(i,j,k,iLPO4)+L_PO4*fiter
+                DiaBio3d(i,j,k,iLPO4)=L_PO4
 # endif
 !
 !  Nitrate, ammonium and phosphate uptake by Phytoplankton.
@@ -1619,8 +1619,7 @@
 #if defined OXYGEN && defined DIAGNOSTICS_BIO
         DO k=1,N(ng)
           DO i=Istr,Iend
-            DiaBio3d(i,j,k,iCOD_)=DiaBio3d(i,j,k,iCOD_)+                &
-     &                            Bio(i,k,iNH4_)*NH42COD+               &
+            DiaBio3d(i,j,k,iCOD_)=Bio(i,k,iNH4_)*NH42COD+               &
 # ifdef H2S
      &                            Bio(i,k,iH2S_)*H2S2COD+               &
 # endif
