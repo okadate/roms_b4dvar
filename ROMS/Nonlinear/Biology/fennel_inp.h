@@ -86,6 +86,10 @@
               Npts=load_r(Nval, Rval, Ngrids, t_opt)
             CASE ('I_opt')
               Npts=load_r(Nval, Rval, Ngrids, I_opt)
+            CASE ('beta1')
+              Npts=load_r(Nval, Rval, Ngrids, beta1)
+            CASE ('beta2')
+              Npts=load_r(Nval, Rval, Ngrids, beta2)
             CASE ('K_Nitri')
               Npts=load_r(Nval, Rval, Ngrids, K_Nitri)
             CASE ('DenitR')
@@ -667,6 +671,8 @@
             WRITE (out,80) g_max(ng), 'g_max', 'g_max'
             WRITE (out,80) t_opt(ng), 't_opt', 't_opt'
             WRITE (out,80) I_opt(ng), 'I_opt', 'I_opt'
+            WRITE (out,80) beta1(ng), 'beta1', 'beta1'
+            WRITE (out,80) beta2(ng), 'beta2', 'beta2'
             WRITE (out,80) DenitR(ng), 'DenitR', 'DenitR'
             WRITE (out,80) K_Denit(ng), 'K_Denit', 'K_Denit'
             WRITE (out,80) thDenitR(ng), 'thDenitR', 'thDenitR'

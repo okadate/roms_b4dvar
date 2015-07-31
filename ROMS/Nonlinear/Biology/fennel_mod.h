@@ -177,6 +177,8 @@
       real(r8), allocatable :: g_max(:)              ! 
       real(r8), allocatable :: t_opt(:)              ! 
       real(r8), allocatable :: I_opt(:)              ! 
+      real(r8), allocatable :: beta1(:)              ! 
+      real(r8), allocatable :: beta2(:)              ! 
       real(r8), allocatable :: DenitR(:)             ! 
       real(r8), allocatable :: K_Denit(:)            ! 
       real(r8), allocatable :: thDenitR(:)           ! 
@@ -363,6 +365,12 @@
       END IF
       IF (.not.allocated(I_opt)) THEN
         allocate ( I_opt(Ngrids) )
+      END IF
+      IF (.not.allocated(beta1)) THEN
+        allocate ( beta1(Ngrids) )
+      END IF
+      IF (.not.allocated(beta2)) THEN
+        allocate ( beta2(Ngrids) )
       END IF
 
       IF (.not.allocated(K_DO)) THEN
