@@ -1,4 +1,6 @@
 Build/
+auto_in/
+auto_out/
 ocean?
 *~
 *.log
