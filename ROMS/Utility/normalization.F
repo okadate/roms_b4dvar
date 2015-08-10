@@ -488,6 +488,8 @@
       character (len=40 ) :: Text
       character (len=256) :: ncname
 
+      integer :: diag 
+
 # include "set_bounds.h"
 !
       SourceFile='normalization.F, normalization_tile'
@@ -576,6 +578,10 @@
             END DO
             DO jc=Jmin,Jmax
               DO ic=Imin,Imax
+                IF (Master) THEN
+                  diag=ic+(jc-1)*Imax
+                  WRITE (stdout,40) diag, Jmax*Imax
+                ENDIF 
 # ifdef MASKING
                 compute=0.0_r8
                 IF (((Jstr.le.jc).and.(jc.le.Jend)).and.                &
@@ -918,6 +924,10 @@
             DO kc=1,N(ng)
               DO jc=Jmin,Jmax
                 DO ic=Imin,Imax
+                  IF (Master) THEN
+                    diag=ic+(jc-1)*Imax+(kc-1)*Jmax*Imax
+                    WRITE (stdout,40) diag, N(ng)*Jmax*Imax
+                  ENDIF 
 #  ifdef MASKING
                   compute=0.0_r8
                   IF (((Jstr.le.jc).and.(jc.le.Jend)).and.              &
@@ -1047,6 +1057,10 @@
             DO kc=1,N(ng)
               DO jc=Jmin,Jmax
                 DO ic=Imin,Imax
+                  IF (Master) THEN
+                    diag=ic+(jc-1)*Imax+(kc-1)*Jmax*Imax
+                    WRITE (stdout,40) diag, N(ng)*Jmax*Imax
+                  ENDIF 
 #  ifdef MASKING
                   compute=0.0_r8
                   IF (((Jstr.le.jc).and.(jc.le.Jend)).and.              &
@@ -1201,6 +1215,10 @@
               DO kc=1,N(ng)
                 DO jc=Jmin,Jmax
                   DO ic=Imin,Imax
+                    IF (Master) THEN
+                      diag=ic+(jc-1)*Imax+(kc-1)*Jmax*Imax
+                      WRITE (stdout,40) diag, N(ng)*Jmax*Imax
+                    ENDIF 
 #  ifdef MASKING
                     compute=0.0_r8
                     IF (((Jstr.le.jc).and.(jc.le.Jend)).and.            &
@@ -1385,6 +1403,10 @@
               END IF
             END IF
             DO ib=Bmin,Bmax
+              IF (Master) THEN
+                diag=ib+(ibry-1)*Bmax
+                WRITE (stdout,40) diag, 4*Bmax
+              ENDIF 
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
                 bounded=Lconvolve(ibry).and.                            &
      &                  ((Jstr.le.ib).and.(ib.le.Jend))
@@ -2664,6 +2686,7 @@
      &        'Exact Method',/)
  20   FORMAT (4x,'Computing',1x,a,1x,a)
  30   FORMAT (/)
+ 40   FORMAT (7x,i5,'/',i5)
 
       RETURN
       END SUBROUTINE normalization_tile
@@ -2935,6 +2958,8 @@
       character (len=40 ) :: Text
       character (len=256) :: ncname
 
+      integer :: diag
+
 # include "set_bounds.h"
 !
       SourceFile='normalization.F, randomization_tile'
@@ -3031,6 +3056,13 @@
               END DO
             END DO
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'zeta',diag
+                ENDIF
+              ENDIF
               CALL white_noise2d (ng, iTLM, r2dvar, Rscheme(ng),        &
      &                            IstrR, IendR, JstrR, JendR,           &
      &                            LBi, UBi, LBj, UBj,                   &
@@ -3112,6 +3144,13 @@
               END DO
             END DO
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'ubar', diag
+                ENDIF
+              ENDIF
               CALL white_noise2d (ng, iTLM, u2dvar, Rscheme(ng),        &
      &                            Istr, IendR, JstrR, JendR,            &
      &                            LBi, UBi, LBj, UBj,                   &
@@ -3193,6 +3232,13 @@
               END DO
             END DO
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'vbar', diag
+                ENDIF
+              ENDIF
               CALL white_noise2d (ng, iTLM, v2dvar, Rscheme(ng),        &
      &                            IstrR, IendR, Jstr, JendR,            &
      &                            LBi, UBi, LBj, UBj,                   &
@@ -3279,6 +3325,13 @@
               END DO
             END DO
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'u',diag
+                ENDIF
+              ENDIF
               CALL white_noise3d (ng, iTLM, u3dvar, Rscheme(ng),        &
      &                            Istr, IendR, JstrR, JendR,            &
      &                            LBi, UBi, LBj, UBj, 1, N(ng),         &
@@ -3374,6 +3427,13 @@
               END DO
             END DO
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'v', diag
+                ENDIF
+              ENDIF
               CALL white_noise3d (ng, iTLM, v3dvar, Rscheme(ng),        &
      &                            IstrR, IendR, Jstr, JendR,            &
      &                            LBi, UBi, LBj, UBj, 1, N(ng),         &
@@ -3507,6 +3567,13 @@
                 END DO
               END DO
               DO iter=1,Nrandom
+                IF (Master) THEN
+                  diag=mod(iter,Nrandom/100)
+                  IF (diag.eq.0) THEN
+                    diag=float(iter)/float(Nrandom)*100.0_r8
+                    WRITE (stdout,40) 'tracer', diag
+                  ENDIF
+                ENDIF
                 CALL white_noise3d (ng, iTLM, r3dvar, Rscheme(ng),      &
      &                              IstrR, IendR, JstrR, JendR,         &
      &                              LBi, UBi, LBj, UBj, 1, N(ng),       &
@@ -3678,6 +3745,13 @@
               END IF
             END IF
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'zeta_obc', diag
+                ENDIF
+              ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
                 CALL white_noise2d_bry (ng, tile, iTLM, ibry,           &
      &                                  Rscheme(ng),                    &
@@ -3810,6 +3884,13 @@
               END IF
             END IF
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'ubar_obc', diag
+                ENDIF
+              ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
                 CALL white_noise2d_bry (ng, tile, iTLM, ibry,           &
      &                                  Rscheme(ng),                    &
@@ -3942,6 +4023,13 @@
               END IF
             END IF
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'vbar_obc',diag
+                ENDIF
+              ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
                 CALL white_noise2d_bry (ng, tile, iTLM, ibry,           &
      &                                  Rscheme(ng),                    &
@@ -4084,6 +4172,13 @@
               END IF
             END IF
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'u_obc',diag
+                ENDIF
+              ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
                 CALL white_noise3d_bry (ng, tile, iTLM, ibry,           &
      &                                  Rscheme(ng),                    &
@@ -4250,6 +4345,13 @@
               END IF
             END IF
             DO iter=1,Nrandom
+              IF (Master) THEN
+                diag=mod(iter,Nrandom/100)
+                IF (diag.eq.0) THEN
+                  diag=float(iter)/float(Nrandom)*100.0_r8
+                  WRITE (stdout,40) 'v_obc', diag
+                ENDIF
+              ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
                 CALL white_noise3d_bry (ng, tile, iTLM, ibry,           &
      &                                  Rscheme(ng),                    &
@@ -4424,6 +4526,13 @@
                 END IF
               END IF
               DO iter=1,Nrandom
+                IF (Master) THEN
+                  diag=mod(iter,Nrandom/100)
+                  IF (diag.eq.0) THEN
+                    diag=float(iter)/float(Nrandom)*100.0_r8
+                    WRITE (stdout,40) 'tracer_obc', diag
+                  ENDIF
+                ENDIF
                 IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
                   CALL white_noise3d_bry (ng, tile, iTLM, ibry,         &
      &                                    Rscheme(ng),                  &
@@ -4617,6 +4726,13 @@
             END DO
           END DO
           DO iter=1,Nrandom
+            IF (Master) THEN
+              diag=mod(iter,Nrandom/100)
+              IF (diag.eq.0) THEN
+                diag=float(iter)/float(Nrandom)*100.0_r8
+                WRITE (stdout,40) 'sustr', diag
+              ENDIF
+            ENDIF
             CALL white_noise2d (ng, iTLM, u2dvar, Rscheme(ng),          &
      &                          Istr, IendR, JstrR, JendR,              &
      &                          LBi, UBi, LBj, UBj,                     &
@@ -4698,6 +4814,13 @@
             END DO
           END DO
           DO iter=1,Nrandom
+            IF (Master) THEN
+              diag=mod(iter,Nrandom/100)
+              IF (diag.eq.0) THEN
+                diag=float(iter)/float(Nrandom)*100.0_r8
+                WRITE (stdout,40) 'svstr', diag
+              ENDIF
+            ENDIF
             CALL white_noise2d (ng, iTLM, v2dvar, Rscheme(ng),          &
      &                          IstrR, IendR, Jstr, JendR,              &
      &                          LBi, UBi, LBj, UBj,                     &
@@ -4818,6 +4941,13 @@
                 END DO
               END DO
               DO iter=1,Nrandom
+                IF (Master) THEN
+                  diag=mod(iter,Nrandom/100)
+                  IF (diag.eq.0) THEN
+                    diag=float(iter)/float(Nrandom)*100.0_r8
+                    WRITE (stdout,40) 'tracer flux', diag
+                  ENDIF
+                ENDIF
                 CALL white_noise2d (ng, iTLM, r2dvar, Rscheme(ng),      &
      &                              IstrR, IendR, JstrR, JendR,         &
      &                              LBi, UBi, LBj, UBj,                 &
@@ -4914,6 +5044,7 @@
  10   FORMAT (/,' Error Covariance Factors: Randomization Method',/)
  20   FORMAT (4x,'Computing',1x,a,1x,a)
  30   FORMAT (/)
+ 40   FORMAT (14x,a,1x,f7.2,' %')
 
       RETURN
       END SUBROUTINE randomization_tile
