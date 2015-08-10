@@ -3059,8 +3059,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'zeta',diag
+                  WRITE (stdout,40) 'zeta', iter, Nrandom
                 ENDIF
               ENDIF
               CALL white_noise2d (ng, iTLM, r2dvar, Rscheme(ng),        &
@@ -3147,8 +3146,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'ubar', diag
+                  WRITE (stdout,40) 'ubar', iter, Nrandom
                 ENDIF
               ENDIF
               CALL white_noise2d (ng, iTLM, u2dvar, Rscheme(ng),        &
@@ -3235,8 +3233,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'vbar', diag
+                  WRITE (stdout,40) 'vbar', iter, Nrandom
                 ENDIF
               ENDIF
               CALL white_noise2d (ng, iTLM, v2dvar, Rscheme(ng),        &
@@ -3328,8 +3325,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'u',diag
+                  WRITE (stdout,40) 'u', iter, Nrandom
                 ENDIF
               ENDIF
               CALL white_noise3d (ng, iTLM, u3dvar, Rscheme(ng),        &
@@ -3430,8 +3426,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'v', diag
+                  WRITE (stdout,40) 'v', iter, Nrandom
                 ENDIF
               ENDIF
               CALL white_noise3d (ng, iTLM, v3dvar, Rscheme(ng),        &
@@ -3570,8 +3565,7 @@
                 IF (Master) THEN
                   diag=mod(iter,Nrandom/100)
                   IF (diag.eq.0) THEN
-                    diag=float(iter)/float(Nrandom)*100.0_r8
-                    WRITE (stdout,40) 'tracer', diag
+                    WRITE (stdout,40) 'tracer', iter, Nrandom
                   ENDIF
                 ENDIF
                 CALL white_noise3d (ng, iTLM, r3dvar, Rscheme(ng),      &
@@ -3748,8 +3742,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'zeta_obc', diag
+                  WRITE (stdout,40) 'zeta_obc', iter, Nrandom
                 ENDIF
               ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
@@ -3887,8 +3880,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'ubar_obc', diag
+                  WRITE (stdout,40) 'ubar_obc', iter, Nrandom
                 ENDIF
               ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
@@ -4026,8 +4018,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'vbar_obc',diag
+                  WRITE (stdout,40) 'vbar_obc', iter, Nrandom
                 ENDIF
               ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
@@ -4175,8 +4166,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'u_obc',diag
+                  WRITE (stdout,40) 'u_obc', iter, Nrandom
                 ENDIF
               ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
@@ -4348,8 +4338,7 @@
               IF (Master) THEN
                 diag=mod(iter,Nrandom/100)
                 IF (diag.eq.0) THEN
-                  diag=float(iter)/float(Nrandom)*100.0_r8
-                  WRITE (stdout,40) 'v_obc', diag
+                  WRITE (stdout,40) 'v_obc', iter, Nrandom
                 ENDIF
               ENDIF
               IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
@@ -4529,8 +4518,7 @@
                 IF (Master) THEN
                   diag=mod(iter,Nrandom/100)
                   IF (diag.eq.0) THEN
-                    diag=float(iter)/float(Nrandom)*100.0_r8
-                    WRITE (stdout,40) 'tracer_obc', diag
+                    WRITE (stdout,40) 'tracer_obc', iter, Nrandom
                   ENDIF
                 ENDIF
                 IF ((ibry.eq.iwest).or.(ibry.eq.ieast)) THEN
@@ -4729,8 +4717,7 @@
             IF (Master) THEN
               diag=mod(iter,Nrandom/100)
               IF (diag.eq.0) THEN
-                diag=float(iter)/float(Nrandom)*100.0_r8
-                WRITE (stdout,40) 'sustr', diag
+                WRITE (stdout,40) 'sustr', iter, Nrandom
               ENDIF
             ENDIF
             CALL white_noise2d (ng, iTLM, u2dvar, Rscheme(ng),          &
@@ -4817,8 +4804,7 @@
             IF (Master) THEN
               diag=mod(iter,Nrandom/100)
               IF (diag.eq.0) THEN
-                diag=float(iter)/float(Nrandom)*100.0_r8
-                WRITE (stdout,40) 'svstr', diag
+                WRITE (stdout,40) 'svstr', iter, Nrandom
               ENDIF
             ENDIF
             CALL white_noise2d (ng, iTLM, v2dvar, Rscheme(ng),          &
@@ -4944,8 +4930,7 @@
                 IF (Master) THEN
                   diag=mod(iter,Nrandom/100)
                   IF (diag.eq.0) THEN
-                    diag=float(iter)/float(Nrandom)*100.0_r8
-                    WRITE (stdout,40) 'tracer flux', diag
+                    WRITE (stdout,40) 'tracer flux', iter, Nrandom
                   ENDIF
                 ENDIF
                 CALL white_noise2d (ng, iTLM, r2dvar, Rscheme(ng),      &
@@ -5044,7 +5029,7 @@
  10   FORMAT (/,' Error Covariance Factors: Randomization Method',/)
  20   FORMAT (4x,'Computing',1x,a,1x,a)
  30   FORMAT (/)
- 40   FORMAT (14x,a,1x,f7.2,' %')
+ 40   FORMAT (14x,a,i5,' /',i5)
 
       RETURN
       END SUBROUTINE randomization_tile
