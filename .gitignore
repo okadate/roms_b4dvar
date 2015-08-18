@@ -5,3 +5,6 @@ ocean?
 *~
 *.log
 *.nc
+*.txt
+NL*.*
+link_in
