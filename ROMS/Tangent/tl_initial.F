@@ -140,10 +140,10 @@
       IF (ANY(tl_VolCons(:,ng))) THEN
         tl_ubar_xs=0.0_r8
       END IF
-      tdays(ng)=dstart
+      tdays(ng)=dstart*sec2day
       time(ng)=tdays(ng)*day2sec
 !$OMP MASTER
-      ntstart(ng)=INT((time(ng)-dstart*day2sec)/dt(ng))+1
+      ntstart(ng)=INT((time(ng)-dstart)/dt(ng))+1
       ntend(ng)=ntimes(ng)
       ntfirst(ng)=ntstart(ng)
 !$OMP END MASTER

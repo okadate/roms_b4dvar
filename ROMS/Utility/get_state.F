@@ -294,13 +294,13 @@
       IF ((model.eq.0).or.(model.eq.iNLM).or.                           &
      &    (model.eq.iTLM).or.(model.eq.iRPM)) THEN
         IF (((model.eq.iTLM).or.(model.eq.iRPM)).and.(msg.eq.1).and.    &
-     &      (INPtime.ne.(dstart*day2sec))) THEN
-          INPtime=dstart*day2sec
+     &      (INPtime.ne.(dstart))) THEN
+          INPtime=dstart
         END IF
         IF (msg.eq.1) THEN            ! processing initial conditions
           time(ng)=INPtime
           tdays(ng)=time(ng)*sec2day
-          ntstart(ng)=NINT((time(ng)-dstart*day2sec)/dt(ng))+1
+          ntstart(ng)=NINT((time(ng)-dstart)/dt(ng))+1
           IF (ntstart(ng).lt.1) ntstart(ng)=1
           IF (PerfectRST(ng)) THEN
             ntfirst(ng)=1

@@ -166,8 +166,8 @@
         END DO
       END DO
 #elif defined CHANNEL_NECK
-!!    IF ((tdays(ng)-dstart).le.4.0_r8) THEN
-!!      windamp=-0.01_r8*SIN(pi*(tdays(ng)-dstart)/8.0_r8)/rho0
+!!    IF ((tdays(ng)-dstart*sec2day).le.4.0_r8) THEN
+!!      windamp=-0.01_r8*SIN(pi*(tdays(ng)-dstart*sec2day)/8.0_r8)/rho0
 !!    ELSE
         windamp=-0.01_r8/rho0
 !!    END IF
@@ -244,20 +244,20 @@
 #elif defined NJ_BIGHT
 !!    windamp=0.086824313_r8
 !!    winddir=0.5714286_r8
-!!    if ((tdays(ng)-dstart).le.0.5_r8) then
-!!      Ewind=windamp*winddir*SIN(pi*(tdays(ng)-dstart))/rho0
-!!      Nwind=windamp*SIN(pi*(tdays(ng)-dstart))/rho0
+!!    if ((tdays(ng)-dstart*sec2day).le.0.5_r8) then
+!!      Ewind=windamp*winddir*SIN(pi*(tdays(ng)-dstart*sec2day))/rho0
+!!      Nwind=windamp*SIN(pi*(tdays(ng)-dstart*sec2day))/rho0
 !!    else
 !!      Ewind=windamp*winddir/rho0
 !!      Nwind=windamp/rho0
 !!    endif
-      IF ((tdays(ng)-dstart).le.3.0_r8) THEN
+      IF ((tdays(ng)-dstart*sec2day).le.3.0_r8) THEN
          winddir=60.0_r8
          windamp=0.1_r8
-      ELSE IF (((tdays(ng)-dstart).gt.3.0_r8).and.                      &
-     &        ((tdays(ng)-dstart).le.4.0_r8)) THEN
-         winddir= 60.0_r8*((tdays(ng)-dstart)-2.0_r8)-                  &
-     &           120.0_r8*((tdays(ng)-dstart)-2.0_r8)
+      ELSE IF (((tdays(ng)-dstart*sec2day).gt.3.0_r8).and.              &
+     &        ((tdays(ng)-dstart*sec2day).le.4.0_r8)) THEN
+         winddir= 60.0_r8*((tdays(ng)-dstart*sec2day)-2.0_r8)-          &
+     &           120.0_r8*((tdays(ng)-dstart*sec2day)-2.0_r8)
          windamp=0.0_r8
       ELSE
          winddir=-120.0_r8
@@ -307,8 +307,8 @@
           END DO
         END DO
       ELSE IF (EWperiodic(ng)) THEN
-        IF ((tdays(ng)-dstart).le.2.0_r8) THEN
-          windamp=-0.1_r8*SIN(pi*(tdays(ng)-dstart)/4.0_r8)/rho0
+        IF ((tdays(ng)-dstart*sec2day).le.2.0_r8) THEN
+          windamp=-0.1_r8*SIN(pi*(tdays(ng)-dstart*sec2day)/4.0_r8)/rho0
         ELSE
           windamp=-0.1_r8/rho0
         END IF
@@ -322,8 +322,8 @@
         END DO
       END IF
 #elif defined WINDBASIN
-      IF ((tdays(ng)-dstart).le.2.0_r8) THEN
-        windamp=-0.1_r8*SIN(pi*(tdays(ng)-dstart)/4.0_r8)/rho0
+      IF ((tdays(ng)-dstart*sec2day).le.2.0_r8) THEN
+        windamp=-0.1_r8*SIN(pi*(tdays(ng)-dstart*sec2day)/4.0_r8)/rho0
       ELSE
         windamp=-0.1_r8/rho0
       END IF
@@ -405,8 +405,8 @@
       END DO
 #elif defined UPWELLING
       IF (NSperiodic(ng)) THEN
-        IF ((tdays(ng)-dstart).le.2.0_r8) THEN
-          windamp=-0.1_r8*SIN(pi*(tdays(ng)-dstart)/4.0_r8)/rho0
+        IF ((tdays(ng)-dstart*sec2day).le.2.0_r8) THEN
+          windamp=-0.1_r8*SIN(pi*(tdays(ng)-dstart*sec2day)/4.0_r8)/rho0
         ELSE
           windamp=-0.1_r8/rho0
         END IF
