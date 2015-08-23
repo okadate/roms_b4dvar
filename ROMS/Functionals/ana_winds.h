@@ -118,7 +118,7 @@
         END DO
       END DO
 #elif defined BL_TEST
-      IF ((tdays(ng)-dstart).le.6.0_r8) THEN
+      IF ((tdays(ng)-dstart*sec2day).le.6.0_r8) THEN
         u_wind=0.0_r8
 !!      v_wind=4.7936_r8
         v_wind=10.0_r8

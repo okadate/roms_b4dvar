@@ -206,7 +206,7 @@
 !  Set time-ramping parameter.
 !
 # ifdef RAMP_TIDES
-        ramp=TANH((tdays(ng)-dstart)/1.0_r8)
+        ramp=TANH((tdays(ng)-dstart*sec2day)/1.0_r8)
 # else
         ramp=1.0_r8
 # endif

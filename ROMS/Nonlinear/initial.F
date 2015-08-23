@@ -135,10 +135,10 @@
 !
         synchro_flag(ng)=.TRUE.
         first_time(ng)=0
-        tdays(ng)=dstart
+        tdays(ng)=dstart*sec2day
         time(ng)=tdays(ng)*day2sec
 !$OMP MASTER
-        ntstart(ng)=INT((time(ng)-dstart*day2sec)/dt(ng))+1
+        ntstart(ng)=INT((time(ng)-dstart)/dt(ng))+1
         ntend(ng)=ntimes(ng)
         ntfirst(ng)=ntstart(ng)
 !$OMP END MASTER
