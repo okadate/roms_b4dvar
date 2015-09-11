@@ -304,7 +304,11 @@
 !$OMP BARRIER
 
 #if defined RIVERPLUME1
+# ifdef DSTARTSEC
         IF ((tdays(ng)-dstart*sec2day).lt.0.5_r8) THEN
+# else
+        IF ((tdays(ng)-dstart).lt.0.5_r8) THEN
+# endif
           fac=1.0_r8+TANH((time(ng)-43200.0_r8)/43200.0_r8)
         ELSE
           fac=1.0_r8

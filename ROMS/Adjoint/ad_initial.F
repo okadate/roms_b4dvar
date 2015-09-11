@@ -133,8 +133,12 @@
       synchro_flag(ng)=.TRUE.
       first_time(ng)=0
       ad_ubar_xs=0.0_r8
+# ifdef DSTARTSEC
       tdays(ng)=(dstart+dt(ng)*REAL(ntimes(ng)-ntfirst(ng)+1,r8))*      &
      &          sec2day
+# else
+      tdays(ng)=dstart+dt(ng)*REAL(ntimes(ng)-ntfirst(ng)+1,r8)*sec2day
+# endif
       time(ng)=tdays(ng)*day2sec
 !$OMP MASTER
       ntstart(ng)=ntimes(ng)+1

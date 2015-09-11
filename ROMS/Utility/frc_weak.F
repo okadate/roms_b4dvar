@@ -173,8 +173,13 @@
 !
       it1=MAX(0,(iic(ng)-1)/nADJ(ng))+1
       it2=it1+1
+# ifdef DSTARTSEC
       time1=dstart+(it1-1)*nADJ(ng)*dt(ng)
       time2=dstart+(it2-1)*nADJ(ng)*dt(ng)
+# else
+      time1=dstart*day2sec+(it1-1)*nADJ(ng)*dt(ng)
+      time2=dstart*day2sec+(it2-1)*nADJ(ng)*dt(ng)
+# endif
       fac1=time2-time(ng)
       fac2=time(ng)-time1
       fac=1.0_r8/(fac1+fac2)
@@ -449,7 +454,11 @@
 !  Reset weak-constraing forcing time on last timestep.
 !
       IF (iic(ng).eq.ntend(ng)) THEN
+# ifdef DSTARTSEC
         ForceTime(ng)=dstart
+# else
+        ForceTime(ng)=dstart*day2sec
+# endif
       END IF
 !
 !  Update free-surface weak-constraint forcing terms.

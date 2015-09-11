@@ -978,16 +978,32 @@
       Vinfo( 1)='dstart'
       Vinfo( 2)='time stamp assigned to model initilization'
       IF (INT(time_ref).eq.-2) THEN
+#ifdef DSTARTSEC
         Vinfo( 3)='seconds since 1968-05-23 00:00:00 GMT'
+#else
+        Vinfo( 3)='days since 1968-05-23 00:00:00 GMT'
+#endif
         Vinfo( 4)='gregorian'
       ELSE IF (INT(time_ref).eq.-1) THEN
+#ifdef DSTARTSEC
         Vinfo( 3)='seconds since 0001-01-01 00:00:00'
+#else
+        Vinfo( 3)='days since 0001-01-01 00:00:00'
+#endif
         Vinfo( 4)='360_day'
       ELSE IF (INT(time_ref).eq.0) THEN
+#ifdef DSTARTSEC
         Vinfo( 3)='seconds since 0001-01-01 00:00:00'
+#else
+        Vinfo( 3)='days since 0001-01-01 00:00:00'
+#endif
         Vinfo( 4)='julian'
       ELSE IF (time_ref.gt.0.0_r8) THEN
+#ifdef DSTARTSEC
         WRITE (Vinfo( 3),'(a,1x,a)') 'seconds since', TRIM(r_text)
+#else
+        WRITE (Vinfo( 3),'(a,1x,a)') 'days since', TRIM(r_text)
+#endif
       END IF
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &

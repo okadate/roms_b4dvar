@@ -51,7 +51,11 @@
 !
 !  Get final time string for simulation.
 !
+# ifdef DSTARTSEC
       Tfinal=dstart+ntimes(ng)*dt(ng)
+# else
+      Tfinal=dstart*day2sec+ntimes(ng)*dt(ng)
+# endif
       CALL time_string(tfinal, F_code)
 !
 !-----------------------------------------------------------------------

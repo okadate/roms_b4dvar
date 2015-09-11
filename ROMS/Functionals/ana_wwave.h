@@ -200,8 +200,13 @@
 #elif defined NJ_BIGHT
 !!    wdir=210.0_r8*deg2rad
       wdir=150.0_r8*deg2rad
+# ifdef DSTARTSEC
       IF ((tdays(ng)-dstart*sec2day).lt.1.5_r8) THEN
         cff=TANH(0.5_r8*(tdays(ng)-dstart*sec2day))
+# else
+      IF ((tdays(ng)-dstart).lt.1.5_r8) THEN
+        cff=TANH(0.5_r8*(tdays(ng)-dstart))
+# endif
         cff=1.0_r8
       ELSE
         cff=1.0_r8
