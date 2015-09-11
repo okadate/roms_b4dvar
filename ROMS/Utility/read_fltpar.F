@@ -222,7 +222,11 @@
           DO i=1,nentry(ng)
             IF (Fcount(i,ng).eq.1) THEN
               nc=nc+1
+# ifdef DSTARTSEC
               DRIFTER(ng)%Tinfo(itstr,nc)=dstart+Ft0(i,ng)*day2sec
+# else
+              DRIFTER(ng)%Tinfo(itstr,nc)=(dstart+Ft0(i,ng))*day2sec
+# endif
               DRIFTER(ng)%Tinfo(izgrd,nc)=Fz0(i,ng)
               DRIFTER(ng)%Ftype(nc)=Ftype(i,ng)
               IF (Fcoor(i,ng).eq.0) THEN
@@ -238,9 +242,15 @@
               DO j=1,Fcount(i,ng)
                 nc=nc+1
                 IF (Fdt(i,ng).gt.0.0_r8) THEN
+# ifdef DSTARTSEC
                   DRIFTER(ng)%Tinfo(itstr,nc)=dstart+                   &
      &                                        (Ft0(i,ng)+REAL(j-1,r8)*  &
      &                                        Fdt(i,ng))*day2sec
+# else
+                  DRIFTER(ng)%Tinfo(itstr,nc)=(dstart+Ft0(i,ng)+        &
+     &                                         REAL(j-1,r8)*Fdt(i,ng))* &
+     &                                        day2sec
+# endif
                   DRIFTER(ng)%Tinfo(izgrd,nc)=Fz0(i,ng)
                   DRIFTER(ng)%Ftype(nc)=Ftype(i,ng)
                   IF (Fcoor(i,ng).eq.0) THEN
@@ -253,7 +263,11 @@
                     DRIFTER(ng)%Findex(mc)=nc
                   END IF
                 ELSE
+# ifdef DSTARTSEC
                   DRIFTER(ng)%Tinfo(itstr,nc)=dstart+Ft0(i,ng)*day2sec
+# else
+                  DRIFTER(ng)%Tinfo(itstr,nc)=(dstart+Ft0(i,ng))*day2sec
+# endif
                   IF (Fdz(i,ng).eq.0.0_r8) THEN
                     DRIFTER(ng)%Tinfo(izgrd,nc)=Fz0(i,ng)
                   ELSE

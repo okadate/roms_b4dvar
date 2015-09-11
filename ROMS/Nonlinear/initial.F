@@ -135,10 +135,18 @@
 !
         synchro_flag(ng)=.TRUE.
         first_time(ng)=0
+# ifdef DSTARTSEC
         tdays(ng)=dstart*sec2day
+# else
+        tdays(ng)=dstart
+# endif
         time(ng)=tdays(ng)*day2sec
 !$OMP MASTER
+# ifdef DSTARTSEC
         ntstart(ng)=INT((time(ng)-dstart)/dt(ng))+1
+# else
+        ntstart(ng)=INT((time(ng)-dstart*day2sec)/dt(ng))+1
+# endif
         ntend(ng)=ntimes(ng)
         ntfirst(ng)=ntstart(ng)
 !$OMP END MASTER

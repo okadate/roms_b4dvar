@@ -148,7 +148,11 @@
 #elif defined WEDDELL
       IF (LBC(iwest,isFsur,ng)%acquire.and.                             &
      &    DOMAIN(ng)%Western_Edge(tile)) THEN
+# ifdef DSTARTSEC
         fac=TANH((tdays(ng)-dstart*sec2day)/1.0_r8)
+# else
+        fac=TANH((tdays(ng)-dstart)/1.0_r8)
+# endif
         omega=2.0_r8*pi*time(ng)/(12.42_r8*3600.0_r8)  !  M2 Tide period
         val=0.53_r8+(0.53_r8-0.48_r8)/REAL(Iend+1,r8)
         phase=(277.0_r8+(277.0_r8-240.0_r8)/REAL(Iend+1,r8))*deg2rad
@@ -159,7 +163,11 @@
 
       IF (LBC(ieast,isFsur,ng)%acquire.and.                             &
      &    DOMAIN(ng)%Eastern_Edge(tile)) THEN
+# ifdef DSTARTSEC
         fac=TANH((tdays(ng)-dstart*sec2day)/1.0_r8)
+# else
+        fac=TANH((tdays(ng)-dstart)/1.0_r8)
+# endif
         omega=2.0_r8*pi*time(ng)/(12.42_r8*3600.0_r8)  !  M2 Tide period
         val=0.53_r8+(0.53_r8-0.48_r8)
         phase=(277.0_r8+(277.0_r8-240.0_r8))*deg2rad
