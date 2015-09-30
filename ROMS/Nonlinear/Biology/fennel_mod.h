@@ -139,11 +139,15 @@
 !
       integer, allocatable :: iDbio2(:)       ! 2D biological terms
 
+      integer  :: iNH4f = 1                   ! NH4 flux
+      integer  :: iPONf = 2                   ! PON flux
       integer  :: iCOfx                       ! air-sea CO2 flux
       integer  :: iDNIT                       ! denitrification flux
       integer  :: ipCO2                       ! partial pressure of CO2
       integer  :: iO2fx                       ! air-sea O2 flux
       integer  :: iSOD_                       ! sediment oxygen demand flux
+      integer  :: iPO4f                       ! PO4 flux
+      integer  :: iPOPf                       ! POP flux
 !
 !  Biological 3D diagnostic variable IDs.
 !
@@ -151,14 +155,10 @@
 
       integer  :: iPPro = 1                   ! primary productivity
       integer  :: iNO3u = 2                   ! NO3 uptake
-      integer  :: iPmax = 3                   ! 
-      integer  :: iLDIN = 4                   ! 
-# ifdef PHOSPHORUS
-      integer  :: iLPO4                       ! 
-# endif
-# ifdef OXYGEN
-      integer  :: iCOD_                       ! 
-# endif
+      integer  :: iPmax = 3                   ! max growth rate
+      integer  :: iLDIN = 4                   ! DIN limitation
+      integer  :: iLPO4                       ! PO4 limitation
+      integer  :: iCOD_                       ! COD
 #endif
 !
 !  Biological parameters.
@@ -293,27 +293,26 @@
 !
 !  Set number of diagnostics terms.
 !
-      NDbio3d=4
-      NDbio2d=0
+      NDbio3d=4  ! PPro, NO3u, Pmax, LDIN
+      NDbio2d=2  ! NH4f, PONf
 # ifdef DENITRIFICATION
-      NDbio2d=NDbio2d+1
+      NDbio2d=NDbio2d+1  ! DNIT
 # endif
 # ifdef CARBON
-      NDbio2d=NDbio2d+2
+      NDbio2d=NDbio2d+2  ! COfx, pCO2
 # endif
 # ifdef OXYGEN
-      NDbio2d=NDbio2d+2
+      NDbio2d=NDbio2d+2  ! O2fx ,SOD
+      NDbio3d=NDbio3d+1  ! COD
 # endif
 # ifdef PHOSPHORUS
-      NDbio3d=NDbio3d+1
-# endif
-# ifdef OXYGEN
-      NDbio3d=NDbio3d+1
+      NDbio2d=NDbio2d+2  ! PO4f, POPf
+      NDbio3d=NDbio3d+1  ! LPO4
 # endif
 !
 !  Initialize biology diagnostic indices.
 !
-      ic=0
+      ic=2  ! NH4f, PONf
 # ifdef DENITRIFICATION
       iDNIT=ic+1
       ic=ic+1
@@ -326,7 +325,13 @@
 # ifdef OXYGEN
       iO2fx=ic+1
       iSOD_=ic+2
+      ic=ic+2
 # endif
+# ifdef PHOSPHORUS
+      iPO4f=ic+1
+      iPOPf=ic+2
+# endif
+
       ic=4
 # ifdef PHOSPHORUS
       iLPO4=ic+1

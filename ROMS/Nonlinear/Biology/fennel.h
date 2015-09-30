@@ -78,7 +78,7 @@
       USE mod_ncparam
       USE mod_ocean
       USE mod_stepping
-#ifdef DIAGENESIS
+#ifdef BIO_SED_DIAGENESIS
       USE mod_bgcbed
 #endif
 !
@@ -136,7 +136,7 @@
      &                   DIAGS(ng) % DiaBio2d,                          &
      &                   DIAGS(ng) % DiaBio3d,                          &
 #endif
-#ifdef DIAGENESIS
+#ifdef BIO_SED_DIAGENESIS
      &                   GRID(ng) % h,                                  &
      &                   BGCBED(ng) % bpw,                              &
      &                   BGCBED(ng) % bsm,                              &
@@ -177,7 +177,7 @@
 #ifdef DIAGNOSTICS_BIO
      &                         DiaBio2d, DiaBio3d,                      &
 #endif
-#ifdef DIAGENESIS
+#ifdef BIO_SED_DIAGENESIS
      &                         h,                                       &
      &                         bpw, bsm,                                &
      &                         bpwflux, bsmflux,                        &
@@ -227,7 +227,7 @@
       real(r8), intent(inout) :: DiaBio3d(LBi:,LBj:,:,:)
 # endif
       real(r8), intent(inout) :: t(LBi:,LBj:,:,:,:)
-# ifdef DIAGENESIS
+# ifdef BIO_SED_DIAGENESIS
       real(r8), intent(in) :: h(LBi:,LBj:)
       real(r8), intent(inout) :: bpw(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: bsm(LBi:,LBj:,:,:)
@@ -262,7 +262,7 @@
       real(r8), intent(inout) :: DiaBio3d(LBi:UBi,LBj:UBj,UBk,NDbio3d)
 # endif
       real(r8), intent(inout) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
-# ifdef DIAGENESIS
+# ifdef BIO_SED_DIAGENESIS
       real(r8), intent(in) :: h(LBi:UBi,LBj:UBj)
       real(r8), intent(inout) :: bpw(LBi:UBi,LBj:UBj,Nbed,NBGCPW)
       real(r8), intent(inout) :: bsm(LBi:UBi,LBj:UBj,Nbed,NBGCSM)
@@ -497,7 +497,7 @@
       Wbio(5)=wSDet(ng)               ! small Carbon- or Phosphorus-detritus
       Wbio(6)=wLDet(ng)               ! large Carbon- or Phosphorus-detritus
 #endif
-#ifdef DIAGENESIS
+#ifdef BIO_SED_DIAGENESIS
       dia_count=dia_count+1
 #endif
 !
@@ -1278,7 +1278,7 @@
 !  "Bio(:,:,isink)" in terms of a set of parabolic segments within each
 !  grid box. Then, compute semi-Lagrangian flux due to sinking.
 !
-#if defined DIAGENESIS
+#if defined BIO_SED_DIAGENESIS
           DO itrc=1,NBGCSM
             DO i=Istr,Iend
               bsmflux(i,j,itrc)=0.0_r8
@@ -1455,26 +1455,33 @@
                 Bio(i,k,ibio)=qc(i,k)+(FC(i,k)-FC(i,k-1))*Hz_inv(i,k)
               END DO
             END DO
-
-#if defined DIAGENESIS
 !
-!  Biogeochemical model run out of sink loop
+!  Compute POM flux (c) 2015-09-30 teruhisa okada
 !
-            IF ((ibio.eq.iPhyt).or.                                     &
-     &          (ibio.eq.iSDeN).or.                                     &
-     &          (ibio.eq.iLDeN)) THEN
+#ifdef DIAGNOSTICS_BIO
+            IF (ibio.eq.iPhyt) THEN
               DO i=Istr,Iend
-                cff=FC(i,0)/dtdays*PhyCN(ng)
-                bsmflux(i,j,iPOMf)=bsmflux(i,j,iPOMf)+cff*0.54_r8
-                bsmflux(i,j,iPOMs)=bsmflux(i,j,iPOMs)+cff*0.27_r8
-                bsmflux(i,j,iPOMn)=bsmflux(i,j,iPOMn)+cff*0.19_r8
-!                bsmflux(i,j,iPOMf)=cff*0.54_r8
-!                bsmflux(i,j,iPOMs)=cff*0.27_r8
-!                bsmflux(i,j,iPOMn)=cff*0.19_r8
+                DiaBio2d(i,j,iPONf)=DiaBio2d(i,j,iPONf)-FC(i,0)*fiter
+# ifdef PHOSPHORUS
+                DiaBio2d(i,j,iPOPf)=DiaBio2d(i,j,iPOPf)-                &
+     &                              FC(i,0)*PhyPN(ng)*fiter
+# endif
               END DO
             END IF
-
-#elif defined BIO_SEDIMENT
+            IF ((ibio.eq.iSDeN).or.(ibio.eq.iLDeN)) THEN
+              DO i=Istr,Iend
+                DiaBio2d(i,j,iPONf)=DiaBio2d(i,j,iPONf)-FC(i,0)*fiter
+              END DO
+            END IF
+# ifdef PHOSPHORUS
+            IF ((ibio.eq.iSDeP).or.(ibio.eq.iLDeP)) THEN
+              DO i=Istr,Iend
+                DiaBio2d(i,j,iPOPf)=DiaBio2d(i,j,iPOPf)-FC(i,0)*fiter
+              END DO
+            END IF
+# endif
+#endif
+#if defined BIO_SEDIMENT
 !
 !  Particulate flux reaching the seafloor is remineralized and returned
 !  to the dissolved nitrate pool. Without this conversion, particulate
@@ -1496,6 +1503,8 @@
 # ifdef DENITRIFICATION
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1*cff2
 #  ifdef DIAGNOSTICS_BIO
+                DiaBio2d(i,j,iNH4f)=DiaBio2d(i,j,iNH4f)+                &
+     &                              cff1*cff2*Hz(i,j,1)*fiter
                 DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
 #   ifdef WET_DRY
      &                              rmask_full(i,j)*                    &
@@ -1511,6 +1520,10 @@
 #  endif
 # else
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
+#  ifdef DIAGNOSTICS_BIO
+                DiaBio2d(i,j,iNH4f)=DiaBio2d(i,j,iNH4f)+                &
+     &                              cff1*Hz(i,j,1)*fiter
+#  endif
 #  ifdef OXYGEN
                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
 #   ifdef DIAGNOSTICS_BIO
@@ -1546,12 +1559,20 @@
               DO i=Istr,Iend
                 cff1=FC(i,0)*Hz_inv(i,1)
                 Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1
+# ifdef DIAGNOSTICS_BIO
+                DiaBio2d(i,j,iPO4f)=DiaBio2d(i,j,iPO4f)+                &
+     &                              cff1*Hz(i,j,1)*fiter
+# endif
               END DO
             END IF
             IF (ibio.eq.iPhyt)THEN
               DO i=Istr,Iend
                 cff1=FC(i,0)*Hz_inv(i,1)
                 Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*PhyPN(ng)
+# ifdef DIAGNOSTICS_BIO
+                DiaBio2d(i,j,iPO4f)=DiaBio2d(i,j,iPO4f)+                &
+     &                              cff1*PhyPN(ng)*Hz(i,j,1)*fiter
+# endif
               END DO
             END IF
 # endif
@@ -1566,9 +1587,26 @@
               END DO
             END IF
 # endif
+#elif defined BIO_SED_DIAGENESIS
+!
+!  Biogeochemical model run out of sink loop
+!
+            IF ((ibio.eq.iPhyt).or.                                     &
+     &          (ibio.eq.iSDeN).or.                                     &
+     &          (ibio.eq.iLDeN)) THEN
+              DO i=Istr,Iend
+                cff=FC(i,0)/dtdays*PhyCN(ng)
+                bsmflux(i,j,iPOMf)=bsmflux(i,j,iPOMf)+cff*0.54_r8
+                bsmflux(i,j,iPOMs)=bsmflux(i,j,iPOMs)+cff*0.27_r8
+                bsmflux(i,j,iPOMn)=bsmflux(i,j,iPOMn)+cff*0.19_r8
+!                bsmflux(i,j,iPOMf)=cff*0.54_r8
+!                bsmflux(i,j,iPOMs)=cff*0.27_r8
+!                bsmflux(i,j,iPOMn)=cff*0.19_r8
+              END DO
+            END IF
 #endif
           END DO SINK_LOOP
-#if defined DIAGENESIS
+#if defined BIO_SED_DIAGENESIS
 !
 !  Biogeochemical model run
 !
@@ -1592,7 +1630,7 @@
 !              Bio(i,1,iTIC_)=Bio(i,1,iTIC_)-cff*bpwflux(i,j,iwDOMs)
             END DO
           ENDIF
-#elif defined BIO_SEDIMENT_PARAMETER
+#elif defined BIO_SED_CONSTANT
 !
 !  Elution and oxygen consumption parameters (okada)
 !
@@ -1610,14 +1648,38 @@
 !
           DO i=Istr,Iend
             fac1=dtdays*1.05_r8**(Bio(i,1,itemp)-20.0_r8)
-            cff1=fac1*Hz_inv(i,1)
-            Bio(i,1,iH2S_)=Bio(i,1,iH2S_)+cff1*cff8
-            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1*cff9  !*0.7_r8
-            Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*cff10 !*0.7_r8
+            cff=fac1*Hz_inv(i,1)
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2
+# ifdef DIAGNOSTICS_BIO
+            DiaBio2d(i,j,iNH4f)=DiaBio2d(i,j,iNH4f)+                    &
+     &                          cff*cff2*Hz(i,j,1)*fiter
+# endif
+# ifdef OXYGEN
+            cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1),0.0_r8)
+            Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
+#  ifdef DIAGNOSTICS_BIO
+            DiaBio2d(i,j,iSOD_)=DiaBio2d(i,j,iSOD_)-                    &
+     &                          cff4*Hz(i,j,1)*fiter
+#  endif
+#  ifdef H2S
+            cff5=MIN(MIN(Bio(i,1,iOxyg),cff*cff1),0.0_r8)
+            Bio(i,1,iH2S_)=Bio(i,1,iH2S_)-cff5*rOxH2S
+#  endif
+# endif
+# ifdef PHOSPHORUS
+            Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3
+#  ifdef DIAGNOSTICS_BIO
+            DiaBio2d(i,j,iPO4f)=DiaBio2d(i,j,iPO4f)+                    &
+     &                          cff*cff3*Hz(i,j,1)*fiter
+#  endif
+# endif
           END DO
 #endif
         END DO ITER_LOOP
 #if defined OXYGEN && defined DIAGNOSTICS_BIO
+!
+!  Coumpute COD (c) 2014 Teruhisa Okada
+!
         DO k=1,N(ng)
           DO i=Istr,Iend
             DiaBio3d(i,j,k,iCOD_)=Bio(i,k,iNH4_)*NH42COD+               &
@@ -1659,7 +1721,7 @@
         END DO
       END DO J_LOOP
 
-#ifdef DIAGENESIS
+#ifdef BIO_SED_DIAGENESIS
       !IF (dia_count.ge.20) THEN
         !IF (Master) WRITE (stdout,*) 'DIAGENESIS done!'
         dia_count=0
@@ -1668,7 +1730,7 @@
       RETURN
       END SUBROUTINE biology_tile
 
-#ifdef DIAGENESIS
+#ifdef BIO_SED_DIAGENESIS
 # include "diagenesis.h"
 #endif
 
