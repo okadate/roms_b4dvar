@@ -407,6 +407,10 @@
 /*
 **  Biological tracers term diagnostics.
 */
+              CASE ('iDbio2(iNH4f)')
+                iDbio2(iNH4f)=varid
+              CASE ('iDbio2(iPONf)')
+                iDbio2(iPONf)=varid
 # ifdef DENITRIFICATION
               CASE ('iDbio2(iDNIT)')
                 iDbio2(iDNIT)=varid
@@ -422,6 +426,12 @@
                 iDbio2(iO2fx)=varid
               CASE ('iDbio2(iSOD_)')
                 iDbio2(iSOD_)=varid
+# endif
+# ifdef PHOSPHORUS
+              CASE ('iDbio2(iPO4f)')
+                iDbio2(iPO4f)=varid
+              CASE ('iDbio2(iPOPf)')
+                iDbio2(iPOPf)=varid
 # endif
               CASE ('iDbio3(iPPro)')
                 iDbio3(iPPro)=varid
