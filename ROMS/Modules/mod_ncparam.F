@@ -642,6 +642,9 @@
 #if defined SEDIMENT || defined BBL_MODEL
       USE mod_sediment
 #endif
+#ifdef ADJUST_BIOPARAM
+      USE mod_bioparam
+#endif
 !
 !  Local variable declarations.
 !

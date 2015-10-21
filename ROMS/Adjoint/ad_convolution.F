@@ -91,6 +91,9 @@
 # if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       USE mod_forces
 # endif
+# ifdef ADJUST_BIOPARAM
+      USE mod_bioparam
+# endif
       USE mod_grid
       USE mod_mixing
       USE mod_ocean
@@ -166,6 +169,9 @@
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                          FORCES(ng) % b_stflx,                   &
 # endif
+# ifdef ADJUST_BIOPARAM
+     &                          BIOPARAM(ng) % b_bioparam,              &
+# endif
 # ifdef SOLVE3D
      &                          OCEAN(ng) % b_t,                        &
      &                          OCEAN(ng) % b_u,                        &
@@ -190,6 +196,9 @@
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                          FORCES(ng) % ad_tflux,                  &
+# endif
+# ifdef ADJUST_BIOPARAM
+     &                          BIOPARAM(ng) % ad_bioparam,             &
 # endif
 # ifdef SOLVE3D
      &                          OCEAN(ng) % ad_t,                       &
@@ -240,6 +249,9 @@
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                                HnormSTF,                         &
 # endif
+# ifdef ADJUST_BIOPARAM
+     &                                normPbio,                         &
+# endif
 # ifdef SOLVE3D
      &                                VnormR, VnormU, VnormV,           &
 # endif
@@ -256,6 +268,9 @@
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                                ad_tflux,                         &
+# endif
+# ifdef ADJUST_BIOPARAM
+     &                                ad_bioparam,                      &
 # endif
 # ifdef SOLVE3D
      &                                ad_t, ad_u, ad_v,                 &
@@ -277,6 +292,9 @@
 #  ifdef SOLVE3D
       USE ad_conv_bry3d_mod
 #  endif
+# endif
+# ifdef ADJUST_BIOPARAM
+      USE mod_bioparam
 # endif
 # ifdef DISTRIBUTE
       USE mp_exchange_mod
@@ -341,6 +359,9 @@
 #  if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(in) :: HnormSTF(LBi:,LBj:,:)
 #  endif
+#  ifdef ADJUST_BIOPARAM
+      real(r8), intent(in) :: normPbio(:,:)
+#  endif
 #  ifdef SOLVE3D
       real(r8), intent(in) :: VnormR(LBi:,LBj:,:,:,:)
       real(r8), intent(in) :: VnormU(LBi:,LBj:,:,:)
@@ -365,6 +386,9 @@
 #  endif
 #  if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(inout) :: ad_tflux(LBi:,LBj:,:,:,:)
+#  endif
+#  ifdef ADJUST_BIOPARAM
+      real(r8), intent(inout) :: ad_bioparam(:,:)
 #  endif
 #  ifdef SOLVE3D
       real(r8), intent(inout) :: ad_t(LBi:,LBj:,:,:,:)
@@ -428,6 +452,9 @@
 #  if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(in) :: HnormSTF(LBi:UBi,LBj:UBj,NT(ng))
 #  endif
+#  ifdef ADJUST_BIOPARAM
+      real(r8), intent(in) :: normPbio(NSA,Nbioparam)
+#  endif
 #  ifdef SOLVE3D
       real(r8), intent(in) :: VnormR(LBi:UBi,LBj:UBj,N(ng),NSA,NT(ng))
       real(r8), intent(in) :: VnormU(LBi:UBi,LBj:UBj,NSA,N(ng))
@@ -454,6 +481,9 @@
 #  if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(inout) :: ad_tflux(LBi:UBi,LBj:UBj,              &
      &                                    Nfrec(ng),2,NT(ng))
+#  endif
+#  ifdef ADJUST_BIOPARAM
+      real(r8), intent(inout) :: ad_bioparam(2,Nbioparam)
 #  endif
 #  ifdef SOLVE3D
       real(r8), intent(inout) :: ad_t(LBi:UBi,LBj:UBj,N(ng),3,NT(ng))
@@ -863,6 +893,18 @@
         END DO
       END IF
 # endif
+# ifdef ADJUST_BIOPARAM
+!
+!  Adjoint biology parameter.
+!
+      IF (.not.Lweak) THEN
+        DO it=1,Nbioparam
+          IF (Lbioparam(it)) THEN
+            ad_bioparam(Linp,it)=ad_bioparam(Linp,it)*normPbio(rec,it)
+          END IF
+        END DO
+      END IF
+# endif
 !
 !-----------------------------------------------------------------------
 !  Initial conditions or model error covariance: Convolve adjoint state
@@ -1203,6 +1245,14 @@
         END DO
       END IF
 #  endif
+# endif
+# ifdef ADJUST_BIOPARAM
+!
+!  Adjoint biology parameter.
+!
+      IF (.not.Lweak) THEN
+        !okada! CALL ad_conv_0d_tile () 
+      END IF
 # endif
 !
 !-----------------------------------------------------------------------
@@ -1574,6 +1624,17 @@
               END IF
             END DO
           END DO
+        END DO
+      END IF
+# endif
+
+# ifdef ADJUST_BIOPARAM
+!
+!  Adjoint biology parameter.
+!
+      IF (.not.Lweak) THEN
+        DO it=1,Nbioparam
+          ad_bioparam(Linp,it)=ad_bioparam(Linp,it)
         END DO
       END IF
 # endif

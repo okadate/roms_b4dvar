@@ -221,12 +221,6 @@
       real(r8), allocatable :: LDeRRC(:)             ! 1/day
       real(r8), allocatable :: NitriR(:)             ! 1/day
       real(r8), allocatable :: PARfrac(:)            ! nondimensional
-#ifdef TANGENT
-      real(r8), allocatable :: tl_PARfrac(:)
-#endif
-#ifdef ADJOINT
-      real(r8), allocatable :: ad_PARfrac(:)
-#endif
       real(r8), allocatable :: PhyCN(:)              ! mol_C/mol_N
       real(r8), allocatable :: PhyIP(:)              ! 1/mmol_N
       real(r8), allocatable :: PhyIS(:)              ! 1/(Watts m-2 day)
@@ -238,26 +232,8 @@
       real(r8), allocatable :: SDeRRC(:)             ! 1/day
       real(r8), allocatable :: Vp0(:)                ! nondimensional
       real(r8), allocatable :: wLDet(:)              ! m/day
-#ifdef TANGENT
-      real(r8), allocatable :: tl_wLDet(:)
-#endif
-#ifdef ADJOINT
-      real(r8), allocatable :: ad_wLDet(:)
-#endif
       real(r8), allocatable :: wPhy(:)               ! m/day
-#ifdef TANGENT
-      real(r8), allocatable :: tl_wPhy(:)
-#endif
-#ifdef ADJOINT
-      real(r8), allocatable :: ad_wPhy(:)
-#endif
       real(r8), allocatable :: wSDet(:)              ! m/day
-#ifdef TANGENT
-      real(r8), allocatable :: tl_wSDet(:)
-#endif
-#ifdef ADJOINT
-      real(r8), allocatable :: ad_wSDet(:)
-#endif
       real(r8), allocatable :: ZooAE_N(:)            ! nondimensional
       real(r8), allocatable :: ZooBM(:)              ! 1/day
       real(r8), allocatable :: ZooCN(:)              ! mol_C/mol_N
@@ -266,6 +242,87 @@
       real(r8), allocatable :: ZooMin(:)             ! mmol_N/m3
       real(r8), allocatable :: ZooMR(:)              ! 1/day
       real(r8), allocatable :: pCO2air(:)            ! ppmv
+#ifdef TANGENT
+      real(r8), allocatable :: tl_wSDet(:)
+      real(r8), allocatable :: tl_wPhy(:)
+      real(r8), allocatable :: tl_wLDet(:)
+      real(r8), allocatable :: tl_PARfrac(:)
+#endif
+#ifdef ADJOINT
+      real(r8), allocatable :: ad_wSDet(:)
+      real(r8), allocatable :: ad_wPhy(:)
+      real(r8), allocatable :: ad_wLDet(:)
+      real(r8), allocatable :: ad_PARfrac(:)
+#endif
+
+#ifdef ADJUST_BIOPARAM
+      integer :: iAttSW   = 1
+      integer :: iAttChl  = 2
+      integer :: iChl2C_m = 3
+      integer :: iChlMin  = 4
+      integer :: iCoagR   = 5
+      integer :: iD_p5NH4 = 6
+      integer :: iI_thNH4 = 7
+      integer :: iK_NH4   = 8
+      integer :: iK_NO3   = 9
+      integer :: iK_Phy   = 10
+      integer :: iLDeRRN  = 11
+      integer :: iLDeRRC  = 12
+      integer :: iNitriR  = 13
+      integer :: iPARfrac = 14
+      integer :: iPhyCN   = 15
+      integer :: iPhyIP   = 16
+      integer :: iPhyIS   = 17
+      integer :: iPhyMin  = 18
+      integer :: iPhyMR   = 19
+      integer :: iSDeAR   = 20
+      integer :: iSDeBR   = 21
+      integer :: iSDeRRN  = 22
+      integer :: iSDeRRC  = 23
+      integer :: iVp0     = 24
+      integer :: iwLDet   = 25
+      integer :: iwPhy    = 26
+      integer :: iwSDet   = 27
+      integer :: iZooAE_N = 28
+      integer :: iZooBM   = 29
+      integer :: iZooCN   = 30
+      integer :: iZooER   = 31
+      integer :: iZooGR   = 32
+      integer :: iZooMin  = 33
+      integer :: iZooMR   = 34
+      integer :: ipCO2air = 35
+
+      integer :: iK_PO4    = 36 
+      integer :: iPhyPN    = 37
+      integer :: iZooPN    = 38
+      integer :: iLDeRRP   = 39
+      integer :: iSDeRRP   = 40
+      integer :: iH2SOR    = 41
+      integer :: iK_DO     = 42
+      integer :: iK_Nitri  = 43
+      integer :: ithNitriR = 44
+      integer :: ig_max    = 45
+      integer :: it_opt    = 46
+      integer :: iI_opt    = 47
+      integer :: ibeta1    = 48
+      integer :: ibeta2    = 49
+      integer :: iDenitR   = 50
+      integer :: iK_Denit  = 51
+      integer :: ithDenitR = 52
+      integer :: ithPhyMR  = 53
+      integer :: ithRRN    = 54
+
+      integer, parameter :: Nbioparam = 54
+
+      logical :: Lbioparam(Nbioparam)
+
+      real(r8) :: bioparam(2,Nbioparam)
+      real(r8) :: tl_bioparam(2,Nbioparam)
+      real(r8) :: ad_bioparam(2,Nbioparam)
+      real(r8) :: b_bioparam(2,Nbioparam)
+      real(r8) :: d_bioparam(Nbioparam)
+      real(r8) :: e_bioparam(Nbioparam)
+#endif
 
       CONTAINS
 

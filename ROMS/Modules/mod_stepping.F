@@ -15,7 +15,7 @@
 !  Lbout     Open boundary adjustment output fields index.             !
 #endif
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS
+    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
 !  Lfinp     Surface forcing adjustment input  fields index.           !
 !  Lfout     Surface forcing adjustment output fields index.           !
 #endif
@@ -80,7 +80,7 @@
 #endif
 
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS
+    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
         integer, allocatable :: Lfinp(:)
         integer, allocatable :: Lfout(:)
 #endif
@@ -153,7 +153,7 @@
 #endif
 
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS
+    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
       allocate ( Lfinp(Ngrids) )
       Lfinp(1:Ngrids)=1
 

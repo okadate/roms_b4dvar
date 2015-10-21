@@ -70,6 +70,9 @@
      &                          s1_sustr, s2_sustr,                     &
      &                          s1_svstr, s2_svstr,                     &
 #endif
+#ifdef ADJUST_BIOPARAM
+     &                          s1_bioparam, s2_bioparam,               &
+#endif
 #ifdef SOLVE3D
 # ifdef ADJUST_STFLUX
      &                          s1_tflux, s2_tflux,                     &
@@ -90,6 +93,9 @@
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
     defined ADJUST_WSTRESS
       USE mod_scalars
+#endif
+#ifdef ADJUST_BIOPARAM
+      USE mod_bioparam
 #endif
 #ifdef DISTRIBUTE
 !
@@ -129,6 +135,10 @@
       real(r8), intent(in) :: s2_sustr(LBi:,LBj:,:)
       real(r8), intent(in) :: s1_svstr(LBi:,LBj:,:)
       real(r8), intent(in) :: s2_svstr(LBi:,LBj:,:)
+# endif
+# ifdef ADJUST_BIOPARAM
+      real(r8), intent(in) :: s1_bioparam(:)
+      real(r8), intent(in) :: s2_bioparam(:)
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -181,6 +191,10 @@
       real(r8), intent(in) :: s2_sustr(LBi:UBi,LBj:UBj,Nfrec(ng))
       real(r8), intent(in) :: s1_svstr(LBi:UBi,LBj:UBj,Nfrec(ng))
       real(r8), intent(in) :: s2_svstr(LBi:UBi,LBj:UBj,Nfrec(ng))
+# endif
+# ifdef ADJUST_BIOPARAM
+      real(r8), intent(in) :: s1_bioparam(Nbioparam)
+      real(r8), intent(in) :: s2_bioparam(Nbioparam)
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -740,6 +754,19 @@
               END DO
             END DO
           END DO
+        END IF
+      END DO
+# endif
+
+# ifdef ADJUST_BIOPARAM
+!
+!  Biology parameter.
+!
+      DO it=1,Nbioparam
+        IF (Lbioparam(it)) THEN
+          cff=s1_bioparam(it)*s2_bioparam(it)
+          my_DotProd(0)=my_DotProd(0)+cff
+          my_DotProd(isPbio(it))=my_DotProd(isPbio(it))+cff
         END IF
       END DO
 # endif

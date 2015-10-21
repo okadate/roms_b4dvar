@@ -32,6 +32,9 @@
 #if defined ADJUST_WSTRESS || defined ADJUST_STFLUX
       USE mod_forces
 #endif
+#if defined ADJUST_BIOPARAM
+      USE mod_bioparam
+#endif
 #ifdef FOUR_DVAR
       USE mod_fourdvar
 #endif
@@ -66,6 +69,9 @@
       USE nf_fread3d_bry_mod, ONLY : nf_fread3d_bry
 # endif
 #endif
+#ifdef ADJUST_BIOPARAM
+      USE nf_fread0d_mod, ONLY : nf_fread0d
+#endif
       USE nf_fread2d_mod, ONLY : nf_fread2d
       USE nf_fread3d_mod, ONLY : nf_fread3d
 #ifdef SOLVE3D
@@ -87,7 +93,8 @@
 !
       logical :: Perfect2D, Perfect3D, foundit
 #if defined ADJUST_BOUNDARY || \
-    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX
+    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX || \
+    defined ADJUST_BIOPARAM
       logical :: get_adjust
 #endif
       logical, dimension(NV) :: get_var, have_var
@@ -879,6 +886,37 @@
           END IF
         END DO
 
+#  ifdef ADJUST_BIOPARAM
+!
+!  Read in nonlinear biological parameter.
+!
+        DO itrc=1,Nbioparam
+          IF (get_var(idPbio(itrc))) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idPbio(itrc))), varid)
+              status=nf_fread0d(ng, IDmod, ncname, ncINPid,             &
+     &                          Vname(1,idPbio(itrc)), varid,           &
+     &                          InpRec,                                 &
+     &                          BIOPARAM(ng) % bioparam(Tindex,itrc))
+            IF (status.ne.nf90_noerr) THEN
+              IF (Master) THEN
+                WRITE (stdout,60) string, TRIM(Vname(1,idPbio(itrc))),  &
+     &                            InpRec, TRIM(ncname)
+              END IF
+              exit_flag=2
+              ioerror=status
+              RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,70) TRIM(Vname(2,idPbio(itrc))),          &
+     &                            BIOPARAM(ng) % bioparam(Tindex,itrc), &
+     &                            BIOPARAM(ng) % bioparam(Tindex,itrc)
+              END IF
+            END IF
+          END IF
+        END DO
+#  endif
+
 #  if defined GLS_MIXING || defined MY25_MIXING || defined LMD_MIXING
 !
 !  Read in vertical viscosity.
@@ -1592,7 +1630,8 @@
       TLM_STATE: IF ((model.eq.iTLM).or.(model.eq.iRPM)) THEN
 
 # if defined ADJUST_BOUNDARY || \
-    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX
+    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX || \
+    defined ADJUST_BIOPARAM
         IF (inner.eq.0.and.model.eq.iRPM) THEN
           get_adjust=.FALSE.
         ELSE
@@ -2069,6 +2108,38 @@
               IF (Master) THEN
                 WRITE (stdout,70) TRIM(Vname(2,idTsur(itrc)))//         &
      &                            ', adjusted tl_tflux', Fmin, Fmax
+              END IF
+            END IF
+          END IF
+        END DO
+#  endif
+#  ifdef ADJUST_BIOPARAM
+!
+!  Read in tangent linear biological parameters.
+!
+        DO itrc=1,Nbioparam
+          IF (get_var(idPbio(itrc)).and.get_adjust.and.                 &
+     &        Lbioparam(itrc)) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idPbio(itrc))), varid)
+            status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
+     &                        Vname(1,idPbio(itrc)), varid,             &
+     &                        InpRec,                                   &
+     &                        BIOPARAM(ng)% tl_bioparam(Tindex,itrc))
+            IF (status.ne.nf90_noerr) THEN
+              IF (Master) THEN
+                WRITE (stdout,60) string, TRIM(Vname(1,idPbio(itrc))),  &
+     &                            InpRec, TRIM(ncname)
+              END IF
+              exit_flag=2
+              ioerror=status
+              RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,70) TRIM(Vname(2,idPbio(itrc)))//         &
+     &                            ', adjusted tl_bioparam',             &
+     &                            BIOPARAM(ng)%tl_bioparam(Tindex,itrc),&
+     &                            BIOPARAM(ng)%tl_bioparam(Tindex,itrc)
               END IF
             END IF
           END IF
@@ -2755,6 +2826,37 @@
           END IF
         END DO
 #  endif
+#  ifdef ADJUST_BIOPARAM
+!
+!  Read in adjoint biological parameters.
+!
+        DO itrc=1,Nbioparam
+          IF (get_var(idPbio(itrc)).and.Lbioparam(itrc)) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idPbio(itrc))), varid)
+            status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
+     &                        Vname(1,idPbio(itrc)), varid,             &
+     &                        InpRec,                                   &
+     &                        BIOPARAM(ng) % ad_bioparam(Tindex,itrc))
+            IF (status.ne.nf90_noerr) THEN
+              IF (Master) THEN
+                WRITE (stdout,60) string, TRIM(Vname(1,idPbio(itrc))),  &
+     &                            InpRec, TRIM(ncname)
+              END IF
+              exit_flag=2
+              ioerror=status
+              RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,70) TRIM(Vname(2,idPbio(itrc)))//         &
+     &                            ', adjusted ad_bioparam',             &
+     &                            BIOPARAM(ng)%ad_bioparam(Tindex,itrc),&
+     &                            BIOPARAM(ng)%ad_bioparam(Tindex,itrc)
+              END IF
+            END IF
+          END IF
+        END DO
+#  endif
 #  ifdef SEDIMENT
 !
 !  Read in adjoint sediment fraction of each size class in each bed
@@ -3422,6 +3524,24 @@
           END IF
         END DO
 # endif
+# if defined ADJUST_BIOPARAM && defined SOLVE3D
+!
+!  Read in biological parameter normalization factors.
+!
+        DO itrc=1,Nbioparam
+          IF (get_var(idPbio(itrc)).and.(model.eq.11).and.              &
+     &        Lbioparam(itrc)) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idPbio(itrc))), varid)
+            BIOPARAM(ng) % b_bioparam(Tindex,itrc) = 1.0_r8 !okada! std_bioparam(itrc)
+            IF (Master) THEN
+              WRITE (stdout,70) TRIM(Vname(2,idPbio(itrc))),            &
+     &                          BIOPARAM(ng) % b_bioparam(Tindex,itrc), &
+     &                          BIOPARAM(ng) % b_bioparam(Tindex,itrc)
+            END IF
+          END IF
+        END DO
+# endif
       END IF NRM_STATE
 #endif
 
@@ -3980,6 +4100,37 @@
           END IF
         END DO
 # endif
+# if defined ADJUST_BIOPARAM && defined SOLVE3D
+!
+!  Read in biological parameter standard deviations.
+!
+        DO itrc=1,Nbioparam
+          IF (get_var(idPbio(itrc)).and.(model.eq.9).and.               &
+     &        Lbioparam(itrc)) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idPbio(itrc))), varid)
+            status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
+                              Vname(1,idPbio(itrc)), varid,             &
+     &                        InpRec,                                   &
+     &                        BIOPARAM(ng) % e_bioparam(itrc))
+            IF (status.ne.nf90_noerr) THEN
+              IF (Master) THEN
+                WRITE (stdout,60) string, TRIM(Vname(1,idPbio(itrc))),  &
+     &                            InpRec, TRIM(ncname)
+              END IF
+              exit_flag=2
+              ioerror=status
+              RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,70) TRIM(Vname(2,idPbio(itrc))),          &
+     &                            BIOPARAM(ng) % e_bioparam(itrc),      &
+     &                            BIOPARAM(ng) % e_bioparam(itrc)
+              END IF
+            END IF
+          END IF
+        END DO
+# endif
       END IF STD_STATE
 #endif
 
@@ -4197,7 +4348,7 @@
 #if (defined W4DPSAS || defined TL_W4DPSAS || \
      defined W4DPSAS_SENSITIVITY)          && \
     (defined ADJUST_BOUNDARY || defined ADJUST_WSTRESS ||\
-     defined ADJUST_STFLUX)
+     defined ADJUST_STFLUX || defined ADJUST_BIOPARAM)
 !
 !-----------------------------------------------------------------------
 !  Read in tangent linear forcing corrections.
@@ -4489,6 +4640,38 @@
               IF (Master) THEN
                 WRITE (stdout,70) TRIM(Vname(2,idTsur(itrc)))//         &
      &                            ', adjusted tl_tflux', Fmin, Fmax
+              END IF
+            END IF
+          END IF
+        END DO
+# endif
+# if defined ADJUST_BIOPARAM && defined SOLVE3D
+!
+!  Read in tangent linear biological parameters.
+!
+        DO itrc=1,Nbioparam
+          IF (get_var(idPbio(itrc)).and.get_adjust.and.                 &
+     &        Lbioparam(itrc)) THEN
+            foundit=find_string(var_name, n_var,                        &
+     &                          TRIM(Vname(1,idPbio(itrc))), varid)
+            status=nf_fread3d(ng, IDmod, ncname, ncINPid,               &
+     &                        Vname(1,idPbio(itrc)), varid,             &
+     &                        InpRec,                                   &
+     &                        BIOPARAM(ng)%tl_bioparam(Tindex,itrc))
+            IF (status.ne.nf90_noerr) THEN
+              IF (Master) THEN
+                WRITE (stdout,60) string, TRIM(Vname(1,idPbio(itrc))),  &
+     &                            InpRec, TRIM(ncname)
+              END IF
+              exit_flag=2
+              ioerror=status
+              RETURN
+            ELSE
+              IF (Master) THEN
+                WRITE (stdout,70) TRIM(Vname(2,idTsur(itrc)))//         &
+     &                            ', adjusted tl_bioparam',             &
+     &                            BIOPARAM(ng)%tl_bioparam(Tindex,itrc),&
+     &                            BIOPARAM(ng)%tl_bioparam(Tindex,itrc)
               END IF
             END IF
           END IF

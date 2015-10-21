@@ -199,6 +199,7 @@
 !-----------------------------------------------------------------------
 !  Read in standard deviation factors for error covariance.
 !-----------------------------------------------------------------------
+#ifndef ADJUST_NOINITIAL
 !
 !  Initial conditions standard deviation. They are loaded in Tindex=1
 !  of the e_var(...,Tindex) state variables.
@@ -209,7 +210,7 @@
         CALL get_state (ng, 6, 6, STD(1,ng)%name, STDrec, Tindex)
         IF (exit_flag.ne.NoError) RETURN
       END DO
-
+#endif
 #ifdef ADJUST_BOUNDARY
 !
 !  Open boundary conditions standard deviation.
@@ -231,6 +232,11 @@
         CALL get_state (ng, 9, 9, STD(4,ng)%name, STDrec, Tindex)
         IF (exit_flag.ne.NoError) RETURN
       END DO
+#endif
+#ifdef ADJUST_BIOPARAM
+!
+!  biological parameter standard deviation are writen in mod_bioparam.
+!
 #endif
 
       RETURN
@@ -305,7 +311,7 @@
 !
       DO ng=1,Ngrids
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS
+    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
         Lfinp(ng)=1         ! forcing index for input
         Lfout(ng)=1         ! forcing index for output history files
 #endif
@@ -451,6 +457,9 @@
               CALL get_state (ng, 11, 11, NRM(4,ng)%name, NRMrec, 1)
               IF (exit_flag.ne.NoError) RETURN
 #endif
+#ifdef ADJUST_BIOPARAM
+              !okada!
+#endif
             END IF
           END DO
         END IF
@@ -509,7 +518,7 @@
         END DO
 
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS
+    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
 !
 !  Write out initial and background surface forcing into initial
 !  INI(ng)%name NetCDF file for latter use.
@@ -1090,7 +1099,7 @@
         END DO
 
 #if defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
-    defined ADJUST_BOUNDARY
+    defined ADJUST_BOUNDARY || defined ADJUST_BIOPARAM
 !
 !  Set index containing the surface forcing increments used the run
 !  the nonlinear model in the outer loop and read the forcing

@@ -481,3 +481,7 @@
                 iDbio3(iH2Sf)=varid
 # endif
 #endif
+#ifdef ADJUST_BIOPARAM
+              !CASE ('idPbio(iAttSW)')
+              !  idPbio(iAttSW)=varid
+#endif

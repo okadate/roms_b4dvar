@@ -518,6 +518,17 @@
       END DO
 #endif
 
+#ifdef ADJUST_BIOPARAM
+!
+!  Initial conditions for biological parameters.
+!
+      DO ng=1,Ngrids
+        IF (nrrec(ng).eq.0) THEN
+          !CALL set_bioparam (ng)
+        END IF
+      END DO
+#endif
+
 #ifdef INI_FILE
 !
 !  Read in initial conditions from initial NetCDF file.
