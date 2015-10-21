@@ -3590,12 +3590,8 @@
           WRITE (out,200) bvf_bak, 'bvf_bak',                           &
      &          'Background Brunt-Vaisala frequency squared (1/s2).'
 #endif
-          WRITE (out,140) dstart, 'dstart',                             &
-#ifdef DSTARTSEC
-     &          'Time-stamp assigned to model initialization (seconds).'
-#else
+          WRITE (out,140) dstart*sec2day, 'dstart',                     &
      &          'Time-stamp assigned to model initialization (days).'
-#endif
 #if defined SSH_TIDES || defined UV_TIDES
           WRITE (out,140) tide_start, 'tide_start',                     &
      &          'Reference time origin for tidal forcing (days).'
