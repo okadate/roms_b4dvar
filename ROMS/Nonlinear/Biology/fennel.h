@@ -803,7 +803,7 @@
 #else
                 fac1=dtdays*NitriR(ng)
 #endif
-#ifdef TEMP_DEPENDANCE
+#ifdef TDEPENDANCE
                 fac1=fac1*thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
 #endif
                 cff1=(PAR-I_thNH4(ng))/                                 &
@@ -829,7 +829,7 @@
 !  If PARsur=0, nitrification occurs at the maximum rate (NitriR).
 !
             ELSE
-#if defined OXYGEN && (defined NITRI_PAR0 || defined TEMP_DEPENDANCE)
+#if defined OXYGEN && (defined NITRI_PAR0 || defined TDEPENDANCE)
               DO k=N(ng),1,-1
 # ifdef NITRI_PAR0
                 fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
@@ -838,7 +838,7 @@
 # else
                 fac1=dtdays*NitriR(ng)
 # endif
-# ifdef TEMP_DEPENDANCE
+# ifdef TDEPENDANCE
                 fac1=fac1*thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
 # endif
                 cff3=fac1*cff2
@@ -869,7 +869,7 @@
               fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
               fac3=MAX(fac2/(K_Denit(ng)+fac2),0.0_r8)
               fac1=dtdays*DenitR(ng)*fac3
-# ifdef TEMP_DEPENDANCE
+# ifdef TDEPENDANCE
               fac1=fac1*thDenitR(ng)**(Bio(i,k,itemp)-20.0_r8)
 # endif
               Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+fac1)
@@ -885,7 +885,7 @@
 !-----------------------------------------------------------------------
 !
           fac1=dtdays*ZooGR(ng)
-#ifdef TEMP_DEPENDANCE
+#ifdef TDEPENDANCE
           cff2=dtdays*PhyMR(ng)*thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8)
 #else
           cff2=dtdays*PhyMR(ng)
@@ -1019,7 +1019,7 @@
             DO i=Istr,Iend
               fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
               fac2=MAX(fac1/(K_DO(ng)+fac1),0.0_r8) ! MM for O2 dependence (okada)
-# ifdef TEMP_DEPENDANCE
+# ifdef TDEPENDANCE
               fac2=fac2*(thRRN(ng)**(Bio(i,k,iTemp)-20.0_r8))
 # endif
               cff1=dtdays*SDeRRN(ng)*fac2
@@ -1081,7 +1081,7 @@
             DO i=Istr,Iend
               fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
               fac2=MAX(fac1/(K_DO(ng)+fac1),0.0_r8) ! MM for O2 dependence
-# ifdef TEMP_DEPENDANCE
+# ifdef TDEPENDANCE
               !fac2=fac2*(th  **(Bio(i,k,iTemp)-20.0_r8))
 # endif
               cff1=dtdays*H2SOR(ng)*fac2
@@ -1647,7 +1647,10 @@
 !-----------------------------------------------------------------------
 !
           DO i=Istr,Iend
-            fac1=dtdays*1.05_r8**(Bio(i,1,itemp)-20.0_r8)
+            fac1=dtdays
+# ifdef TDEPENDANCE
+            fac1=fac1*1.05_r8**(Bio(i,1,itemp)-20.0_r8)
+# endif
             cff=fac1*Hz_inv(i,1)
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2
 # ifdef DIAGNOSTICS_BIO
