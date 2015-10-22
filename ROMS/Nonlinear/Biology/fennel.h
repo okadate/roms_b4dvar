@@ -804,7 +804,7 @@
                 fac1=dtdays*NitriR(ng)
 #endif
 #ifdef TDEPENDANCE
-                fac1=fac1*thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
+                fac1=fac1*(thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8))
 #endif
                 cff1=(PAR-I_thNH4(ng))/                                 &
      &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
@@ -839,7 +839,7 @@
                 fac1=dtdays*NitriR(ng)
 # endif
 # ifdef TDEPENDANCE
-                fac1=fac1*thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
+                fac1=fac1*(thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8))
 # endif
                 cff3=fac1*cff2
 #else
@@ -870,7 +870,7 @@
               fac3=MAX(fac2/(K_Denit(ng)+fac2),0.0_r8)
               fac1=dtdays*DenitR(ng)*fac3
 # ifdef TDEPENDANCE
-              fac1=fac1*thDenitR(ng)**(Bio(i,k,itemp)-20.0_r8)
+              fac1=fac1*(thDenitR(ng)**(Bio(i,k,itemp)-20.0_r8))
 # endif
               Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+fac1)
             END DO
@@ -886,7 +886,7 @@
 !
           fac1=dtdays*ZooGR(ng)
 #ifdef TDEPENDANCE
-          cff2=dtdays*PhyMR(ng)*thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8)
+          cff2=dtdays*PhyMR(ng)*(thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8))
 #else
           cff2=dtdays*PhyMR(ng)
 #endif
@@ -1649,7 +1649,7 @@
           DO i=Istr,Iend
             fac1=dtdays
 # ifdef TDEPENDANCE
-            fac1=fac1*1.05_r8**(Bio(i,1,itemp)-20.0_r8)
+            fac1=fac1*(1.05_r8**(Bio(i,1,itemp)-20.0_r8))
 # endif
             cff=fac1*Hz_inv(i,1)
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2
