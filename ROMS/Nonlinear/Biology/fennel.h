@@ -885,11 +885,11 @@
 !-----------------------------------------------------------------------
 !
           fac1=dtdays*ZooGR(ng)
-#ifdef TDEPENDANCE
-          cff2=dtdays*PhyMR(ng)*(thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8))
-#else
+!#ifdef TDEPENDANCE
+!          cff2=dtdays*PhyMR(ng)*(thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8))
+!#else
           cff2=dtdays*PhyMR(ng)
-#endif
+!#endif
           DO k=1,N(ng)
             DO i=Istr,Iend
 !
