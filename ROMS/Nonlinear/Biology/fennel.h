@@ -397,7 +397,7 @@
       real(r8), dimension(IminS:ImaxS,N(ng)) :: qc
 
 #ifdef PHOSPHORUS
-      real(r8) :: L_PO4
+      real(r8) :: L_PO4, LMIN, cff6
       real(r8) :: P_Flux_SumProd
       real(r8) :: P_Flux_Remine
 
@@ -707,49 +707,40 @@
 #ifdef PHOSPHORUS
                 cff3=Bio(i,k,iPO4_)*K_PO4(ng)
                 L_PO4=cff3/(1.0_r8+cff3)
+                LMIN=MIN(LTOT,L_PO4)
 # ifdef DIAGNOSTICS_BIO
                 DiaBio3d(i,j,k,iLPO4)=L_PO4
 # endif
-!
-!  Nitrate, ammonium and phosphate uptake by Phytoplankton.
-!
-#else
+#endif
 !
 !  Nitrate and ammonium uptake by Phytoplankton.
 !
-#endif
+#ifdef PHOSPHORUS
+                fac1=dtdays*t_PPmax*LMIN*Bio(i,k,iPhyt)
+                cff4=fac1*L_NO3/MAX(LTOT,eps)/MAX(Bio(i,k,iNO3_),eps)
+                cff5=fac1*L_NH4/MAX(LTOT,eps)/MAX(Bio(i,k,iNH4_),eps)
+                cff6=fac1*PhyPN(ng)/MAX(Bio(i,k,iPO4_),eps)
+#else
                 fac1=dtdays*t_PPmax
                 cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)*Bio(i,k,iPhyt)
                 cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)*Bio(i,k,iPhyt)
-                N_Flux_NewProd=Bio(i,k,iNO3_)/(1.0_r8+cff4)*cff4  ! (okada)
-                N_Flux_RegProd=Bio(i,k,iNH4_)/(1.0_r8+cff5)*cff5  ! (okada)
-                N_Flux_SumProd=N_Flux_NewProd+N_Flux_RegProd      ! (okada)
-#ifdef PHOSPHORUS
-                IF (LTOT.lt.L_PO4) THEN
-                  Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
-                  Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
-                  Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+N_Flux_SumProd
-                  Bio(i,k,iPO4_)=Bio(i,k,iPO4_)-                        &
-     &                           PhyPN(ng)*N_Flux_SumProd
-                ELSE IF (L_PO4.lt.LTOT) THEN
-                  cff4=fac1*K_PO4(ng)/(1.0_r8+cff3)*Bio(i,k,iPhyt)
-                  Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff4)
-                  P_Flux_SumProd=Bio(i,k,iPO4_)*cff4
-                  fac1=MIN(P_Flux_SumProd/PhyPN(ng)/N_Flux_SumProd,     &
-     &                     1.0_r8)
-                  Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+N_Flux_SumProd*fac1
-                  Bio(i,k,iNO3_)=Bio(i,k,iNO3_)-N_Flux_NewProd*fac1
-                  Bio(i,k,iNH4_)=Bio(i,k,iNH4_)-N_Flux_RegProd*fac1
-                  LTOT=L_PO4
-                ENDIF
-#else
+#endif
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
-                Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+N_Flux_SumProd
+#ifdef PHOSPHORUS
+                Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff6)
 #endif
+                N_Flux_NewProd=Bio(i,k,iNO3_)*cff4
+                N_Flux_RegProd=Bio(i,k,iNH4_)*cff5
+                Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
+     &                         N_Flux_NewProd+N_Flux_RegProd
 !
                 Bio(i,k,iChlo)=Bio(i,k,iChlo)+                          &
+#ifdef PHOSPHORUS
+     &                         (dtdays*t_PPmax*t_PPmax*LMIN*LMIN*       &
+#else
      &                         (dtdays*t_PPmax*t_PPmax*LTOT*LTOT*       &
+#endif
      &                          Chl2C_m(ng)*Bio(i,k,iChlo))/            &
      &                         (PhyIS(ng)*MAX(Chl2C,eps)*PAR+eps)
 #ifdef DIAGNOSTICS_BIO
@@ -956,12 +947,19 @@
               N_Flux_Zexcret=cff3*Bio(i,k,iZoop)
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Zexcret
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+N_Flux_Zmortal
+#ifdef PHOSPHORUS
+              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+ZooPN(ng)*N_Flux_Zexcret
+              Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+ZooPN(ng)*N_Flux_Zmortal
+#endif
 !
 !  Zooplankton basal metabolism (limited by a zooplankton minimum).
 !
               N_Flux_Zmetabo=cff1*MAX(Bio(i,k,iZoop)-ZooMin(ng),0.0_r8)
               Bio(i,k,iZoop)=Bio(i,k,iZoop)-N_Flux_Zmetabo
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Zmetabo
+#ifdef PHOSPHORUS
+              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+ZooPN(ng)*N_Flux_Zmetabo
+#endif
 #ifdef OXYGEN
               Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-                            &
      &                       rOxNH4*(N_Flux_Zmetabo+N_Flux_Zexcret)
@@ -971,12 +969,6 @@
      &                       ZooCN(ng)*N_Flux_Zmortal
               Bio(i,k,iTIC_)=Bio(i,k,iTIC_)+                            &
      &                       ZooCN(ng)*(N_Flux_Zmetabo+N_Flux_Zexcret)
-#endif
-#ifdef PHOSPHORUS
-              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+                            &
-     &                       ZooPN(ng)*(N_Flux_Zmetabo+N_Flux_Zexcret)
-              Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+                            &
-     &                       ZooPN(ng)*N_Flux_Zmortal
 #endif
             END DO
           END DO
