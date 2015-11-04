@@ -658,7 +658,7 @@
                 cff=PhyCN(ng)*12.0_r8
                 Chl2C=MIN(Bio(i,k,iChlo)/(Bio(i,k,iPhyt)*cff+eps),      &
      &                    Chl2C_m(ng))
-#ifdef SIMPLE_GROWTH
+#ifdef GROWTH1
 !
 !  Temperature-limited and light-limited growth rate (okada)
 !

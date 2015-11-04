@@ -61,7 +61,7 @@
 
     thNitriR == 1.080d0  ! {1.080d0} (Nakatani, 2012)
 
-! SIMPLE_GROWTH
+! GROWTH1
 
        g_max == 1.0d0   ! {1.0d0}, 3.0_r8 (Nakatani, 2012)
 
