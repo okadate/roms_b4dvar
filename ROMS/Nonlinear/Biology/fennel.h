@@ -1573,7 +1573,7 @@
 #  ifdef OXYGEN
                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
 #   ifdef DIAGNOSTICS_BIO
-                DiaBio2d(i,j,iSOD_)=DiaBio2d(i,j,iSOD_)-                &
+                DiaBio2d(i,j,iSODf)=DiaBio2d(i,j,iSODf)-                &
      &                              cff1*cff3*Hz(i,j,1)*fiter
 #   endif
 #  endif
@@ -1586,7 +1586,7 @@
 #  ifdef OXYGEN
                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
 #   ifdef DIAGNOSTICS_BIO
-                DiaBio2d(i,j,iSOD_)=DiaBio2d(i,j,iSOD_)-                &
+                DiaBio2d(i,j,iSODf)=DiaBio2d(i,j,iSODf)-                &
      &                              cff1*cff4*Hz(i,j,1)*fiter
 #   endif
 #  endif
@@ -1727,7 +1727,7 @@
      &                          cff*cff3*Hz(i,j,1)*fiter
 #  endif
 #  ifdef OXYGEN
-            DiaBio2d(i,j,iSOD_)=DiaBio2d(i,j,iSOD_)-                    &
+            DiaBio2d(i,j,iSODf)=DiaBio2d(i,j,iSODf)-                    &
      &                          cff4*Hz(i,j,1)*fiter
 #  endif
 # endif

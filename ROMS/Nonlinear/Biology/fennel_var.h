@@ -424,8 +424,8 @@
 # ifdef OXYGEN
               CASE ('iDbio2(iO2fx)')
                 iDbio2(iO2fx)=varid
-              CASE ('iDbio2(iSOD_)')
-                iDbio2(iSOD_)=varid
+              CASE ('iDbio2(iSODf)')
+                iDbio2(iSODf)=varid
 # endif
 # ifdef PHOSPHORUS
               CASE ('iDbio2(iPO4f)')

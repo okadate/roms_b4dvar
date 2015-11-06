@@ -149,7 +149,7 @@
 
       integer  :: iPO4f                       ! PO4 flux
       integer  :: iPOPf                       ! POP flux
-      integer  :: iSOD_                       ! sediment oxygen demand flux
+      integer  :: iSODf                       ! sediment oxygen demand flux
 !
 !  Biological 3D diagnostic variable IDs.
 !
@@ -345,7 +345,7 @@
 # endif
 # ifdef OXYGEN
       iO2fx=ic+1
-      iSOD_=ic+2
+      iSODf=ic+2
       ic=ic+2
 # endif
 # ifdef PHOSPHORUS

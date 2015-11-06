@@ -601,14 +601,14 @@
               END DO
 # endif
 # ifdef OXYGEN
-            CASE ('Dout(iSOD_)')
-              IF (iDbio2(iSOD_).eq.0) THEN
-                IF (Master) WRITE (out,40) 'iDbio2(iSOD_)'
+            CASE ('Dout(iSODf)')
+              IF (iDbio2(iSODf).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio2(iSODf)'
                 exit_flag=5
                 RETURN
               END IF
               Npts=load_l(Nval, Cval, Ngrids, Lbio)
-              i=iDbio2(iSOD_)
+              i=iDbio2(iSODf)
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
