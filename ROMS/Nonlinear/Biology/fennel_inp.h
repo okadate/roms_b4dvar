@@ -498,6 +498,9 @@
               END DO
 #endif
 #ifdef DIAGNOSTICS_BIO
+!
+! BioDia2d
+!
 # ifdef CARBON
             CASE ('Dout(iCOfx)')
               IF (iDbio2(iCOfx).eq.0) THEN
@@ -549,18 +552,8 @@
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
-            CASE ('Dout(iSOD_)')
-              IF (iDbio2(iSOD_).eq.0) THEN
-                IF (Master) WRITE (out,40) 'iDbio2(iSOD_)'
-                exit_flag=5
-                RETURN
-              END IF
-              Npts=load_l(Nval, Cval, Ngrids, Lbio)
-              i=iDbio2(iSOD_)
-              DO ng=1,Ngrids
-                Dout(i,ng)=Lbio(ng)
-              END DO
 # endif
+! okada
             CASE ('Dout(iNH4f)')
               IF (iDbio2(iNH4f).eq.0) THEN
                 IF (Master) WRITE (out,40) 'iDbio2(iNH4f)'
@@ -569,6 +562,17 @@
               END IF
               Npts=load_l(Nval, Cval, Ngrids, Lbio)
               i=iDbio2(iNH4f)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iPONf)')
+              IF (iDbio2(iPONf).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio2(iPONf)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio2(iPONf)
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
@@ -584,19 +588,6 @@
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
-# endif
-            CASE ('Dout(iPONf)')
-              IF (iDbio2(iPONf).eq.0) THEN
-                IF (Master) WRITE (out,40) 'iDbio2(iPONf)'
-                exit_flag=5
-                RETURN
-              END IF
-              Npts=load_l(Nval, Cval, Ngrids, Lbio)
-              i=iDbio2(iPONf)
-              DO ng=1,Ngrids
-                Dout(i,ng)=Lbio(ng)
-              END DO
-# ifdef PHOSPHORUS
             CASE ('Dout(iPOPf)')
               IF (iDbio2(iPOPf).eq.0) THEN
                 IF (Master) WRITE (out,40) 'iDbio2(iPOPf)'
@@ -609,6 +600,22 @@
                 Dout(i,ng)=Lbio(ng)
               END DO
 # endif
+# ifdef OXYGEN
+            CASE ('Dout(iSOD_)')
+              IF (iDbio2(iSOD_).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio2(iSOD_)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio2(iSOD_)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+# endif
+!
+! BioDia3d
+!
             CASE ('Dout(iPPro)')
               IF (iDbio3(iPPro).eq.0) THEN
                 IF (Master) WRITE (out,40) 'iDbio3(iPPro)'
@@ -631,6 +638,7 @@
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO
+! okada
             CASE ('Dout(iPmax)')
               IF (iDbio3(iPmax).eq.0) THEN
                 IF (Master) WRITE (out,40) 'iDbio3(iPmax)'
@@ -666,6 +674,162 @@
                 Dout(i,ng)=Lbio(ng)
               END DO
 # endif
+            CASE ('Dout(iNitr)')
+              IF (iDbio3(iNitr).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iNitr)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iNitr)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iDeni)')
+              IF (iDbio3(iDeni).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iDeni)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iDeni)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iAssi)')
+              IF (iDbio3(iAssi).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iAssi)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iAssi)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iEges)')
+              IF (iDbio3(iEges).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iEges)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iEges)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iPmor)')
+              IF (iDbio3(iPmor).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iPmor)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iPmor)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iZmor)')
+              IF (iDbio3(iZmor).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iZmor)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iZmor)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iZexc)')
+              IF (iDbio3(iZexc).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iZexc)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iZexc)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iZmet)')
+              IF (iDbio3(iZmet).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iZmet)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iZmet)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iCoaP)')
+              IF (iDbio3(iCoaP).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iCoaP)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iCoaP)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iCoaD)')
+              IF (iDbio3(iCoaD).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iCoaD)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iCoaD)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iSReN)')
+              IF (iDbio3(iSReN).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iSReN)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iSReN)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iLReN)')
+              IF (iDbio3(iLReN).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iLReN)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iLReN)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+# ifdef PHOSPHORUS
+            CASE ('Dout(iSReP)')
+              IF (iDbio3(iSReP).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iSReP)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iSReP)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iLReP)')
+              IF (iDbio3(iLReP).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iLReP)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iLReP)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+# endif
 # ifdef OXYGEN
             CASE ('Dout(iCOD_)')
               IF (iDbio3(iCOD_).eq.0) THEN
@@ -675,6 +839,17 @@
               END IF
               Npts=load_l(Nval, Cval, Ngrids, Lbio)
               i=iDbio3(iCOD_)
+              DO ng=1,Ngrids
+                Dout(i,ng)=Lbio(ng)
+              END DO
+            CASE ('Dout(iH2Sf)')
+              IF (iDbio3(iH2Sf).eq.0) THEN
+                IF (Master) WRITE (out,40) 'iDbio3(iH2Sf)'
+                exit_flag=5
+                RETURN
+              END IF
+              Npts=load_l(Nval, Cval, Ngrids, Lbio)
+              i=iDbio3(iH2Sf)
               DO ng=1,Ngrids
                 Dout(i,ng)=Lbio(ng)
               END DO

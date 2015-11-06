@@ -433,6 +433,7 @@
               CASE ('iDbio2(iPOPf)')
                 iDbio2(iPOPf)=varid
 # endif
+
               CASE ('iDbio3(iPPro)')
                 iDbio3(iPPro)=varid
               CASE ('iDbio3(iNO3u)')
@@ -441,12 +442,42 @@
                 iDbio3(iPmax)=varid
               CASE ('iDbio3(iLDIN)')
                 iDbio3(iLDIN)=varid
+              CASE ('iDbio3(iNitr)')
+                iDbio3(iNitr)=varid
+              CASE ('iDbio3(iDeni)')
+                iDbio3(iDeni)=varid
+              CASE ('iDbio3(iAssi)')
+                iDbio3(iAssi)=varid
+              CASE ('iDbio3(iEges)')
+                iDbio3(iEges)=varid
+              CASE ('iDbio3(iPmor)')
+                iDbio3(iPmor)=varid
+              CASE ('iDbio3(iZmor)')
+                iDbio3(iZmor)=varid
+              CASE ('iDbio3(iZexc)')
+                iDbio3(iZexc)=varid
+              CASE ('iDbio3(iZmet)')
+                iDbio3(iZmet)=varid
+              CASE ('iDbio3(iCoaP)')
+                iDbio3(iCoaP)=varid
+              CASE ('iDbio3(iCoaD)')
+                iDbio3(iCoaD)=varid
+              CASE ('iDbio3(iSReN)')
+                iDbio3(iSReN)=varid
+              CASE ('iDbio3(iLReN)')
+                iDbio3(iLReN)=varid
 # ifdef PHOSPHORUS
               CASE ('iDbio3(iLPO4)')
                 iDbio3(iLPO4)=varid
+              CASE ('iDbio3(iSReP)')
+                iDbio3(iSReP)=varid
+              CASE ('iDbio3(iLReP)')
+                iDbio3(iLReP)=varid
 # endif
 # ifdef OXYGEN
               CASE ('iDbio3(iCOD_)')
                 iDbio3(iCOD_)=varid
+              CASE ('iDbio3(iH2Sf)')
+                iDbio3(iH2Sf)=varid
 # endif
 #endif
