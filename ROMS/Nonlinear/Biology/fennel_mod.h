@@ -141,13 +141,15 @@
 
       integer  :: iNH4f = 1                   ! NH4 flux
       integer  :: iPONf = 2                   ! PON flux
-      integer  :: iCOfx                       ! air-sea CO2 flux
+
       integer  :: iDNIT                       ! denitrification flux
+      integer  :: iCOfx                       ! air-sea CO2 flux
       integer  :: ipCO2                       ! partial pressure of CO2
       integer  :: iO2fx                       ! air-sea O2 flux
-      integer  :: iSOD_                       ! sediment oxygen demand flux
+
       integer  :: iPO4f                       ! PO4 flux
       integer  :: iPOPf                       ! POP flux
+      integer  :: iSODf                       ! sediment oxygen demand flux
 !
 !  Biological 3D diagnostic variable IDs.
 !
@@ -155,35 +157,54 @@
 
       integer  :: iPPro = 1                   ! primary productivity
       integer  :: iNO3u = 2                   ! NO3 uptake
+
       integer  :: iPmax = 3                   ! max growth rate
       integer  :: iLDIN = 4                   ! DIN limitation
+      integer  :: iNitr = 5
+      integer  :: iDeni = 6
+      integer  :: iAssi = 7
+      integer  :: iEges = 8
+      integer  :: iPmor = 9
+      integer  :: iZmor = 10
+      integer  :: iZexc = 11
+      integer  :: iZmet = 12
+      integer  :: iCoaP = 13
+      integer  :: iCoaD = 14
+      integer  :: iSReN = 15
+      integer  :: iLReN = 16
       integer  :: iLPO4                       ! PO4 limitation
-      integer  :: iCOD_                       ! COD
+      integer  :: iSReP
+      integer  :: iLReP
+      integer  :: iCOD_
+      integer  :: iH2Sf
 #endif
 !
 !  Biological parameters.
 !
       integer, allocatable :: BioIter(:)
 
-      real(r8), allocatable :: K_PO4(:)              ! 
-      real(r8), allocatable :: PhyPN(:)              ! 
-      real(r8), allocatable :: ZooPN(:)              ! 
-      real(r8), allocatable :: LDeRRP(:)             ! 
-      real(r8), allocatable :: SDeRRP(:)             ! 
-      real(r8), allocatable :: H2SOR(:)              ! 
-      real(r8), allocatable :: K_DO(:)               ! 
-      real(r8), allocatable :: K_Nitri(:)            ! 
-      real(r8), allocatable :: thNitriR(:)           ! 
-      real(r8), allocatable :: g_max(:)              ! 
-      real(r8), allocatable :: t_opt(:)              ! 
-      real(r8), allocatable :: I_opt(:)              ! 
-      real(r8), allocatable :: beta1(:)              ! 
-      real(r8), allocatable :: beta2(:)              ! 
-      real(r8), allocatable :: DenitR(:)             ! 
-      real(r8), allocatable :: K_Denit(:)            ! 
-      real(r8), allocatable :: thDenitR(:)           ! 
-      real(r8), allocatable :: thPhyMR(:)            ! 
-      real(r8), allocatable :: thRRN(:)              ! 
+      real(r8), allocatable :: K_PO4(:)
+      real(r8), allocatable :: PhyPN(:)
+      real(r8), allocatable :: ZooPN(:)
+      real(r8), allocatable :: LDeRRP(:)
+      real(r8), allocatable :: SDeRRP(:)
+      real(r8), allocatable :: H2SOR(:)
+      real(r8), allocatable :: K_DO(:) 
+      real(r8), allocatable :: K_Nitri(:)
+      real(r8), allocatable :: thNitriR(:)
+      real(r8), allocatable :: g_max(:)
+      real(r8), allocatable :: t_opt(:)
+      real(r8), allocatable :: I_opt(:)
+      real(r8), allocatable :: beta1(:)
+      real(r8), allocatable :: beta2(:)
+      real(r8), allocatable :: DenitR(:)
+      real(r8), allocatable :: K_Denit(:)
+      real(r8), allocatable :: thDenitR(:)
+      real(r8), allocatable :: thPhyMR(:)
+      real(r8), allocatable :: thRRN(:)
+      real(r8), allocatable :: R_SODf(:)
+      real(r8), allocatable :: R_NH4f(:)
+      real(r8), allocatable :: R_PO4f(:)
 
       real(r8), allocatable :: AttSW(:)              ! 1/m
       real(r8), allocatable :: AttChl(:)             ! 1/(mg_Chl m2)
@@ -406,6 +427,16 @@
       END IF
       IF (.not.allocated(thRRN)) THEN
         allocate ( thRRN(Ngrids) )
+      END IF
+
+      IF (.not.allocated(R_SODf)) THEN
+        allocate ( R_SODf(Ngrids) )
+      END IF
+      IF (.not.allocated(R_NH4f)) THEN
+        allocate ( R_NH4f(Ngrids) )
+      END IF
+      IF (.not.allocated(R_PO4f)) THEN
+        allocate ( R_PO4f(Ngrids) )
       END IF
 
       IF (.not.allocated(BioIter)) THEN

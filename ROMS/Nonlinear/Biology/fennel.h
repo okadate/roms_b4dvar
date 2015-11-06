@@ -1626,13 +1626,9 @@
 !
 !  Elution and oxygen consumption parameters (okada)
 !
-!    SOD 0.2-4.0 g/m2/day  Sediment Oxygen Demand (WASP6)
-!    NH4 15.3    mg/m2/day Average Nishimoto (2012)
-!    PO4 2.0     mg/m2/day Average Nishimoto (2012)
-!
-          cff1=2100.0_r8/32.0_r8  !H2S elution flux from sediment
-          cff2=15.3_r8/14.0_r8    !NH4 elution flux from sediment
-          cff3=2.0_r8/31.0_r8     !PO4 elution flux from sediment
+          cff1=R_SODf(ng)*g2mol_O2    !SOD flux
+          cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
+          cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
 !
 !-----------------------------------------------------------------------
 !  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)

@@ -108,6 +108,12 @@
               Npts=load_r(Nval, Rval, Ngrids, thPhyMR)
             CASE ('thRRN')
               Npts=load_r(Nval, Rval, Ngrids, thRRN)
+            CASE ('R_SODf')
+              Npts=load_r(Nval, Rval, Ngrids, R_SODf)
+            CASE ('R_NH4f')
+              Npts=load_r(Nval, Rval, Ngrids, R_NH4f)
+            CASE ('R_PO4f')
+              Npts=load_r(Nval, Rval, Ngrids, R_PO4f)
 
             CASE ('BioIter')
               Npts=load_i(Nval, Rval, Ngrids, BioIter)
@@ -726,6 +732,9 @@
             WRITE (out,80) thDenitR(ng), 'thDenitR', 'thDenitR'
             WRITE (out,80) thPhyMR(ng), 'thPhyMR', 'thPhyMR'
             WRITE (out,80) thRRN(ng), 'thRRN', 'thRRN'
+            WRITE (out,80) R_SODf(ng), 'R_SODf', 'R_SODf'
+            WRITE (out,80) R_NH4f(ng), 'R_NH4f', 'R_NH4f'
+            WRITE (out,80) R_PO4f(ng), 'R_PO4f', 'R_PO4f'
 
             WRITE (out,70) BioIter(ng), 'BioIter',                      &
      &            'Number of iterations for nonlinear convergence.'

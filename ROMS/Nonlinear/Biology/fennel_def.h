@@ -147,6 +147,27 @@
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (exit_flag.ne.NoError) RETURN
+      
+      Vinfo( 1)='R_SODf'
+      Vinfo( 2)='R_SODf'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (exit_flag.ne.NoError) RETURN
+      
+      Vinfo( 1)='R_NH4f'
+      Vinfo( 2)='R_NH4f'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (exit_flag.ne.NoError) RETURN
+      
+      Vinfo( 1)='R_PO4f'
+      Vinfo( 2)='R_PO4f'
+      status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
+     &               1, (/0/), Aval, Vinfo, ncname,                     &
+     &               SetParAccess = .FALSE.)
+      IF (exit_flag.ne.NoError) RETURN
 !
 !  Define Fennel et al. (2006) ecosystem model parameters.
 !
