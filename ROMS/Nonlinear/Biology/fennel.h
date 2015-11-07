@@ -304,8 +304,10 @@
       real(r8), parameter :: OC0 =-0.000000488682_r8
       real(r8), parameter :: rOxNO3= 8.625_r8       ! 138/16
       real(r8), parameter :: rOxNH4= 6.625_r8       ! 106/16
-      real(r8) :: l2mol = 1000.0_r8/22.3916_r8      ! liter to mol (k*mol/l=kmol/l)
-      real(r8) :: g2mol_O2 = 1000.0_r8/22.3916_r8/1.42903_r8       ! (kmol/l*l/kg=mol/g)  
+      real(r8) :: l2mol = 1000.0_r8/22.3916_r8      ! liter to mol (mol/l*l/m3)
+      real(r8) :: molv = 22.3916_r8                 ! l/mol
+      real(r8) :: rho_O2 = 1.42903_r8               ! g/l
+      real(r8) :: mol2g_O2 = 1.42903_r8*22.3916_r8  ! g/mol
 #endif
 #ifdef CARBON
       integer :: iday, month, year
@@ -1693,7 +1695,7 @@
 !
 !  Elution and oxygen consumption parameters (okada)
 !
-          cff1=R_SODf(ng)*g2mol_O2    !SOD flux
+          cff1=R_SODf(ng)/mol2g_O2    !SOD flux
           cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
           cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
 !
