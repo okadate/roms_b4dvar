@@ -29,6 +29,23 @@
 !  biologically availalbe fixed nitrogen. See Fennel et al. (2006)     !
 !  for details.                                                        !
 !                                                                      !
+!  Additional  options can be  activated to  enable  simulation of     !
+!  inorganic carbon and dissolved oxygen.  Accounting of inorganic     !
+!  carbon is activated by the "CARBON" option,  and results in two     !
+!  additional  biological  tracer  variables:  DIC and alkalinity.     !
+!  See Fennel et al. (2008) for details.                               !
+!                                                                      !
+!  If the "pCO2_RZ" options is activated, in addition to "CARBON",     !
+!  the carbonate system  routines by Zeebe and Wolf-Gladrow (2001)     !
+!  are used,  while the  OCMIP  standard routines are the default.     !
+!  There are two different ways of treating alkalinity.  It can be     !
+!  treated diagnostically (default),  in this case alkalinity acts     !
+!  like a passive tracer  that is  not affected  by changes in the     !
+!  concentration of  nitrate or ammonium.  However,  if the option     !
+!  "TALK_NONCONSERV" is used,  the alkalinity  will be affected by     !
+!  sources and sinks in nitrate. See Fennel et al. (2008) for more     !
+!  details.                                                            !
+!                                                                      !
 !  If the "OXYGEN" option is activated,  one additional biological     !
 !  tracer variable for dissolved oxygen. "OXYGEN" can be activated     !
 !  independently of the  "CARBON"  option. If "OCMIP_OXYGEN_SC" is     !
@@ -44,6 +61,11 @@
 !      Bight and implications for the North Atlantic nitrogen          !
 !      budget: Results from a three-dimensional model.  Global         !
 !      Biogeochemical Cycles 20, GB3007, doi:10.1029/2005GB002456.     !
+!                                                                      !
+!    Fennel, K., Wilkin, J., Previdi, M., Najjar, R. 2008:             !
+!      Denitrification effects on air-sea CO2 flux in the coastal      !
+!      ocean: Simulations for the Northwest North Atlantic.            !
+!      Geophys. Res. Letters 35, L24608, doi:10.1029/2008GL036147.     !
 !                                                                      !
 !***********************************************************************
 !
@@ -79,61 +101,62 @@
       CALL wclock_on (ng, iTLM, 15)
 #endif
       CALL tl_biology_tile (ng, tile,                                   &
-     &                      LBi, UBi, LBj, UBj, N(ng), NT(ng),          &
-     &                      IminS, ImaxS, JminS, JmaxS,                 &
-     &                      nstp(ng), nnew(ng),                         &
+     &                   LBi, UBi, LBj, UBj, N(ng), NT(ng),             &
+     &                   IminS, ImaxS, JminS, JmaxS,                    &
+     &                   nstp(ng), nnew(ng),                            &
 #ifdef MASKING
-     &                      GRID(ng) % rmask,                           &
+     &                   GRID(ng) % rmask,                              &
 #endif
-     &                      GRID(ng) % Hz,                              &
-     &                      GRID(ng) % tl_Hz,                           &
-     &                      GRID(ng) % z_r,                             &
-     &                      GRID(ng) % tl_z_r,                          &
-     &                      GRID(ng) % z_w,                             &
-     &                      GRID(ng) % tl_z_w,                          &
-     &                      FORCES(ng) % srflx,                         &
-     &                      FORCES(ng) % tl_srflx,                      &
-#ifdef OXYGEN
+     &                   GRID(ng) % Hz,                                 &
+     &                   GRID(ng) % tl_Hz,                              &
+     &                   GRID(ng) % z_r,                                &
+     &                   GRID(ng) % tl_z_r,                             &
+     &                   GRID(ng) % z_w,                                &
+     &                   GRID(ng) % tl_z_w,                             &
+     &                   FORCES(ng) % srflx,                            &
+     &                   FORCES(ng) % tl_srflx,                         &
+#if defined OXYGEN
 # ifdef BULK_FLUXES
-     &                      FORCES(ng) % Uwind,                         &
-     &                      FORCES(ng) % Vwind,                         &
+     &                   FORCES(ng) % Uwind,                            &
+     &                   FORCES(ng) % Vwind,                            &
 # else
-     &                      FORCES(ng) % sustr,                         &
-     &                      FORCES(ng) % tl_sustr,                      &
-     &                      FORCES(ng) % svstr,                         &
-     &                      FORCES(ng) % tl_svstr,                      &
+     &                   FORCES(ng) % sustr,                            &
+     &                   FORCES(ng) % tl_sustr,                         &
+     &                   FORCES(ng) % svstr,                            &
+     &                   FORCES(ng) % tl_svstr,                         &
 # endif
 #endif
-     &                      OCEAN(ng) % t,                              &
-     &                      OCEAN(ng) % tl_t)
+     &                   OCEAN(ng) % t,                                 &
+     &                   OCEAN(ng) % tl_t)
 
 #ifdef PROFILE
       CALL wclock_off (ng, iTLM, 15)
 #endif
+
       RETURN
       END SUBROUTINE tl_biology
 !
 !-----------------------------------------------------------------------
       SUBROUTINE tl_biology_tile (ng, tile,                             &
-     &                            LBi, UBi, LBj, UBj, UBk, UBt,         &
-     &                            IminS, ImaxS, JminS, JmaxS,           &
-     &                            nstp, nnew,                           &
+     &                         LBi, UBi, LBj, UBj, UBk, UBt,            &
+     &                         IminS, ImaxS, JminS, JmaxS,              &
+     &                         nstp, nnew,                              &
 #ifdef MASKING
-     &                            rmask,                                &
+     &                         rmask,                                   &
 #endif
-     &                            Hz, tl_Hz,                            &
-     &                            z_r, tl_z_r,                          &
-     &                            z_w, tl_z_w,                          &
-     &                            srflx, tl_srflx,                      &
-#ifdef OXYGEN
+     &                         Hz, tl_Hz,                               &
+     &                         z_r, tl_z_r,                             &
+     &                         z_w, tl_z_w,                             &
+     &                         srflx, tl_srflx,                         &
+#if defined OXYGEN
 # ifdef BULK_FLUXES
-     &                            Uwind, Vwind,                         &
+     &                         Uwind, Vwind,                            &
 # else
-     &                            sustr, tl_sustr,                      &
-     &                            svstr, tl_svstr,                      &
+     &                         sustr, tl_sustr,                         &
+     &                         svstr, tl_svstr,                         &
 # endif
 #endif
-     &                            t, tl_t)
+     &                         t, tl_t)
 !-----------------------------------------------------------------------
 !
       USE mod_param
@@ -163,7 +186,7 @@
       real(r8), intent(in) :: tl_z_r(LBi:,LBj:,:)
       real(r8), intent(in) :: tl_z_w(LBi:,LBj:,0:)
       real(r8), intent(in) :: tl_srflx(LBi:,LBj:)
-# ifdef OXYGEN
+# if defined OXYGEN
 #  ifdef BULK_FLUXES
       real(r8), intent(in) :: Uwind(LBi:,LBj:)
       real(r8), intent(in) :: Vwind(LBi:,LBj:)
@@ -191,7 +214,7 @@
       real(r8), intent(in) :: tl_z_r(LBi:UBi,LBj:UBj,UBk)
       real(r8), intent(in) :: tl_z_w(LBi:UBi,LBj:UBj,0:UBk)
       real(r8), intent(in) :: tl_srflx(LBi:UBi,LBj:UBj)
-# ifdef OXYGEN
+# if defined OXYGEN
 #  ifdef BULK_FLUXES
       real(r8), intent(in) :: Uwind(LBi:UBi,LBj:UBj)
       real(r8), intent(in) :: Vwind(LBi:UBi,LBj:UBj)
@@ -210,7 +233,7 @@
 !
 !  Local variable declarations.
 !
-#ifdef PHOSPHORUS
+#if defined PHOSPHORUS
       integer, parameter :: Nsink = 6
 #else
       integer, parameter :: Nsink = 4
@@ -223,7 +246,7 @@
 
       real(r8), parameter :: eps = 1.0e-20_r8
 
-#ifdef OXYGEN
+#if defined OXYGEN
       real(r8) :: u10squ
       real(r8) :: tl_u10squ
 #endif
@@ -382,16 +405,16 @@
       Wbio(3)=wSDet(ng)               ! small Nitrogen-detritus
       Wbio(4)=wLDet(ng)               ! large Nitrogen-detritus
 
-      tl_Wbio(1)=tl_wPhy(ng)                ! phytoplankton
-      tl_Wbio(2)=tl_wPhy(ng)                ! chlorophyll
-      tl_Wbio(3)=tl_wSDet(ng)               ! small Nitrogen-detritus
-      tl_Wbio(4)=tl_wLDet(ng)               ! large Nitrogen-detritus
-#ifdef PHOSPHORUS
+      tl_Wbio(1)=tl_wPhy(ng)
+      tl_Wbio(2)=tl_wPhy(ng)
+      tl_Wbio(3)=tl_wSDet(ng)
+      tl_Wbio(4)=tl_wLDet(ng)
+#if defined PHOSPHORUS
       Wbio(5)=wSDet(ng)               ! small Phosphorus-detritus
       Wbio(6)=wLDet(ng)               ! large Phosphorus-detritus
 
-      tl_Wbio(5)=tl_wSDet(ng)               ! small Phosphorus-detritus
-      tl_Wbio(6)=tl_wLDet(ng)               ! large Phosphorus-detritus
+      tl_Wbio(5)=tl_wSDet(ng)
+      tl_Wbio(6)=tl_wLDet(ng)
 #endif
 !
 !  Compute inverse thickness to avoid repeated divisions.

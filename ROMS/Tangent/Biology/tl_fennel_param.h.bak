@@ -859,9 +859,9 @@
                 tl_inhNH4=-inhNH4*inhNH4*tl_cff1
                 L_NH4=cff1/(1.0_r8+cff1)
                 L_NO3=cff2*inhNH4/(1.0_r8+cff2)
-                tl_L_NH4=tl_cff1/(1.0_r8+tl_cff1)
-                tl_L_NO3=tl_cff2*inhNH4/(1.0_r8+tl_cff2)
                 LTOT=L_NO3+L_NH4
+                tl_L_NH4=cff1/(1.0_r8+cff1)
+                tl_L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 tl_LTOT=tl_L_NO3+tl_L_NH4
 #ifdef PHOSPHORUS
                 cff3=Bio1(i,k,iPO4_)*K_PO4(ng)
