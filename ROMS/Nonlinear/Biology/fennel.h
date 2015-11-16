@@ -827,22 +827,18 @@
 !  If PARsur=0, nitrification occurs at the maximum rate (NitriR).
 !
             ELSE
-#if defined OXYGEN && (defined NITRI_PAR0 || defined TDEPENDANCE)
+              cff1=dtdays*NitriR(ng)
               DO k=N(ng),1,-1
-# ifdef NITRI_PAR0
-                fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
-                fac3=MAX(fac2/(K_Nitri(ng)+fac2),0.0_r8)
-                fac1=dtdays*NitriR(ng)*fac3
-# else
-                fac1=dtdays*NitriR(ng)
-# endif
+#if defined OXYGEN
+                fac1=MAX(Bio(i,k,iOxyg),0.0_r8)
+                fac2=MAX(fac1/(K_Nitri(ng)+fac1),0.0_r8)
+                cff2=cff1*fac2
 # ifdef TDEPENDANCE
-                fac1=fac1*(thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8))
+                fac3=thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
+                cff3=cff2*fac3
 # endif
-                cff3=fac1*cff2
 #else
-              cff3=dtdays*NitriR(ng)
-              DO k=N(ng),1,-1
+                cff3=cff1
 #endif
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
@@ -860,7 +856,7 @@
               END DO
             END IF
           END DO
-#if defined OXYGEN && defined DENIT_WATER
+#if defined OXYGEN && defined DENITRIFICATION
 !
 !-----------------------------------------------------------------------
 ! Denitrification in anoxic water                       Okada 2014/02/13
@@ -868,17 +864,19 @@
 !
           DO i=Istr,Iend
             DO k=N(ng),1,-1
-              fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
-              fac3=MAX(fac2/(K_Denit(ng)+fac2),0.0_r8)
-              fac1=dtdays*DenitR(ng)*fac3
+              fac1=dtdays*DenitR(ng)
+              cff1=MAX(Bio(i,k,iOxyg),0.0_r8)/K_Denit(ng)
+              fac2=1.0_r8/(1.0_r8+cff1)
+              cff2=fac1*fac2
 # ifdef TDEPENDANCE
-              fac1=fac1*(thDenitR(ng)**(Bio(i,k,itemp)-20.0_r8))
+              fac3=thDenitR(ng)**(Bio(i,k,itemp)-20.0_r8)
+              cff2=cff2*fac3
 # endif
-              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+fac1)
-#ifdef DIAGNOSTICS_BIO
+              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff2)
+#  ifdef DIAGNOSTICS_BIO
               DiaBio3d(i,j,k,iDeni)=DiaBio3d(i,j,k,iDeni)+              &
-     &                              Bio(i,k,iNO3_)*fac1*fiter
-#endif
+     &                              Bio(i,k,iNO3_)*cff2*fiter
+#  endif
             END DO
           END DO
 #endif
