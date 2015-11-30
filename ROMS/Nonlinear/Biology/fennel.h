@@ -401,8 +401,7 @@
 
 #ifdef PHOSPHORUS
       real(r8) :: L_PO4, LMIN, cff6
-      real(r8) :: P_Flux_SumProd
-      real(r8) :: P_Flux_Remine
+      real(r8) :: P_Flux
 
       real(r8), parameter :: rOxPO4 = 106.0_r8   ! 106/1
 #endif
@@ -687,7 +686,8 @@
                 t_PPmax=Epp*fac1
 #endif
 #ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iPmax)=t_PPmax
+                DiaBio3d(i,j,k,iPmax)=DiaBio3d(i,j,k,iPmax)+            &
+     &                                dtdays*t_PPmax*fiter
 #endif
 #ifdef PHOSPHORUS
 !
@@ -705,36 +705,47 @@
                 L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 LTOT=L_NO3+L_NH4
 #ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iLDIN)=LTOT
+                DiaBio3d(i,j,k,iLDIN)=DiaBio3d(i,j,k,iLDIN)+            &
+     &                                dtdays*LTOT*fiter
 #endif
 #ifdef PHOSPHORUS
                 cff3=Bio(i,k,iPO4_)*K_PO4(ng)
                 L_PO4=cff3/(1.0_r8+cff3)
                 LMIN=MIN(LTOT,L_PO4)
 # ifdef DIAGNOSTICS_BIO
-                DiaBio3d(i,j,k,iLPO4)=L_PO4
+                DiaBio3d(i,j,k,iLPO4)=DiaBio3d(i,j,k,iLPO4)+            &
+     &                                dtdays*L_PO4*fiter
 # endif
 #endif
 !
 !  Nitrate and ammonium uptake by Phytoplankton.
 !
+                fac1=dtdays*t_PPmax*Bio(i,k,iPhyt)
+                cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)
+                cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)
 #ifdef PHOSPHORUS
-                fac1=dtdays*t_PPmax*LMIN*Bio(i,k,iPhyt)
-                cff4=fac1*L_NO3/MAX(LTOT,eps)/MAX(Bio(i,k,iNO3_),eps)
-                cff5=fac1*L_NH4/MAX(LTOT,eps)/MAX(Bio(i,k,iNH4_),eps)
-                cff6=fac1*PhyPN(ng)/MAX(Bio(i,k,iPO4_),eps)
+                cff6=fac1*PhyPN(ng)*K_PO4(ng)/(1.0_r8+cff3)
+                IF (LMIN.eq.L_PO4) THEN
+                  Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff6)
+                  P_Flux=Bio(i,k,iPO4_)*cff6
+                  N_Flux_NewProd=P_Flux/PhyPN(ng)*L_NO3/MAX(LTOT,eps)
+                  N_Flux_RegProd=P_Flux/PhyPN(ng)*L_NH4/MAX(LTOT,eps)
+                  Bio(i,k,iNO3_)=Bio(i,k,iNO3_)-N_Flux_NewProd
+                  Bio(i,k,iNH4_)=Bio(i,k,iNH4_)-N_Flux_RegProd
+                ELSE
+                  Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
+                  Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
+                  N_Flux_NewProd=Bio(i,k,iNO3_)*cff4
+                  N_Flux_RegProd=Bio(i,k,iNH4_)*cff5
+                  P_Flux=(N_Flux_NewProd+N_Flux_RegProd)*PhyPN(ng)
+                  Bio(i,k,iPO4_)=Bio(i,k,iPO4_)-P_Flux
+                END IF
 #else
-                fac1=dtdays*t_PPmax
-                cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)*Bio(i,k,iPhyt)
-                cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)*Bio(i,k,iPhyt)
-#endif
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
-#ifdef PHOSPHORUS
-                Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff6)
-#endif
                 N_Flux_NewProd=Bio(i,k,iNO3_)*cff4
                 N_Flux_RegProd=Bio(i,k,iNH4_)*cff5
+#endif
                 Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
      &                         N_Flux_NewProd+N_Flux_RegProd
 !
@@ -791,14 +802,15 @@
 ! inhibited at low oxygen concentrations using a Michaelis-Menten term.
 !
 #ifdef OXYGEN
-                fac2=MAX(Bio(i,k,iOxyg),0.0_r8)     ! O2 max
-                fac3=MAX(fac2/(K_Nitri(ng)+fac2),0.0_r8) ! MM for O2 dependence (okada)
+                fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
+                fac3=fac2/(K_Nitri(ng)+fac2)
                 fac1=dtdays*NitriR(ng)*fac3
 #else
                 fac1=dtdays*NitriR(ng)
 #endif
 #ifdef TDEPENDANCE
-                fac1=fac1*(thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8))
+                cff=NitriR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+                fac1=fac1*cff
 #endif
                 cff1=(PAR-I_thNH4(ng))/                                 &
      &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
@@ -827,19 +839,19 @@
 !  If PARsur=0, nitrification occurs at the maximum rate (NitriR).
 !
             ELSE
-              cff1=dtdays*NitriR(ng)
+              fac1=dtdays*NitriR(ng)
               DO k=N(ng),1,-1
 #if defined OXYGEN
-                fac1=MAX(Bio(i,k,iOxyg),0.0_r8)
-                fac2=MAX(fac1/(K_Nitri(ng)+fac1),0.0_r8)
-                cff2=cff1*fac2
-# ifdef TDEPENDANCE
-                fac3=thNitriR(ng)**(Bio(i,k,itemp)-20.0_r8)
-                cff3=cff2*fac3
-# endif
+                fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
+                fac3=fac2/(K_Nitri(ng)+fac2)
+                cff3=fac1*fac3
 #else
-                cff3=cff1
+                cff3=fac1
 #endif
+# ifdef TDEPENDANCE
+                cff=NitriR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+                cff3=cff3*cff
+# endif
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
@@ -866,11 +878,11 @@
             DO k=N(ng),1,-1
               fac1=dtdays*DenitR(ng)
               cff1=MAX(Bio(i,k,iOxyg),0.0_r8)/K_Denit(ng)
-              fac2=1.0_r8/(1.0_r8+cff1)
-              cff2=fac1*fac2
+              cff2=1.0_r8/(1.0_r8+cff1)
+              cff2=cff2*fac1
 # ifdef TDEPENDANCE
-              fac3=thDenitR(ng)**(Bio(i,k,itemp)-20.0_r8)
-              cff2=cff2*fac3
+              fac2=DenitR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+              cff2=cff2*fac2
 # endif
               Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff2)
 #  ifdef DIAGNOSTICS_BIO
@@ -888,12 +900,15 @@
 !  detritus. [Landry 1993 L&O 38:468-472]
 !-----------------------------------------------------------------------
 !
+#ifdef TDEPENDANCE
+          fac1=ZooGR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+          cff2=PhyMR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+          fac1=dtdays*ZooGR(ng)*fac1
+          cff2=dtdays*PhyMR(ng)*cff2
+#else
           fac1=dtdays*ZooGR(ng)
-!#ifdef TDEPENDANCE
-!          cff2=dtdays*PhyMR(ng)*(thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8))
-!#else
           cff2=dtdays*PhyMR(ng)
-!#endif
+#endif
           DO k=1,N(ng)
             DO i=Istr,Iend
 !
@@ -1075,8 +1090,8 @@
               cff4=1.0_r8/(1.0_r8+cff3)
               Bio(i,k,iSDeP)=Bio(i,k,iSDeP)*cff2
               Bio(i,k,iLDeP)=Bio(i,k,iLDeP)*cff4
-              P_Flux_Remine=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
-              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux_Remine
+              P_Flux=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
+              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux
 #  ifdef DIAGNOSTICS_BIO
               DiaBio3d(i,j,k,iSReP)=DiaBio3d(i,j,k,iSReP)+              &
      &                              Bio(i,k,iSDeP)*cff1*fiter
@@ -1114,8 +1129,8 @@
             DO i=Istr,Iend
               Bio(i,k,iSDeP)=Bio(i,k,iSDeP)*cff2
               Bio(i,k,iLDeP)=Bio(i,k,iLDeP)*cff4
-              P_Flux_Remine=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
-              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux_Remine
+              P_Flux=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
+              Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux
 #  ifdef DIAGNOSTICS_BIO
               DiaBio3d(i,j,k,iSReP)=DiaBio3d(i,j,k,iSReP)+              &
      &                              Bio(i,k,iSDeP)*cff1*fiter
