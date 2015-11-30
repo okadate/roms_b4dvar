@@ -106,6 +106,8 @@
               Npts=load_r(Nval, Rval, Ngrids, DenitR_t)
             CASE ('PhyMR_t')
               Npts=load_r(Nval, Rval, Ngrids, PhyMR_t)
+            CASE ('ZooGR_t')
+              Npts=load_r(Nval, Rval, Ngrids, ZooGR_t)
             CASE ('RR_t')
               Npts=load_r(Nval, Rval, Ngrids, RR_t)
             CASE ('R_SODf')
@@ -906,6 +908,7 @@
             WRITE (out,80) K_Denit(ng), 'K_Denit', 'K_Denit'
             WRITE (out,80) DenitR_t(ng), 'DenitR_t', 'DenitR_t'
             WRITE (out,80) PhyMR_t(ng), 'PhyMR_t', 'PhyMR_t'
+            WRITE (out,80) ZooGR_t(ng), 'ZooGR_t', 'ZooGR_t'
             WRITE (out,80) RR_t(ng), 'RR_t', 'RR_t'
             WRITE (out,80) R_SODf(ng), 'R_SODf', 'R_SODf'
             WRITE (out,80) R_NH4f(ng), 'R_NH4f', 'R_NH4f'

@@ -201,6 +201,7 @@
       real(r8), allocatable :: K_Denit(:)
       real(r8), allocatable :: DenitR_t(:)
       real(r8), allocatable :: PhyMR_t(:)
+      real(r8), allocatable :: ZooGR_t(:)
       real(r8), allocatable :: RR_t(:)
       real(r8), allocatable :: R_SODf(:)
       real(r8), allocatable :: R_NH4f(:)
@@ -427,6 +428,9 @@
       END IF
       IF (.not.allocated(PhyMR_t)) THEN
         allocate ( PhyMR_t(Ngrids) )
+      END IF
+      IF (.not.allocated(ZooGR_t)) THEN
+        allocate ( ZooGR_t(Ngrids) )
       END IF
       IF (.not.allocated(RR_t)) THEN
         allocate ( RR_t(Ngrids) )

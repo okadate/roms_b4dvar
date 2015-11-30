@@ -105,6 +105,11 @@
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 
+      CALL netcdf_put_fvar (ng, model, ncname, 'ZooGR_t',               &
+     &                      ZooGR_t(ng), (/0/), (/0/),                  &
+     &                      ncid = ncid)
+      IF (exit_flag.ne.NoError) RETURN
+
       CALL netcdf_put_fvar (ng, model, ncname, 'RR_t',                 &
      &                      RR_t(ng), (/0/), (/0/),                    &
      &                      ncid = ncid)
