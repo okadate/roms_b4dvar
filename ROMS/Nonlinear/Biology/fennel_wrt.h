@@ -55,8 +55,8 @@
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 
-      CALL netcdf_put_fvar (ng, model, ncname, 'thNitriR',              &
-     &                      thNitriR(ng), (/0/), (/0/),                 &
+      CALL netcdf_put_fvar (ng, model, ncname, 'NitriR_t',              &
+     &                      NitriR_t(ng), (/0/), (/0/),                 &
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 
@@ -95,18 +95,18 @@
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 
-      CALL netcdf_put_fvar (ng, model, ncname, 'thDenitR',              &
-     &                      thDenitR(ng), (/0/), (/0/),                 &
+      CALL netcdf_put_fvar (ng, model, ncname, 'DenitR_t',              &
+     &                      DenitR_t(ng), (/0/), (/0/),                 &
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 
-      CALL netcdf_put_fvar (ng, model, ncname, 'thPhyMR',               &
-     &                      thPhyMR(ng), (/0/), (/0/),                  &
+      CALL netcdf_put_fvar (ng, model, ncname, 'PhyMR_t',               &
+     &                      PhyMR_t(ng), (/0/), (/0/),                  &
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 
-      CALL netcdf_put_fvar (ng, model, ncname, 'thRRN',                 &
-     &                      thRRN(ng), (/0/), (/0/),                    &
+      CALL netcdf_put_fvar (ng, model, ncname, 'RR_t',                 &
+     &                      RR_t(ng), (/0/), (/0/),                    &
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
 

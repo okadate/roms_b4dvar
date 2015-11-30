@@ -191,7 +191,7 @@
       real(r8), allocatable :: H2SOR(:)
       real(r8), allocatable :: K_DO(:) 
       real(r8), allocatable :: K_Nitri(:)
-      real(r8), allocatable :: thNitriR(:)
+      real(r8), allocatable :: NitriR_t(:)
       real(r8), allocatable :: g_max(:)
       real(r8), allocatable :: t_opt(:)
       real(r8), allocatable :: I_opt(:)
@@ -199,9 +199,9 @@
       real(r8), allocatable :: beta2(:)
       real(r8), allocatable :: DenitR(:)
       real(r8), allocatable :: K_Denit(:)
-      real(r8), allocatable :: thDenitR(:)
-      real(r8), allocatable :: thPhyMR(:)
-      real(r8), allocatable :: thRRN(:)
+      real(r8), allocatable :: DenitR_t(:)
+      real(r8), allocatable :: PhyMR_t(:)
+      real(r8), allocatable :: RR_t(:)
       real(r8), allocatable :: R_SODf(:)
       real(r8), allocatable :: R_NH4f(:)
       real(r8), allocatable :: R_PO4f(:)
@@ -419,17 +419,17 @@
         allocate ( K_Denit(Ngrids) )
       END IF
 
-      IF (.not.allocated(thNitriR)) THEN
-        allocate ( thNitriR(Ngrids) )
+      IF (.not.allocated(NitriR_t)) THEN
+        allocate ( NitriR_t(Ngrids) )
       END IF
-      IF (.not.allocated(thDenitR)) THEN
-        allocate ( thDenitR(Ngrids) )
+      IF (.not.allocated(DenitR_t)) THEN
+        allocate ( DenitR_t(Ngrids) )
       END IF
-      IF (.not.allocated(thPhyMR)) THEN
-        allocate ( thPhyMR(Ngrids) )
+      IF (.not.allocated(PhyMR_t)) THEN
+        allocate ( PhyMR_t(Ngrids) )
       END IF
-      IF (.not.allocated(thRRN)) THEN
-        allocate ( thRRN(Ngrids) )
+      IF (.not.allocated(RR_t)) THEN
+        allocate ( RR_t(Ngrids) )
       END IF
 
       IF (.not.allocated(R_SODf)) THEN

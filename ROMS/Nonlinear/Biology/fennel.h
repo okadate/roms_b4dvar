@@ -1066,7 +1066,7 @@
               fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
               fac2=MAX(fac1/(K_DO(ng)+fac1),0.0_r8) ! MM for O2 dependence (okada)
 # ifdef TDEPENDANCE
-              fac2=fac2*(thRRN(ng)**(Bio(i,k,iTemp)-20.0_r8))
+              fac2=fac2*(RR_t(ng)**(Bio(i,k,iTemp)-20.0_r8))
 # endif
               cff1=dtdays*SDeRRN(ng)*fac2
               cff2=1.0_r8/(1.0_r8+cff1)

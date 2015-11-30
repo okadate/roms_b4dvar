@@ -100,14 +100,14 @@
               Npts=load_r(Nval, Rval, Ngrids, K_DO)
             CASE ('H2SOR')
               Npts=load_r(Nval, Rval, Ngrids, H2SOR)
-            CASE ('thNitriR')
-              Npts=load_r(Nval, Rval, Ngrids, thNitriR)
-            CASE ('thDenitR')
-              Npts=load_r(Nval, Rval, Ngrids, thDenitR)
-            CASE ('thPhyMR')
-              Npts=load_r(Nval, Rval, Ngrids, thPhyMR)
-            CASE ('thRRN')
-              Npts=load_r(Nval, Rval, Ngrids, thRRN)
+            CASE ('NitriR_t')
+              Npts=load_r(Nval, Rval, Ngrids, NitriR_t)
+            CASE ('DenitR_t')
+              Npts=load_r(Nval, Rval, Ngrids, DenitR_t)
+            CASE ('PhyMR_t')
+              Npts=load_r(Nval, Rval, Ngrids, PhyMR_t)
+            CASE ('RR_t')
+              Npts=load_r(Nval, Rval, Ngrids, RR_t)
             CASE ('R_SODf')
               Npts=load_r(Nval, Rval, Ngrids, R_SODf)
             CASE ('R_NH4f')
@@ -896,7 +896,7 @@
             WRITE (out,80) H2SOR(ng), 'H2SOR', 'H2SOR'
             WRITE (out,80) K_DO(ng), 'K_DO', 'K_DO'
             WRITE (out,80) K_Nitri(ng), 'K_Nitri', 'K_Nitri'
-            WRITE (out,80) thNitriR(ng), 'thNitriR', 'thNitriR'
+            WRITE (out,80) NitriR_t(ng), 'NitriR_t', 'NitriR_t'
             WRITE (out,80) g_max(ng), 'g_max', 'g_max'
             WRITE (out,80) t_opt(ng), 't_opt', 't_opt'
             WRITE (out,80) I_opt(ng), 'I_opt', 'I_opt'
@@ -904,9 +904,9 @@
             WRITE (out,80) beta2(ng), 'beta2', 'beta2'
             WRITE (out,80) DenitR(ng), 'DenitR', 'DenitR'
             WRITE (out,80) K_Denit(ng), 'K_Denit', 'K_Denit'
-            WRITE (out,80) thDenitR(ng), 'thDenitR', 'thDenitR'
-            WRITE (out,80) thPhyMR(ng), 'thPhyMR', 'thPhyMR'
-            WRITE (out,80) thRRN(ng), 'thRRN', 'thRRN'
+            WRITE (out,80) DenitR_t(ng), 'DenitR_t', 'DenitR_t'
+            WRITE (out,80) PhyMR_t(ng), 'PhyMR_t', 'PhyMR_t'
+            WRITE (out,80) RR_t(ng), 'RR_t', 'RR_t'
             WRITE (out,80) R_SODf(ng), 'R_SODf', 'R_SODf'
             WRITE (out,80) R_NH4f(ng), 'R_NH4f', 'R_NH4f'
             WRITE (out,80) R_PO4f(ng), 'R_PO4f', 'R_PO4f'

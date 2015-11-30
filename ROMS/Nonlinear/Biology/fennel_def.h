@@ -71,8 +71,8 @@
      &               SetParAccess = .FALSE.)
       IF (exit_flag.ne.NoError) RETURN
       
-      Vinfo( 1)='thNitriR'
-      Vinfo( 2)='thNitriR'
+      Vinfo( 1)='NitriR_t'
+      Vinfo( 2)='NitriR_t'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
@@ -127,22 +127,22 @@
      &               SetParAccess = .FALSE.)
       IF (exit_flag.ne.NoError) RETURN
       
-      Vinfo( 1)='thDenitR'
-      Vinfo( 2)='thDenitR'
+      Vinfo( 1)='DenitR_t'
+      Vinfo( 2)='DenitR_t'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (exit_flag.ne.NoError) RETURN
       
-      Vinfo( 1)='thPhyMR'
-      Vinfo( 2)='thPhyMR'
+      Vinfo( 1)='PhyMR_t'
+      Vinfo( 2)='PhyMR_t'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
       IF (exit_flag.ne.NoError) RETURN
       
-      Vinfo( 1)='thRRN'
-      Vinfo( 2)='thRRN'
+      Vinfo( 1)='RR_t'
+      Vinfo( 2)='RR_t'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
      &               SetParAccess = .FALSE.)
