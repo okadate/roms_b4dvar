@@ -370,7 +370,6 @@
       real(r8) :: N_Flux_CoagD, N_Flux_CoagP
       real(r8) :: N_Flux_Egest
       real(r8) :: N_Flux_NewProd, N_Flux_RegProd
-      real(r8) :: N_Flux_SumProd                  ! (okada)
       real(r8) :: N_Flux_Nitrifi
       real(r8) :: N_Flux_Pmortal, N_Flux_Zmortal
       real(r8) :: N_Flux_Remine
@@ -801,16 +800,18 @@
 ! two different bacteria types. If OXYGEN is defined, nitrification is
 ! inhibited at low oxygen concentrations using a Michaelis-Menten term.
 !
+                fac=dtdays*NitriR(ng)
 #ifdef OXYGEN
                 fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
                 fac3=fac2/(K_Nitri(ng)+fac2)
-                fac1=dtdays*NitriR(ng)*fac3
-#else
-                fac1=dtdays*NitriR(ng)
-#endif
-#ifdef TDEPENDANCE
+# ifdef TDEPENDANCE
                 cff=NitriR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
-                fac1=fac1*cff
+                fac1=fac*fac3*cff
+# else
+                fac1=fac*fac3
+# endif
+#else
+                fac1=fac
 #endif
                 cff1=(PAR-I_thNH4(ng))/                                 &
      &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
@@ -844,14 +845,15 @@
 #if defined OXYGEN
                 fac2=MAX(Bio(i,k,iOxyg),0.0_r8)
                 fac3=fac2/(K_Nitri(ng)+fac2)
+# ifdef TDEPENDANCE
+                cff=NitriR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+                cff3=fac1*fac3*cff
+# else
                 cff3=fac1*fac3
+# endif
 #else
                 cff3=fac1
 #endif
-# ifdef TDEPENDANCE
-                cff=NitriR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
-                cff3=cff3*cff
-# endif
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
@@ -875,19 +877,20 @@
 !-----------------------------------------------------------------------
 !
           DO i=Istr,Iend
-            DO k=N(ng),1,-1
+            DO k=1,N(ng)
               fac1=dtdays*DenitR(ng)
               cff1=MAX(Bio(i,k,iOxyg),0.0_r8)/K_Denit(ng)
               cff2=1.0_r8/(1.0_r8+cff1)
-              cff2=cff2*fac1
 # ifdef TDEPENDANCE
               fac2=DenitR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
-              cff2=cff2*fac2
+              cff3=cff2*fac1*fac2
+# else
+              cff3=cff2*fac1
 # endif
-              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff2)
+              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff3)
 #  ifdef DIAGNOSTICS_BIO
               DiaBio3d(i,j,k,iDeni)=DiaBio3d(i,j,k,iDeni)+              &
-     &                              Bio(i,k,iNO3_)*cff2*fiter
+     &                              Bio(i,k,iNO3_)*cff3*fiter
 #  endif
             END DO
           END DO
@@ -900,17 +903,16 @@
 !  detritus. [Landry 1993 L&O 38:468-472]
 !-----------------------------------------------------------------------
 !
-#ifdef TDEPENDANCE
-          fac1=ZooGR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
-          cff2=PhyMR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
-          fac1=dtdays*ZooGR(ng)*fac1
-          cff2=dtdays*PhyMR(ng)*cff2
-#else
           fac1=dtdays*ZooGR(ng)
           cff2=dtdays*PhyMR(ng)
-#endif
           DO k=1,N(ng)
             DO i=Istr,Iend
+#ifdef TDEPENDANCE
+              fac2=ZooGR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+              fac3=PhyMR_t(ng)**(Bio(i,k,itemp)-20.0_r8)
+              fac1=dtdays*ZooGR(ng)*fac2
+              cff2=dtdays*PhyMR(ng)*fac3
+#endif
 !
 ! Phytoplankton grazing by zooplankton.
 !
@@ -923,12 +925,10 @@
 ! Phytoplankton assimilated to zooplankton and egested to small
 ! detritus.
 !
-              N_Flux_Assim=cff1*Bio(i,k,iPhyt)*ZooAE_N(ng)
+              N_Flux_Assim=Bio(i,k,iPhyt)*cff1*ZooAE_N(ng)
               N_Flux_Egest=Bio(i,k,iPhyt)*cff1*(1.0_r8-ZooAE_N(ng))
-              Bio(i,k,iZoop)=Bio(i,k,iZoop)+                            &
-     &                       N_Flux_Assim
-              Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+                            &
-     &                       N_Flux_Egest
+              Bio(i,k,iZoop)=Bio(i,k,iZoop)+N_Flux_Assim
+              Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+N_Flux_Egest
 #ifdef DIAGNOSTICS_BIO
               DiaBio3d(i,j,k,iAssi)=DiaBio3d(i,j,k,iAssi)+              &
      &                              N_Flux_Assim*fiter
@@ -940,10 +940,9 @@
 !
               N_Flux_Pmortal=cff2*MAX(Bio(i,k,iPhyt)-PhyMin(ng),0.0_r8)
               Bio(i,k,iPhyt)=Bio(i,k,iPhyt)-N_Flux_Pmortal
+              Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+N_Flux_Pmortal
               Bio(i,k,iChlo)=Bio(i,k,iChlo)-                            &
      &                       cff2*MAX(Bio(i,k,iChlo)-ChlMin(ng),0.0_r8)
-              Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+                            &
-     &                       N_Flux_Pmortal
 #ifdef CARBON
               Bio(i,k,iSDeC)=Bio(i,k,iSDeC)+                            &
      &                       PhyCN(ng)*(N_Flux_Egest+N_Flux_Pmortal)+   &
@@ -976,8 +975,7 @@
      &             (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
               cff2=fac2*Bio(i,k,iZoop)
               cff3=fac1*ZooAE_N(ng)
-              Bio(i,k,iZoop)=Bio(i,k,iZoop)/                            &
-     &                       (1.0_r8+cff2+cff3)
+              Bio(i,k,iZoop)=Bio(i,k,iZoop)/(1.0_r8+cff2+cff3)
 !
 !  Zooplankton mortality and excretion.
 !
@@ -1063,8 +1061,8 @@
 #ifdef OXYGEN
           DO k=1,N(ng)
             DO i=Istr,Iend
-              fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
-              fac2=MAX(fac1/(K_DO(ng)+fac1),0.0_r8) ! MM for O2 dependence (okada)
+              fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8)
+              fac2=fac1/(K_DO(ng)+fac1)
 # ifdef TDEPENDANCE
               fac2=fac2*(RR_t(ng)**(Bio(i,k,iTemp)-20.0_r8))
 # endif
@@ -1149,10 +1147,10 @@
 !
           DO k=1,N(ng)
             DO i=Istr,Iend
-              fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
-              fac2=MAX(fac1/(K_DO(ng)+fac1),0.0_r8) ! MM for O2 dependence
+              fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8)
+              fac2=fac1/(K_DO(ng)+fac1)
 # ifdef TDEPENDANCE
-              !fac2=fac2*(th  **(Bio(i,k,iTemp)-20.0_r8))
+              fac2=fac2*(1.05_r8**(Bio(i,k,iTemp)-20.0_r8))
 # endif
               cff1=dtdays*H2SOR(ng)*fac2
               cff2=1.0_r8/(1.0_r8+cff1)
@@ -1717,9 +1715,10 @@
 !-----------------------------------------------------------------------
 !
           DO i=Istr,Iend
-            fac1=dtdays
 # ifdef TDEPENDANCE
-            fac1=fac1*(1.05_r8**(Bio(i,1,itemp)-20.0_r8))
+            fac1=dtdays*(1.05_r8**(Bio(i,1,itemp)-20.0_r8))
+# else
+            fac1=dtdays
 # endif
             cff=fac1*Hz_inv(i,1)
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2

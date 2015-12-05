@@ -22,7 +22,8 @@
       CONTAINS
 
 # if defined BIO_FENNEL
-#  include <tl_fennel.h>
+!!#  include <tl_fennel.h>
+#  include <tl_fennel_main.h>
 # elif defined NEMURO
 !!#  include <tl_nemuro.h>
 # elif defined NPZD_FRANKS
