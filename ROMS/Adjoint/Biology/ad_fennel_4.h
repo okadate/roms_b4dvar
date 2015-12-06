@@ -1,6 +1,3 @@
-
-#include "ad_fennel_bs.h"
-
 #if defined BIO_SED_CONSTANT
 !
 !  Elution and oxygen consumption parameters (okada)

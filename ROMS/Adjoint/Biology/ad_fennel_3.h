@@ -181,7 +181,7 @@
               ad_Bio(i,k,iLDeP)=ad_Bio(i,k,iLDeP)+ad_P_Flux*cff3
               ad_cff1=ad_cff1+Bio1(i,k,iSDeP)*ad_P_Flux
               ad_Bio(i,k,iSDeP)=ad_Bio(i,k,iSDeP)+ad_P_Flux*cff1
-              tl_P_Flux=0.0_r8
+              ad_P_Flux=0.0_r8
 
 !>            tl_Bio(i,k,iLDeP)=tl_Bio(i,k,iLDeP)*cff4+                 &
 !>   &                          Bio(i,k,iLDeP)*tl_cff4
@@ -271,8 +271,6 @@
 #else
 ! pass okada
 #endif
-
-#include "ad_fennel_bs.h"
 !
 !-----------------------------------------------------------------------
 !  Coagulation of phytoplankton and small detritus to large detritus.
@@ -340,8 +338,6 @@
               ad_cff1=0.0_r8
             END DO
           END DO
-
-#include "ad_fennel_bs.h"
 !
 !-----------------------------------------------------------------------
 !  Zooplankton basal metabolism to NH4  (rate: ZooBM), zooplankton
@@ -420,7 +416,7 @@
               adfac=ad_Bio(i,k,iZoop)/(1.0_r8+cff2+cff3)
               ad_cff3=ad_cff3-Bio1(i,k,iZoop)*adfac
               ad_cff2=ad_cff2-Bio1(i,k,iZoop)*adfac
-              tl_Bio(i,k,iZoop)=adfac
+              ad_Bio(i,k,iZoop)=adfac
 
 !>            tl_cff3=tl_fac1*ZooAE_N(ng)
               ad_fac1=ad_fac1+ad_cff3*ZooAE_N(ng)

@@ -58,7 +58,7 @@
 
 !>            tl_N_Flux_Pmortal=tl_cff2*cff+cff2*tl_cff
               ad_cff=ad_cff+cff2*ad_N_Flux_Pmortal
-              ad_cff2=ad_cff2+=ad_N_Flux_Pmortal*cff
+              ad_cff2=ad_cff2+ad_N_Flux_Pmortal*cff
               ad_N_Flux_Pmortal=0.0_r8
 
 !>            tl_cff=(0.5_r8+SIGN(0.5_r8,Bio2(i,k,iPhyt)-PhyMin(ng)))*  &

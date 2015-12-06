@@ -349,6 +349,7 @@
       real(r8) :: cff, cff1, cff2, cff3, cff4, cff5
       real(r8) :: fac1, fac2, fac3
       real(r8) :: cffL, cffR, cu, dltL, dltR
+      real(r8) :: fac
 
       real(r8) :: total_N
 

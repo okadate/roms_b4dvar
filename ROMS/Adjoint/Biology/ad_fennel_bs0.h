@@ -116,9 +116,9 @@
                 fac1=dtdays*t_PPmax*Bio(i,k,iPhyt)
                 cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)
                 cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)
-fdef PHOSPHORUS
+#ifdef PHOSPHORUS
                 cff6=fac1*PhyPN(ng)*K_PO4(ng)/(1.0_r8+cff3)
-               IF (LMIN.eq.L_PO4) THEN
+                IF (LMIN.eq.L_PO4) THEN
                   Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff6)
                   P_Flux=Bio(i,k,iPO4_)*cff6
                   N_Flux_NewProd=P_Flux/PhyPN(ng)*L_NO3/MAX(LTOT,eps)
@@ -139,10 +139,10 @@ fdef PHOSPHORUS
                 N_Flux_NewProd=Bio(i,k,iNO3_)*cff4
                 N_Flux_RegProd=Bio(i,k,iNH4_)*cff5
 #endif
-               Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
+                Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
      &                         N_Flux_NewProd+N_Flux_RegProd
 !
-               Bio(i,k,iChlo)=Bio(i,k,iChlo)+                          &
+                Bio(i,k,iChlo)=Bio(i,k,iChlo)+                          &
 #ifdef PHOSPHORUS
      &                         (dtdays*t_PPmax*t_PPmax*LMIN*LMIN*       &
 #else
@@ -151,7 +151,7 @@ fdef PHOSPHORUS
      &                          Chl2C_m(ng)*Bio(i,k,iChlo))/            &
      &                         (PhyIS(ng)*MAX(Chl2C,eps)*PAR+eps)
 #ifdef OXYGEN
-               Bio(i,k,iOxyg)=Bio(i,k,iOxyg)+                          &
+                Bio(i,k,iOxyg)=Bio(i,k,iOxyg)+                          &
      &                         N_Flux_NewProd*rOxNO3+                   &
      &                         N_Flux_RegProd*rOxNH4
 #endif
@@ -185,11 +185,11 @@ fdef PHOSPHORUS
      &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
                 cff2=1.0_r8-MAX(0.0_r8,cff1)
                 cff3=fac1*cff2
-               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
+                Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
-               Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
+                Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
 #ifdef OXYGEN
-               Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
+                Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
 #endif
 !
 !  Light attenuation at the bottom of the grid cell. It is the starting
@@ -215,11 +215,11 @@ fdef PHOSPHORUS
 #else
                 cff3=fac1
 #endif
-               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
+                Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
-               Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
+                Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
 #ifdef OXYGEN
-               Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
+                Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
 #endif
               END DO
             END IF
@@ -246,7 +246,7 @@ fdef PHOSPHORUS
           END DO
 #endif
 !
-!---------------------------------------------------------------------
+!-----------------------------------------------------------------------
 !  Phytoplankton grazing by zooplankton (rate: ZooGR), phytoplankton
 !  assimilated to zooplankton (fraction: ZooAE_N) and egested to small
 !  detritus, and phytoplankton mortality (rate: PhyMR) to small
@@ -749,6 +749,7 @@ fdef PHOSPHORUS
               END DO
             END IF
 # endif
+#endif
           END DO
 
 #if defined BIO_SED_CONSTANT
@@ -784,7 +785,7 @@ fdef PHOSPHORUS
 # endif
           END DO
 #endif
-!>      END DOTER_LOOP
+!>      END DO ITER_LOOP
         END DO
 !
 !  End of compute required state arrays.

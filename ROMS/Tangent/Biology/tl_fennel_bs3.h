@@ -767,6 +767,7 @@
               END DO
             END IF
 # endif
+#endif
           END DO
 
 #if defined BIO_SED_CONSTANT

@@ -324,9 +324,9 @@
 
 !>                tl_P_Flux=(tl_N_Flux_NewProd+tl_N_Flux_RegProd)*      &
 !>   &                      PhyPN(ng)
-                  adfad=ad_P_Flux*PhyPN(ng)
-                  ad_N_Flux_RegProd=ad_N_Flux_RegProd+adfad
-                  ad_N_Flux_NewProd=ad_N_Flux_NewProd+adfad
+                  adfac=ad_P_Flux*PhyPN(ng)
+                  ad_N_Flux_RegProd=ad_N_Flux_RegProd+adfac
+                  ad_N_Flux_NewProd=ad_N_Flux_NewProd+adfac
                   ad_P_Flux=0.0_r8
 
 !>                tl_N_Flux_RegProd=tl_Bio(i,k,iNH4_)*cff5+             &
@@ -511,7 +511,7 @@
 
 !>              tl_Chl2C=(0.5_r8+SIGN(0.5_r8,Chl2C_m(ng)-cff1))*tl_cff1
                 adfac=0.5_r8+SIGN(0.5_r8,Chl2C_m(ng)-cff1)
-                ad_cff1=ad_cff1+*ad_Chl2C
+                ad_cff1=ad_cff1+adfac*ad_Chl2C
                 ad_Chl2C=0.0_r8
 
 !>              tl_cff1=(tl_Bio(i,k,iChlo)-cff1*cff*tl_Bio(i,k,iPhyt))/ &
@@ -548,8 +548,9 @@
                 adfac=AttSW(ng)+AttChl(ng)*Bio1(i,k,iChlo)+AttFac
                 ad_z_w(i,j,k-1)=ad_z_w(i,j,k-1)-ad_Att*adfac
                 ad_z_w(i,j,k)=ad_z_w(i,j,k)+ad_Att*adfac
-                z_w(i,j,k-1)=z_w(i,j,k-1)-AttChl(ng)*ad_Att
-                z_w(i,j,k)=z_w(i,j,k)+AttChl(ng)*ad_Att
+                adfac=AttChl(ng)*(z_w(i,j,k)-z_w(i,j,k-1))
+                ad_Bio(i,k,iChlo)=ad_Bio(i,k,iChlo)+adfac*ad_Att
+                ad_Att=0.0_r8
               END DO
 !
 !  If PARsur=0, nitrification occurs at the maximum rate (NitriR).
