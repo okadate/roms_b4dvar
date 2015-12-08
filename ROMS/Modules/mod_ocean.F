@@ -54,6 +54,12 @@
 !  v_stokes     3D V-Stokes drift velocity (m/s).                      !
 !                                                                      !
 #endif
+#ifdef ADJUST_PARAM
+!  Data assimilation variables.
+!
+!  p            Parameter type variables.                              !
+!
+#endif
 !=======================================================================
 !
         USE mod_kinds
@@ -101,6 +107,9 @@
           real(r8), pointer :: DIN_obsG(:,:,:,:)
 # endif
 #endif
+#ifdef ADJUST_PARAM
+          real(r8), pointer :: p(:,:)
+#endif
 
 #if defined TANGENT || defined TL_IOMS
 !
@@ -133,6 +142,9 @@
           real(r8), pointer :: tl_u_stokes(:,:,:)
           real(r8), pointer :: tl_v_stokes(:,:,:)
 #  endif
+# endif
+# ifdef ADJUST_PARAM
+          real(r8), pointer :: tl_p(:,:)
 # endif
 #endif
 
@@ -174,6 +186,9 @@
           real(r8), pointer :: ad_v_stokes(:,:,:)
 #  endif
 # endif
+# ifdef ADJUST_PARAM
+          real(r8), pointer :: ad_p(:,:)
+# endif
 #endif
 
 #if defined FOUR_DVAR || defined IMPULSE
@@ -189,6 +204,9 @@
           real(r8), pointer :: b_u(:,:,:,:)
           real(r8), pointer :: b_v(:,:,:,:)
 # endif
+# ifdef ADJUST_PARAM
+          real(r8), pointer :: b_p(:,:)
+# endif
 # ifdef FOUR_DVAR
           real(r8), pointer :: d_ubar(:,:)
           real(r8), pointer :: d_vbar(:,:)
@@ -198,6 +216,9 @@
           real(r8), pointer :: d_u(:,:,:)
           real(r8), pointer :: d_v(:,:,:)
 #  endif
+#  ifdef ADJUST_PARAM
+          real(r8), pointer :: d_p(:)
+#  endif
           real(r8), pointer :: e_ubar(:,:,:)
           real(r8), pointer :: e_vbar(:,:,:)
           real(r8), pointer :: e_zeta(:,:,:)
@@ -205,6 +226,9 @@
           real(r8), pointer :: e_t(:,:,:,:,:)
           real(r8), pointer :: e_u(:,:,:,:)
           real(r8), pointer :: e_v(:,:,:,:)
+#  endif
+#  ifdef ADJUST_PARAM
+          real(r8), pointer :: e_p(:,:)
 #  endif
 # endif
 # ifdef WEAK_CONSTRAINT
@@ -216,6 +240,9 @@
           real(r8), pointer :: f_u(:,:,:)
           real(r8), pointer :: f_v(:,:,:)
 #  endif
+#  ifdef ADJUST_PARAM
+          real(r8), pointer :: f_p(:)
+#  endif
 # endif
 #endif
 #ifdef FORCING_SV
@@ -226,6 +253,9 @@
           real(r8), pointer :: f_t(:,:,:,:)
           real(r8), pointer :: f_u(:,:,:)
           real(r8), pointer :: f_v(:,:,:)
+# endif
+# ifdef ADJUST_PARAM
+          real(r8), pointer :: f_p(:)
 # endif
 #endif
 
@@ -252,6 +282,9 @@
           real(r8), pointer :: uG(:,:,:,:)
           real(r8), pointer :: vG(:,:,:,:)
 # endif
+# ifdef ADJUST_PARAM
+          real(r8), pointer :: pG(:,:)
+# endif
 # ifdef WEAK_CONSTRAINT
           real(r8), pointer :: f_zetaG(:,:,:)
 #  ifdef SOLVE3D
@@ -261,6 +294,9 @@
 #  else
           real(r8), pointer :: f_ubarG(:,:,:)
           real(r8), pointer :: f_vbarG(:,:,:)
+#  endif
+#  ifdef ADJUST_PARAM
+          real(r8), pointer :: f_pG(:,:)
 #  endif
 # endif
 #endif
@@ -340,6 +376,10 @@
 # endif
 #endif
 
+#ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % p(2,Nparam(ng)) )
+#endif
+
 #if defined TANGENT || defined TL_IOMS
 !
 !  Tangent linear model state.
@@ -378,6 +418,11 @@
       allocate ( OCEAN(ng) % tl_v_stokes(LBi:UBi,LBj:UBj,N(ng)) )
 #  endif
 # endif
+
+# ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % tl_p(2,Nparam(ng)) )
+# endif
+
 #endif
 
 #ifdef ADJOINT
@@ -425,6 +470,10 @@
       allocate ( OCEAN(ng) % ad_u_stokes(LBi:UBi,LBj:UBj,N(ng)) )
       allocate ( OCEAN(ng) % ad_v_stokes(LBi:UBi,LBj:UBj,N(ng)) )
 #  endif
+
+# endif
+# ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % ad_p(2,Nparam(ng)) )
 # endif
 #endif
 
@@ -443,6 +492,9 @@
       allocate ( OCEAN(ng) % b_u(LBi:UBi,LBj:UBj,N(ng),NSA) )
       allocate ( OCEAN(ng) % b_v(LBi:UBi,LBj:UBj,N(ng),NSA) )
 # endif
+# ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % b_p(NSA,Nparam(ng)) )
+# endif
 
 # ifdef FOUR_DVAR
       allocate ( OCEAN(ng) % d_ubar(LBi:UBi,LBj:UBj) )
@@ -454,6 +506,9 @@
       allocate ( OCEAN(ng) % d_u(LBi:UBi,LBj:UBj,N(ng)) )
       allocate ( OCEAN(ng) % d_v(LBi:UBi,LBj:UBj,N(ng)) )
 #  endif
+#  ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % d_p(Nparam(ng)) )
+#  endif
 
       allocate ( OCEAN(ng) % e_ubar(LBi:UBi,LBj:UBj,NSA) )
       allocate ( OCEAN(ng) % e_vbar(LBi:UBi,LBj:UBj,NSA) )
@@ -463,6 +518,9 @@
       allocate ( OCEAN(ng) % e_t(LBi:UBi,LBj:UBj,N(ng),NSA,NT(ng)) )
       allocate ( OCEAN(ng) % e_u(LBi:UBi,LBj:UBj,N(ng),NSA) )
       allocate ( OCEAN(ng) % e_v(LBi:UBi,LBj:UBj,N(ng),NSA) )
+#  endif
+#  ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % e_p(NSA,Nparam(ng)) )
 #  endif
 
 #  ifdef WEAK_CONSTRAINT
@@ -474,6 +532,9 @@
       allocate ( OCEAN(ng) % f_t(LBi:UBi,LBj:UBj,N(ng),NT(ng)) )
       allocate ( OCEAN(ng) % f_u(LBi:UBi,LBj:UBj,N(ng)) )
       allocate ( OCEAN(ng) % f_v(LBi:UBi,LBj:UBj,N(ng)) )
+#   endif
+#   ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % f_p(Nparam(ng)) )
 #   endif
 #  endif
 # endif
@@ -487,6 +548,9 @@
       allocate ( OCEAN(ng) % f_t(LBi:UBi,LBj:UBj,N(ng),NT(ng)) )
       allocate ( OCEAN(ng) % f_u(LBi:UBi,LBj:UBj,N(ng)) )
       allocate ( OCEAN(ng) % f_v(LBi:UBi,LBj:UBj,N(ng)) )
+# endif
+# ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % f_p(Nparam(ng)) )
 # endif
 #endif
 
@@ -514,6 +578,10 @@
       allocate ( OCEAN(ng) % uG(LBi:UBi,LBj:UBj,N(ng),2) )
       allocate ( OCEAN(ng) % vG(LBi:UBi,LBj:UBj,N(ng),2) )
 # endif
+# ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % pG(2,Nparam(ng)) )
+# endif
+
 # ifdef WEAK_CONSTRAINT
       allocate ( OCEAN(ng) % f_zetaG(LBi:UBi,LBj:UBj,2) )
 #  ifdef SOLVE3D
@@ -523,6 +591,9 @@
 #  else
       allocate ( OCEAN(ng) % f_ubarG(LBi:UBi,LBj:UBj,2) )
       allocate ( OCEAN(ng) % f_vbarG(LBi:UBi,LBj:UBj,2) )
+#  endif
+#  ifdef ADJUST_PARAM
+      allocate ( OCEAN(ng) % f_pG(2,Nparam(ng)) )
 #  endif
 # endif
 #endif
@@ -673,6 +744,12 @@
           END DO
 #endif
         END DO
+#ifdef ADJUST_PARAM
+        DO itrc=1,Nparam(ng)
+          OCEAN(ng) % p(1,itrc) = IniVal
+          OCEAN(ng) % p(2,itrc) = IniVal
+        END DO
+#endif
       END IF
 
 #if defined TANGENT || defined TL_IOMS
@@ -756,6 +833,15 @@
           END DO
 # endif
         END DO
+# ifdef ADJUST_PARAM
+        DO itrc=1,Nparam(ng)
+          OCEAN(ng) % tl_p(1,itrc) = IniVal
+          OCEAN(ng) % tl_p(2,itrc) = IniVal
+#  ifdef FORCING_SV
+          OCEAN(ng) % f_p(itrc) = IniVal
+#  endif
+        END DO
+# endif
       END IF
 #endif
 
@@ -847,6 +933,15 @@
           END DO
 # endif
         END DO
+# ifdef ADJUST_PARAM
+        DO itrc=1,Nparam(ng)
+          OCEAN(ng) % ad_p(1,itrc) = IniVal
+          OCEAN(ng) % ad_p(2,itrc) = IniVal
+#  ifdef FORCING_SV
+          OCEAN(ng) % f_p(itrc) = IniVal
+#  endif
+        END DO
+# endif
       END IF
 #endif
 
@@ -934,6 +1029,24 @@
           END DO
 # endif
         END DO
+
+# ifdef ADJUST_PARAM
+        DO itrc=1,Nparam(ng)
+          DO rec=1,NSA
+            OCEAN(ng) % b_p(rec,itrc) = IniVal
+#  ifdef FOUR_DVAR
+            OCEAN(ng) % e_p(rec,itrc) = IniVal
+#  endif
+          END DO
+#  ifdef FOUR_DVAR
+          OCEAN(ng) % d_p(itrc) = IniVal
+
+#   ifdef WEAK_CONSTRAINT
+          OCEAN(ng) % f_p(itrc) = IniVal
+#   endif
+#  endif
+        END DO
+# endif
       END IF
 #endif
 
@@ -1010,6 +1123,18 @@
           END DO
 # endif
         END DO
+
+# ifdef ADJUST_PARAM
+        DO itrc=1,Nparam(ng)
+          OCEAN(ng) % pG(1,itrc) = IniVal
+          OCEAN(ng) % pG(2,itrc) = IniVal
+#  ifdef WEAK_CONSTRAINT
+          OCEAN(ng) % f_pG(1,itrc) = IniVal
+          OCEAN(ng) % f_pG(2,itrc) = IniVal
+#  endif
+        END DO
+# endif
+
       END IF
 #endif
 

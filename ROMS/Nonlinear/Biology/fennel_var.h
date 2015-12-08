@@ -60,6 +60,10 @@
               CASE ('idTvar(iH2S_)')
                 idTvar(iH2S_)=varid
 # endif
+# ifdef ADJUST_PARAM
+              CASE ('idPvar(iChl2C_m)')
+                idPvar(iChl2C_m)=varid
+# endif
 # ifdef DIAGENESIS
               CASE ('idBpw(iwO2_)')
                 idBpw(iwO2_)=varid
@@ -201,6 +205,10 @@
 # ifdef H2S
               CASE ('idTads(iH2S_)')
                 idTads(iH2S_)=varid
+# endif
+# ifdef ADJUST_PARAM
+              CASE ('idPads(iChl2C_m)')
+                idPads(iChl2C_m)=varid
 # endif
 #endif
 
@@ -480,8 +488,4 @@
               CASE ('iDbio3(iH2Sf)')
                 iDbio3(iH2Sf)=varid
 # endif
-#endif
-#ifdef ADJUST_BIOPARAM
-              !CASE ('idPbio(iAttSW)')
-              !  idPbio(iAttSW)=varid
 #endif

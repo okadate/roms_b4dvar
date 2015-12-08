@@ -113,7 +113,7 @@
      &                       FORCES(ng) % tl_vstr,                      &
 # endif
 # ifdef ADJUST_BIOPARAM
-     &                       BIOPARAM(ng) % tl_bioparam,                &
+     &                       OCEAN(ng) % tl_p,                &
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                       FORCES(ng) % tl_tflux,                     &
@@ -172,7 +172,7 @@
      &                             tl_ustr, tl_vstr,                    &
 # endif
 # ifdef ADJUST_BIOPARAM
-     &                             tl_bioparam,                         &
+     &                             tl_p,                         &
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                             tl_tflux,                            &
@@ -516,7 +516,7 @@
      &                       tl_ustr, tl_vstr,                          &
 # endif
 # ifdef ADJUST_BIOPARAM
-     &                       tl_bioparam,                               &
+     &                       tl_p,                               &
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                       tl_tflux,                                  &

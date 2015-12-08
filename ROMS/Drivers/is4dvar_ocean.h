@@ -233,9 +233,9 @@
         IF (exit_flag.ne.NoError) RETURN
       END DO
 #endif
-#ifdef ADJUST_BIOPARAM
+#ifdef ADJUST_PARAM
 !
-!  biological parameter standard deviation are writen in mod_bioparam.
+!  Parameter standard deviations are writen in [            ]. (okada)
 !
 #endif
 
@@ -311,7 +311,7 @@
 !
       DO ng=1,Ngrids
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
+    defined ADJUST_WSTRESS || defined ADJUST_PARAM
         Lfinp(ng)=1         ! forcing index for input
         Lfout(ng)=1         ! forcing index for output history files
 #endif
@@ -457,8 +457,10 @@
               CALL get_state (ng, 11, 11, NRM(4,ng)%name, NRMrec, 1)
               IF (exit_flag.ne.NoError) RETURN
 #endif
-#ifdef ADJUST_BIOPARAM
-              !okada!
+#ifdef ADJUST_PARAM
+!
+!  Parameter normalization factors are writen in [            ]. (okada)
+!
 #endif
             END IF
           END DO
@@ -518,7 +520,7 @@
         END DO
 
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
+    defined ADJUST_WSTRESS || defined ADJUST_PARAM
 !
 !  Write out initial and background surface forcing into initial
 !  INI(ng)%name NetCDF file for latter use.
@@ -1099,7 +1101,7 @@
         END DO
 
 #if defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
-    defined ADJUST_BOUNDARY || defined ADJUST_BIOPARAM
+    defined ADJUST_BOUNDARY || defined ADJUST_PARAM
 !
 !  Set index containing the surface forcing increments used the run
 !  the nonlinear model in the outer loop and read the forcing

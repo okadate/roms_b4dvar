@@ -54,9 +54,6 @@
 #ifdef BBL_MODEL
       USE mod_bbl, ONLY : allocate_bbl, initialize_bbl
 #endif
-#ifdef ADJUST_BIOPARAM
-      USE mod_bioparam, ONLY : allocate_bioparam, initialize_bioparam
-#endif
 !
       implicit none
 !
@@ -152,9 +149,6 @@
           IF (LuvSrc(ng).or.LwSrc(ng).or.ANY(LtracerSrc(:,ng))) THEN
             CALL allocate_sources (ng)
           END IF
-#ifdef ADJUST_BIOPARAM
-          CALL allocate_bioparam (ng)
-#endif
 !$OMP END MASTER
 !$OMP BARRIER
         END DO
@@ -217,9 +211,6 @@
 #endif
 #if defined SSH_TIDES || defined UV_TIDES
           CALL initialize_tides (ng, tile)
-#endif
-#ifdef ADJUST_BIOPARAM
-          CALL initialize_bioparam (ng)
 #endif
         END DO
 !$OMP BARRIER

@@ -926,6 +926,13 @@
         integer, allocatable :: Nfrec(:)         ! number of records
         integer, allocatable :: SFcount(:)       ! record counter
 
+#ifdef ADJUST_PARAM
+!
+!  Logical switches to process parameters during 4DVar adjustments.
+!
+        logical, allocatable :: Lparam(:)
+#endif
+
 #ifdef ADJUST_STFLUX
 !
 !  Logical switches to process surface tracer fluxes during 4DVar

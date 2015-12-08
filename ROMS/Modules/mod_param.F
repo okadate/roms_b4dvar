@@ -545,6 +545,14 @@
 !
       integer, allocatable :: Nbico(:)
 #endif
+
+#ifdef ADJUST_PARAM
+!
+!  Number of control parameters.
+!
+      integer, allocatable :: Nparam(:)
+      integer :: Mparam
+#endif
 !
 !-----------------------------------------------------------------------
 !  Model state parameters.
@@ -689,6 +697,10 @@
 
 #if defined BALANCE_OPERATOR && defined ZETA_ELLIPTIC
       allocate ( Nbico(Ngrids) )
+#endif
+
+#ifdef ADJUST_PARAM
+      allocate ( Nparam(Ngrids) )
 #endif
 
       RETURN
@@ -931,6 +943,9 @@
 #ifdef ADJUST_STFLUX
         NSV(ng)=NSV(ng)+NT(ng)
 #endif
+#ifdef ADJUST_PARAM
+        NSV(ng)=NSV(ng)+Nparam(ng)
+#endif
       END DO
 !
 !  Set maximum number of tracer between all nested grids.
@@ -939,6 +954,9 @@
       MT=MAX(NAT,MAXVAL(NT))
 #else
       MT=MAX(2,MAXVAL(NT))
+#endif
+#ifdef ADJUST_PARAM
+      Mparam=MAX(1,MAXVAL(Nparam))
 #endif
 !
 !-----------------------------------------------------------------------

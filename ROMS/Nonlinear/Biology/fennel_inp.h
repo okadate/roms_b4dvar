@@ -17,9 +17,6 @@
       USE mod_biology
       USE mod_ncparam
       USE mod_scalars
-#ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
-#endif
 !
       implicit none
 !
@@ -184,16 +181,16 @@
               Npts=load_r(Nval, Rval, Ngrids, wPhy)
             CASE ('wLDet')
               Npts=load_r(Nval, Rval, Ngrids, wLDet)
-#ifdef ADJUST_BIOPARAM
-              bioparam(1,iwLDet)=wLDet(ng)
+#ifdef ADJUST_PARAM
+!!            p(1,iwLDet)=wLDet(ng)
 #endif
             CASE ('wSDet')
               Npts=load_r(Nval, Rval, Ngrids, wSDet)
             CASE ('pCO2air')
               Npts=load_r(Nval, Rval, Ngrids, pCO2air)
-#ifdef ADJUST_BIOPARAM
-            CASE ('Lbioparam')
-              Npts=load_l(Nval, Cval, Nbioparam, Lbioparam)
+#ifdef ADJUST_PARAM
+            CASE ('Lparam')
+              Npts=load_l(Nval, Cval, Nparam(ng), Lparam)
 #endif
             CASE ('TNU2')
               Npts=load_r(Nval, Rval, NBT*Ngrids, Rbio)

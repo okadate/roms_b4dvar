@@ -255,7 +255,7 @@
       real(r8), allocatable :: ad_PARfrac(:)
 #endif
 
-#ifdef ADJUST_BIOPARAM
+#ifdef ADJUST_PARAM
       integer :: iAttSW   = 1
       integer :: iAttChl  = 2
       integer :: iChl2C_m = 3
@@ -312,16 +312,8 @@
       integer :: ithPhyMR  = 53
       integer :: ithRRN    = 54
 
-      integer, parameter :: Nbioparam = 54
-
-      logical :: Lbioparam(Nbioparam)
-
-      real(r8) :: bioparam(2,Nbioparam)
-      real(r8) :: tl_bioparam(2,Nbioparam)
-      real(r8) :: ad_bioparam(2,Nbioparam)
-      real(r8) :: b_bioparam(2,Nbioparam)
-      real(r8) :: d_bioparam(Nbioparam)
-      real(r8) :: e_bioparam(Nbioparam)
+!!      integer, parameter :: Nparam(ng) = 54
+!!      logical :: Lparam(Nparam(ng))
 #endif
 
       CONTAINS

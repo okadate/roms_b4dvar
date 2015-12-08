@@ -126,9 +126,9 @@
      &                   FORCES(ng) % tl_svstr,                         &
 # endif
 #endif
-#ifdef ADJUST_BIOPARAM
-     &                   BIOPARAM(ng) % param,                          &
-     &                   BIOPARAM(ng) % tl_param,                       &
+#ifdef ADJUST_PARAM
+     &                   OCEAN(ng) % param,                          &
+     &                   OCEAN(ng) % tl_param,                       &
 #endif
      &                   OCEAN(ng) % t,                                 &
      &                   OCEAN(ng) % tl_t)
@@ -160,7 +160,7 @@
      &                         svstr, tl_svstr,                         &
 # endif
 #endif
-#ifdef ADJUST_BIOPARAM
+#ifdef ADJUST_PARAM
      &                         param, tl_param,                         &
 #endif
      &                         t, tl_t)
@@ -172,9 +172,6 @@
       USE mod_scalars
       USE mod_parallel  ! (okada)
       USE mod_iounits   ! (okada)
-#ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
-#endif
 !
 !  Imported variable declarations.
 !
@@ -208,7 +205,7 @@
       real(r8), intent(in) :: tl_svstr(LBi:,LBj:)
 #  endif
 # endif
-# ifdef ADJUST_BIOPARAM
+# ifdef ADJUST_PARAM
       real(r8), intent(in) :: param(:,:)
       real(r8), intent(inout) :: tl_param(:,:)
 # endif
@@ -240,9 +237,9 @@
       real(r8), intent(in) :: tl_svstr(LBi:UBi,LBj:UBj)
 #  endif
 # endif
-# ifdef ADJUST_BIOPARAM
-      real(r8), intent(in) :: param(2,Nbioparam)
-      real(r8), intent(inout) :: tl_param(2,Nbioparam)
+# ifdef ADJUST_PARAM
+      real(r8), intent(in) :: param(2,Nparam(ng))
+      real(r8), intent(inout) :: tl_param(2,Nparam(ng))
 # endif
       real(r8), intent(in) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
 
@@ -1031,7 +1028,7 @@
 !#ifdef TDEPENDANCE
 !          cff2=dtdays*PhyMR(ng)*(thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8))
 !#else
-#if ADJUST_BIOPARAM
+#if ADJUST_PARAM
           cff2=dtdays*param(2,)
 #else
           cff2=dtdays*PhyMR(ng)
@@ -1108,7 +1105,7 @@
 !#ifdef TDEPENDANCE
 !          cff2=dtdays*PhyMR(ng)*(thPhyMR(ng)**(Bio(i,k,itemp)-20.0_r8))
 !#else
-#if ADJUST_BIOPARAM
+#if ADJUST_PARAM
           cff2=dtdays*param(2,)
 #else
           cff2=dtdays*PhyMR(ng)

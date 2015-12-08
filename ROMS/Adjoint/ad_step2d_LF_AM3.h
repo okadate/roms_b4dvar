@@ -224,6 +224,7 @@
       USE mod_ncparam
       USE mod_clima
       USE mod_scalars
+      USE mod_parallel
 # if defined SEDIMENT_NOT_YET && defined SED_MORPH_NOT_YET
       USE mod_sediment
 # endif
@@ -600,10 +601,12 @@
       ptsk=3-kstp
       CORRECTOR_2D_STEP=.not.PREDICTOR_2D_STEP(ng)
 # ifdef DEBUG
-      WRITE (21,20) iic(ng), CORRECTOR_2D_STEP,                         &
-     &              kstp, krhs, knew, ptsk
- 20   FORMAT (' iic = ',i5.5,' corrector = ',l1,' kstp = ',i1,          &
-     &        ' krhs = ',i1,' knew = ',i1,' ptsk = ',i1)
+      IF (Master) THEN
+        WRITE (21,20) iic(ng), CORRECTOR_2D_STEP,                       &
+     &                kstp, krhs, knew, ptsk
+ 20     FORMAT (' iic = ',i5.5,' corrector = ',l1,' kstp = ',i1,        &
+     &          ' krhs = ',i1,' knew = ',i1,' ptsk = ',i1)
+      END IF
 # endif
 !
 !-----------------------------------------------------------------------

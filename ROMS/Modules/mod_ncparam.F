@@ -370,6 +370,9 @@
         integer, allocatable :: idTnud(:)    ! tracers nudge coefficient
         integer, allocatable :: idTsur(:)    ! surface flux for tracers
         integer, allocatable :: idTtlf(:)    ! tracers impulse forcing
+#ifdef ADJUST_PARAM
+        integer, allocatable :: idPads(:)    ! parameters adjoint sentivity
+#endif
 !
 !  Boundary conditions identification indices.
 !
@@ -423,6 +426,9 @@
         integer, allocatable :: idBvar(:)     ! LBC variables indices
         integer, allocatable :: idSvar(:)     ! state vector indices
         integer, allocatable :: idSbry(:)     ! state boundaries indices
+#ifdef ADJUST_PARAM
+        integer, allocatable :: isPvar(:)     ! tracers
+#endif
 !
 !  Generic state variables lateral boundary indices.
 !
@@ -453,6 +459,9 @@
         integer, allocatable :: idTvar(:)     ! tracers variables
         integer, allocatable :: idTrcD(:)     ! detided tracer variables
         integer, allocatable :: idTrcH(:)     ! tracer variables hamonics
+#ifdef ADJUST_PARAM
+        integer, allocatable :: idPvar(:)     ! parameter variables
+#endif
 !
 !  Input/Output information variables.
 !
@@ -571,6 +580,9 @@
       allocate ( idTnud(MT) )
       allocate ( idTsur(MT) )
       allocate ( idTtlf(MT) )
+#ifdef ADJUST_PARAM
+      allocate ( idPads(Mparam) )
+#endif
 
       allocate ( iHUTav(MT) )
       allocate ( iHVTav(MT) )
@@ -591,6 +603,9 @@
       allocate ( idBvar(nLBCvar) )
       allocate ( idSvar(MAXVAL(NSV)+1) )
       allocate ( idSbry(MAXVAL(NSV)+1) )
+#ifdef ADJUST_PARAM
+      allocate ( isPvar(Mparam) )
+#endif
 
       allocate ( ncFRCid(NV,Ngrids) )
 
@@ -603,6 +618,9 @@
       allocate ( idTvar(MT) )
       allocate ( idTrcD(NAT) )
       allocate ( idTrcH(NAT) )
+#ifdef ADJUST_PARAM
+      allocate ( idPvar(Mparam) )
+#endif
 
       allocate ( Linfo(4,NV,Ngrids) )
 
@@ -641,9 +659,6 @@
       USE mod_scalars
 #if defined SEDIMENT || defined BBL_MODEL
       USE mod_sediment
-#endif
-#ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
 #endif
 !
 !  Local variable declarations.
@@ -756,6 +771,14 @@
       DO i=1,MT
         ic=ic+1
         isTsur(i)=ic
+      END DO
+#endif
+#if defined ADJUST_PARAM   || defined FORCING_SV     || \
+    defined HESSIAN_FSV    || defined SO_SEMI        || \
+    defined STOCHASTIC_OPT
+      DO i=1,Mparam
+        ic=ic+1
+        isPvar(i)=ic
       END DO
 #endif
 !
@@ -2294,6 +2317,11 @@
 #ifdef ADJUST_STFLUX
       DO i=1,MT
         idSvar(isTsur(i))=idTsur(i)
+      END DO
+#endif
+#ifdef ADJUST_PARAM
+      DO i=1,Mparam
+        idSvar(isPvar(i))=idTvar(i)
       END DO
 #endif
 #ifdef ADJUST_BOUNDARY

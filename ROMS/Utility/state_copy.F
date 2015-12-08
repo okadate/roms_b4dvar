@@ -38,8 +38,8 @@
      &                       s1_sustr, s2_sustr,                        &
      &                       s1_svstr, s2_svstr,                        &
 #endif
-#ifdef ADJUST_BIOPARAM
-     &                       s1_bioparam, s2_bioparam,                  &
+#ifdef ADJUST_PARAM
+     &                       s1_p, s2_p,                  &
 #endif
 #ifdef SOLVE3D
 # ifdef ADJUST_STFLUX
@@ -57,12 +57,9 @@
 !
       USE mod_param
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS || defined ADJUST_BIOPARAM
+    defined ADJUST_WSTRESS || defined ADJUST_PARAM
       USE mod_ncparam
       USE mod_scalars
-#endif
-#ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
 #endif
 !
 !  Imported variable declarations.
@@ -86,8 +83,8 @@
       real(r8), intent(in) :: s2_sustr(LBi:,LBj:,:,:)
       real(r8), intent(in) :: s2_svstr(LBi:,LBj:,:,:)
 # endif
-# ifdef ADJUST_BIOPARAM
-      real(r8), intent(in) :: s2_bioparam(:,:)
+# ifdef ADJUST_PARAM
+      real(r8), intent(in) :: s2_p(:,:)
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -116,8 +113,8 @@
       real(r8), intent(inout) :: s1_sustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: s1_svstr(LBi:,LBj:,:,:)
 # endif
-# ifdef ADJUST_BIOPARAM
-      real(r8), intent(inout) :: s1_bioparam(:,:)
+# ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: s1_p(:,:)
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -149,8 +146,8 @@
       real(r8), intent(in) :: s2_sustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(in) :: s2_svstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 # endif
-# ifdef ADJUST_BIOPARAM
-      real(r8), intent(in) :: s2_bioparam(2,Nbioparam)
+# ifdef ADJUST_PARAM
+      real(r8), intent(in) :: s2_p(2,Nparam(ng))
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -181,8 +178,8 @@
       real(r8), intent(inout) :: s1_sustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: s1_svstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 # endif
-# ifdef ADJUST_BIOPARAM
-      real(r8), intent(inout) :: s1_bioparam(2,Nbioparam)
+# ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: s1_p(2,Nparam(ng))
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -569,13 +566,13 @@
       END DO
 # endif
 
-# ifdef ADJUST_BIOPARAM
+# ifdef ADJUST_PARAM
 !
 !  Biology parameter.
 !
-      DO it=1,Nbioparam
-        IF (Lbioparam(it)) THEN
-          s1_bioparam(Lout,it)=s2_bioparam(Linp,it)
+      DO it=1,Nparam(ng)
+        IF (Lparam(it)) THEN
+          s1_p(Lout,it)=s2_p(Linp,it)
         END IF
       END DO
 # endif

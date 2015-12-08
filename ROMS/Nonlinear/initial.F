@@ -524,7 +524,7 @@
 !
       DO ng=1,Ngrids
         IF (nrrec(ng).eq.0) THEN
-          !CALL set_bioparam (ng)
+          !CALL set_param (ng)
         END IF
       END DO
 #endif

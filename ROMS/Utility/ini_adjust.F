@@ -807,9 +807,6 @@
 #  if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       USE mod_forces
 #  endif
-#  ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
-#  endif
       USE mod_grid
       USE mod_ocean
 !
@@ -848,8 +845,8 @@
      &                       FORCES(ng) % ad_ustr,                      &
      &                       FORCES(ng) % ad_vstr,                      &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                       BIOPARAM(ng) % ad_bioparam,                &
+#  ifdef ADJUST_PARAM
+     &                       OCEAN(ng) % ad_p,                &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -877,8 +874,8 @@
      &                       FORCES(ng) % tl_ustr,                      &
      &                       FORCES(ng) % tl_vstr,                      &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                       BIOPARAM(ng) % tl_bioparam,                &
+#  ifdef ADJUST_PARAM
+     &                       OCEAN(ng) % tl_p,                &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -917,8 +914,8 @@
 #  ifdef ADJUST_WSTRESS
      &                             ad_ustr, ad_vstr,                    &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                             ad_bioparam,                         &
+#  ifdef ADJUST_PARAM
+     &                             ad_p,                         &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -939,8 +936,8 @@
 #  ifdef ADJUST_WSTRESS
      &                             tl_ustr, tl_vstr,                    &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                             tl_bioparam,                         &
+#  ifdef ADJUST_PARAM
+     &                             tl_p,                         &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -956,9 +953,6 @@
       USE mod_param
 #  if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       USE mod_scalars
-#  endif
-#  ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
 #  endif
 !
       USE state_addition_mod, ONLY : state_addition
@@ -992,8 +986,8 @@
       real(r8), intent(in) :: ad_ustr(LBi:,LBj:,:,:)
       real(r8), intent(in) :: ad_vstr(LBi:,LBj:,:,:)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(in) :: ad_bioparam(:,:)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(in) :: ad_p(:,:)
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1021,8 +1015,8 @@
       real(r8), intent(inout) :: tl_ustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: tl_vstr(LBi:,LBj:,:,:)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(inout) :: tl_bioparam(:,:)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: tl_p(:,:)
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1057,8 +1051,8 @@
       real(r8), intent(in) :: ad_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(in) :: ad_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(in) :: ad_bioparam(2,Nbioparam)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(in) :: ad_p(2,Nparam(ng))
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1088,8 +1082,8 @@
       real(r8), intent(inout) :: tl_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: tl_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(inout) :: tl_bioparam(2,Nbioparam)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: tl_p(2,Nparam(ng))
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1144,8 +1138,8 @@
      &                       tl_ustr, ad_ustr,                          &
      &                       tl_vstr, ad_vstr,                          &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                       tl_bioparam, ad_bioparam,                  &
+#  ifdef ADJUST_PARAM
+     &                       tl_p, ad_p,                  &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1183,8 +1177,8 @@
      &                   tl_ustr, ad_ustr,                              &
      &                   tl_vstr, ad_vstr,                              &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                   tl_bioparam, ad_bioparam,                      &
+#  ifdef ADJUST_PARAM
+     &                   tl_p, ad_p,                      &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1227,9 +1221,6 @@
 #  if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       USE mod_forces
 #  endif
-#  ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
-#  endif
       USE mod_grid
       USE mod_ocean
 !
@@ -1268,8 +1259,8 @@
      &                       FORCES(ng) % tl_ustr,                      &
      &                       FORCES(ng) % tl_vstr,                      &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                       BIOPARAM(ng) % tl_bioparam,                &
+#  ifdef ADJUST_PARAM
+     &                       OCEAN(ng) % tl_p,                &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1297,8 +1288,8 @@
      &                       FORCES(ng) % ad_ustr,                      &
      &                       FORCES(ng) % ad_vstr,                      &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                       BIOPARAM(ng) % ad_bioparam,                &
+#  ifdef ADJUST_PARAM
+     &                       OCEAN(ng) % ad_p,                &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1337,8 +1328,8 @@
 #  ifdef ADJUST_WSTRESS
      &                             tl_ustr, tl_vstr,                    &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                             tl_bioparam,                         &
+#  ifdef ADJUST_PARAM
+     &                             tl_p,                         &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1359,8 +1350,8 @@
 #  ifdef ADJUST_WSTRESS
      &                             ad_ustr, ad_vstr,                    &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                             ad_bioparam,                         &
+#  ifdef ADJUST_PARAM
+     &                             ad_p,                         &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1376,9 +1367,6 @@
       USE mod_param
 #  if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       USE mod_scalars
-#  endif
-#  ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
 #  endif
 !
       USE state_addition_mod, ONLY : state_addition
@@ -1412,8 +1400,8 @@
       real(r8), intent(in) :: tl_ustr(LBi:,LBj:,:,:)
       real(r8), intent(in) :: tl_vstr(LBi:,LBj:,:,:)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(in) :: tl_bioparam(:,:)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(:,:)
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1441,8 +1429,8 @@
       real(r8), intent(inout) :: ad_ustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: ad_vstr(LBi:,LBj:,:,:)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(inout) :: ad_bioparam(:,:)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: ad_p(:,:)
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1477,8 +1465,8 @@
       real(r8), intent(in) :: tl_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(in) :: tl_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(in) :: tl_bioparam(2,Nbioparam)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(2,Nparam(ng))
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1508,8 +1496,8 @@
       real(r8), intent(inout) :: ad_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: ad_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #   endif
-#   ifdef ADJUST_BIOPARAM
-      real(r8), intent(inout) :: ad_bioparam(2,Nbioparam)
+#   ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: ad_p(2,Nparam(ng))
 #   endif
 #   ifdef SOLVE3D
 #    ifdef ADJUST_STFLUX
@@ -1564,8 +1552,8 @@
      &                       ad_ustr, tl_ustr,                          &
      &                       ad_vstr, tl_vstr,                          &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                       ad_bioparam, tl_bioparam,                  &
+#  ifdef ADJUST_PARAM
+     &                       ad_p, tl_p,                  &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1603,8 +1591,8 @@
      &                   ad_ustr, tl_ustr,                              &
      &                   ad_vstr, tl_vstr,                              &
 #  endif
-#  ifdef ADJUST_BIOPARAM
-     &                   ad_bioparam, tl_bioparam,                      &
+#  ifdef ADJUST_PARAM
+     &                   ad_p, tl_p,                      &
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX

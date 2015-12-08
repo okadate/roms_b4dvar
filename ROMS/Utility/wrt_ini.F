@@ -349,7 +349,7 @@
 
 # if defined ADJUST_BOUNDARY || \
      defined ADJUST_WSTRESS  || defined ADJUST_STFLUX || \
-     defined ADJUST_BIOPARAM
+     defined ADJUST_PARAM
       SUBROUTINE wrt_frc (ng, Tindex, OutRec)
 !
 !=======================================================================
@@ -374,8 +374,8 @@
       USE mod_forces
       USE mod_grid
 #  endif
-#  ifdef ADJUST_BIOPARAM
-      USE mod_bioparam
+#  ifdef ADJUST_PARAM
+      USE mod_ocean
 #  endif
       USE mod_iounits
       USE mod_ncparam
@@ -383,7 +383,7 @@
       USE mod_scalars
       USE mod_stepping
 !
-# ifdef ADJUST_BIOPARAM
+# ifdef ADJUST_PARAM
       USE nf_fwrite0d_mod, ONLY : nf_fwrite0d
 # endif
 # ifdef ADJUST_BOUNDARY
@@ -661,19 +661,19 @@
       END DO
 #  endif
 
-#  if defined ADJUST_BIOPARAM && defined SOLVE3D
+#  ifdef ADJUST_PARAM
 !
 !  Write out biology parameters.
 !
-      DO itrc=1,Nbioparam
-        IF (Lbioparam(itrc)) THEN
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc)) THEN
           status=nf_fwrite0d(ng, iNLM, INI(ng)%ncid,                    &
-     &                       INI(ng)%Vid(idPbio(itrc)),                 &
+     &                       INI(ng)%Vid(idPvar(itrc)),                 &
      &                       OutRec,                                    &
-     &                       BIOPARAM(ng) % bioparam(Tindex,itrc))
+     &                       OCEAN(ng) % p(Tindex,itrc))
           IF (status.ne.nf90_noerr) THEN
             IF (Master) THEN
-              WRITE (stdout,10) TRIM(Vname(1,idPbio(itrc))), OutRec
+              WRITE (stdout,10) TRIM(Vname(1,idPvar(itrc))), OutRec
             END IF
             exit_flag=3
             ioerror=status
@@ -735,8 +735,8 @@
       USE mod_forces
       USE mod_grid
 #  endif
-#  if defined ADJUST_BIOPARAM
-      USE mod_bioparam
+#  ifdef ADJUST_PARAM
+      USE mod_ocean
 #  endif
       USE mod_iounits
       USE mod_ncparam
@@ -744,7 +744,7 @@
       USE mod_scalars
       USE mod_stepping
 !
-# ifdef ADJUST_BIOPARAM
+# ifdef ADJUST_PARAM
       USE nf_fwrite0d_mod, ONLY : nf_fwrite0d
 # endif
 # ifdef ADJUST_BOUNDARY
@@ -1018,19 +1018,19 @@
       END DO
 #  endif
 
-#  if defined ADJUST_BIOPARAM && defined SOLVE3D
+#  ifdef ADJUST_PARAM
 !
 !  Write out biology parameters.
 !
-      DO itrc=1,Nbioparam
-        IF (Lbioparam(itrc)) THEN
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc)) THEN
           status=nf_fwrite0d(ng, iNLM, INI(ng)%ncid,                    &
-     &                       INI(ng)%Vid(idPbio(itrc)),                 &
+     &                       INI(ng)%Vid(idPvar(itrc)),                 &
      &                       OutRec,                                    &
-     &                       BIOPARAM(ng) % ad_bioparam(Tindex,itrc))
+     &                       OCEAN(ng) % ad_p(Tindex,itrc))
           IF (status.ne.nf90_noerr) THEN
             IF (Master) THEN
-              WRITE (stdout,10) TRIM(Vname(1,idPbio(itrc))), OutRec
+              WRITE (stdout,10) TRIM(Vname(1,idPvar(itrc))), OutRec
             END IF
             exit_flag=3
             ioerror=status

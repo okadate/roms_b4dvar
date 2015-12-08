@@ -1276,8 +1276,9 @@
 !
 #if defined SOLVE3D && defined TS_DIF2
       Vinfo( 1)='nl_tnu2'
-      Vinfo( 2)='nonlinear model Laplacian mixing coefficient '//       &
-     &          'for tracers'
+!!    Vinfo( 2)='nonlinear model Laplacian mixing coefficient '//       &
+!!   &          'for tracers'
+      Vinfo( 2)='nonlinear model Laplacian mixing coefficient'
       Vinfo( 3)='meter2 second-1'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/trcdim/), Aval, Vinfo, ncname,                &
@@ -1342,8 +1343,9 @@
 
 #ifdef UV_VIS2
       Vinfo( 1)='nl_visc2'
-      Vinfo( 2)='nonlinear model Laplacian mixing coefficient '//       &
-     &          'for momentum'
+!!    Vinfo( 2)='nonlinear model Laplacian mixing coefficient '//       &
+!!   &          'for momentum'
+      Vinfo( 2)='nonlinear model Laplacian mixing coefficient '
       Vinfo( 3)='meter2 second-1'
       status=def_var(ng, model, ncid, varid, NF_TYPE,                   &
      &               1, (/0/), Aval, Vinfo, ncname,                     &
