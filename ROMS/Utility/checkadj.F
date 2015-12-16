@@ -101,15 +101,13 @@
      &                               'not coded, FATAL ERROR'
       END IF
 
-# ifndef ADJOINT_BIO_FENNEL
-      string=uppercase('bio_fennel')
-      ifound=INDEX(TRIM(Coptions), TRIM(string))
-      IF (ifound.ne.0) THEN
-        ic=ic+1
-        IF (Master) WRITE(stdout,20) TRIM(string),                      &
-     &                               'not coded, FATAL ERROR'
-      END IF
-# endif
+!!    string=uppercase('bio_fennel')
+!!    ifound=INDEX(TRIM(Coptions), TRIM(string))
+!!    IF (ifound.ne.0) THEN
+!!      ic=ic+1
+!!      IF (Master) WRITE(stdout,20) TRIM(string),                      &
+!!   &                               'not coded, FATAL ERROR'
+!!    END IF
 
 # ifndef NL_BULK_FLUXES
       string=uppercase('bulk_fluxes')
@@ -402,7 +400,6 @@
      &                               'not allowed, FATAL ERROR'
       END IF
 
-# ifndef ADJOINT_BIO_FENNEL
       string=uppercase('sediment')
       ifound=INDEX(TRIM(Coptions), TRIM(string))
       IF (ifound.ne.0) THEN
@@ -410,7 +407,6 @@
         IF (Master) WRITE(stdout,20) TRIM(string),                      &
      &                               'not coded, FATAL ERROR'
       END IF
-# endif
 
       string=uppercase('sed_dens')
       ifound=INDEX(TRIM(Coptions), TRIM(string))
