@@ -341,6 +341,14 @@
             END DO
 !$OMP BARRIER
           END DO
+# ifdef OKADA2015
+!
+!-----------------------------------------------------------------------
+!  PASS adjoint vertically integrated primitive equations for the
+!  free-surface and barotropic momentum components. (Okada, 2015)
+!-----------------------------------------------------------------------
+!
+# else
 !
 !-----------------------------------------------------------------------
 !  Solve adjoint vertically integrated primitive equations for the
@@ -416,7 +424,7 @@
             END DO
 
           END DO LOOP_2D
-
+# endif
         END IF TIME_STEP
 
 # if (defined FOUR_DVAR    && !defined IS4DVAR_SENSITIVITY) && \

@@ -448,6 +448,14 @@
           END DO
 !$OMP BARRIER
         END DO
+# ifdef OKADA2015
+!
+!-----------------------------------------------------------------------
+!  PASS the vertically integrated primitive equations for the 
+!  free-surface and barotropic momentum components. (Okada, 2015)
+!-----------------------------------------------------------------------
+!
+# else
 !
 !-----------------------------------------------------------------------
 !  Solve the vertically integrated primitive equations for the
@@ -512,6 +520,7 @@
           END DO
 
         END DO LOOP_2D
+# endif
 !
 !-----------------------------------------------------------------------
 !  Recompute depths and thicknesses using the new time filtered
