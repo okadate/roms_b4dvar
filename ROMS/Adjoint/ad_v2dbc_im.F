@@ -994,6 +994,7 @@
 #  else
 !>            tl_bry_cor=0.0_r8
 !>
+              ad_bry_cor=0.0_r8
 #  endif
               IF (ad_LBC(inorth,isFsur,ng)%acquire) THEN
 #  ifdef ADJUST_BOUNDARY
@@ -1284,6 +1285,7 @@
 #  else
 !>            tl_bry_cor=0.0_r8
 !>
+              ad_bry_cor=0.0_r8
 #  endif
               IF (ad_LBC(inorth,isFsur,ng)%acquire) THEN
 #  ifdef ADJUST_BOUNDARY
@@ -2223,7 +2225,7 @@
 # else
 !>            bry_cor=0.0_r8
 !>
-              tl_bry_cor=0.0_r8
+              ad_bry_cor=0.0_r8
 # endif
               IF (ad_LBC(isouth,isFsur,ng)%acquire) THEN
 # ifdef ADJUST_BOUNDARY
