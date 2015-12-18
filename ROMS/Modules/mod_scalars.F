@@ -930,7 +930,7 @@
 !
 !  Logical switches to process parameters during 4DVar adjustments.
 !
-        logical, allocatable :: Lparam(:)
+        logical, allocatable :: Lparam(:,:)
 #endif
 
 #ifdef ADJUST_STFLUX
@@ -1951,6 +1951,10 @@
       allocate ( Nfrec(Ngrids) )
       allocate ( SFcount(Ngrids) )
 
+#ifdef ADJUST_PARAM
+      allocate ( Lparam(Mparam,Ngrids) )
+#endif
+
 #ifdef ADJUST_STFLUX
       allocate ( Lstflux(MT,Ngrids) )
 #endif
@@ -2215,6 +2219,19 @@
           DO i=1,4
             Lobc(i,j,ng)=.FALSE.
           END DO
+        END DO
+      END DO
+#endif
+#ifdef ADJUST_PARAM
+!
+!-----------------------------------------------------------------------
+!  Initilize switches to process paramaters for 4DVar
+!  adjustments.
+!-----------------------------------------------------------------------
+!
+      DO ng=1,Ngrids
+        DO i=1,MT
+          Lparam(i,ng)=.FALSE.
         END DO
       END DO
 #endif

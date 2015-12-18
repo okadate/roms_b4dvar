@@ -37,6 +37,9 @@
 # if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       logical :: got_frc_adjust
 # endif
+# ifdef ADJUST_PARAM
+      logical :: got_ocean_time
+# endif
       logical :: got_var(NV)
 
       integer, parameter :: Natt = 25
@@ -49,6 +52,9 @@
 # endif
 # if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       integer :: frecdim
+# endif
+# ifdef ADJUST_PARAM
+      integer :: recdim
 # endif
       integer :: DimIDs(32), Vsize(4)
 # ifdef ADJUST_BOUNDARY
@@ -70,7 +76,8 @@
       SourceFile='def_ini.F'
 
 # if defined ADJUST_BOUNDARY || \
-     defined ADJUST_STFLUX   || defined ADJUST_WSTRESS
+     defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
+     defined ADJUST_PARAM
 !
 !=======================================================================
 !  Open existing nonlinear model initial conditions and define new
@@ -150,6 +157,16 @@
           END IF
         END DO
 #  endif
+#  ifdef ADJUST_PARAM
+        DO itrc=1,Nparam(ng)
+          IF (Lparam(itrc,ng)) THEN
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idPvar(itrc)))) THEN
+              got_var(idPvar(itrc))=.TRUE.
+              INI(ng)%Vid(idPvar(itrc))=var_id(i)
+            END IF
+          END IF
+        END DO
+#  endif
       END DO
 
 #  ifdef ADJUST_BOUNDARY
@@ -172,6 +189,13 @@
       DO itrc=1,NT(ng)
         IF (Lstflux(itrc,ng)) THEN
           IF (.not.got_var(idTsur(itrc))) Ldefine=.TRUE.
+        END IF
+      END DO
+#  endif
+#  ifdef ADJUST_PARAM
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          IF (.not.got_var(idPvar(itrc))) Ldefine=.TRUE.
         END IF
       END DO
 #  endif
@@ -207,6 +231,9 @@
 #  endif
 #  if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
         got_frc_adjust=.FALSE.
+#  endif
+#  ifdef ADJUST_PARAM
+        got_ocean_time=.FALSE.
 #  endif
         DO i=1,n_dim
           SELECT CASE (TRIM(ADJUSTL(dim_name(i))))
@@ -245,6 +272,11 @@
             CASE ('obc_adjust')
               brecdim=dim_id(i)
               got_obc_adjust=.TRUE.
+#  endif
+#  ifdef ADJUST_PARAM
+            CASE ('ocean_time')
+              recdim=dim_id(i)
+              got_ocean_time=.TRUE.
 #  endif
           END SELECT
         END DO
@@ -334,6 +366,24 @@
 !  in addition to initialization time.
 !-----------------------------------------------------------------------
 
+#  ifdef ADJUST_PARAM
+!
+!  Define parameters.
+!
+        DO itrc=1,Nparam(ng)
+          IF (.not.got_var(idPvar(itrc)).and.Lparam(itrc,ng)) THEN
+            Vinfo( 1)=Vname(1,idPvar(itrc))
+            Vinfo( 2)=Vname(2,idPvar(itrc))
+            Vinfo( 3)=Vname(3,idPvar(itrc))
+            Vinfo(14)=Vname(4,idPvar(itrc))
+            Vinfo(16)=Vname(1,idtime)
+            status=def_var(ng, iNLM, INI(ng)%ncid,                      &
+     &                     INI(ng)%Vid(idPvar(itrc)), NF_TYPE,          &
+     &                     1, (/recdim/), Aval, Vinfo, ncname)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+#  endif
 #  ifdef ADJUST_BOUNDARY
 !
 !  Define free-surface open boundaries.

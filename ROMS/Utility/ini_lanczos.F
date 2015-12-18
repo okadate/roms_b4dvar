@@ -112,8 +112,8 @@
      &                       FORCES(ng) % tl_ustr,                      &
      &                       FORCES(ng) % tl_vstr,                      &
 # endif
-# ifdef ADJUST_BIOPARAM
-     &                       OCEAN(ng) % tl_p,                &
+# ifdef ADJUST_PARAM
+     &                       OCEAN(ng) % tl_p,                          &
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                       FORCES(ng) % tl_tflux,                     &
@@ -171,8 +171,8 @@
 # ifdef ADJUST_WSTRESS
      &                             tl_ustr, tl_vstr,                    &
 # endif
-# ifdef ADJUST_BIOPARAM
-     &                             tl_p,                         &
+# ifdef ADJUST_PARAM
+     &                             tl_p,                                &
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                             tl_tflux,                            &
@@ -515,8 +515,8 @@
 # ifdef ADJUST_WSTRESS
      &                       tl_ustr, tl_vstr,                          &
 # endif
-# ifdef ADJUST_BIOPARAM
-     &                       tl_p,                               &
+# ifdef ADJUST_PARAM
+     &                       tl_p,                                      &
 # endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                       tl_tflux,                                  &

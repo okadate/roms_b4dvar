@@ -2321,7 +2321,7 @@
 #endif
 #ifdef ADJUST_PARAM
       DO i=1,Mparam
-        idSvar(isPvar(i))=idTvar(i)
+        idSvar(isPvar(i))=idPvar(i)
       END DO
 #endif
 #ifdef ADJUST_BOUNDARY
@@ -2352,6 +2352,31 @@
      &        TRIM(Vname(1,varid)), ', scalar, series'
         WRITE (Vname(5,varid),'(a)')                                    &
      &        TRIM(ADJUSTL(Vname(5,idSvar(i))))
+      END DO
+#endif
+#ifdef ADJUST_PARAM
+!
+!-----------------------------------------------------------------------
+!
+!-----------------------------------------------------------------------
+!
+      DO i=1,Mparam
+        varid=varid+1
+        IF (varid.gt.MV) THEN
+          WRITE (stdout,60) MV, varid
+          STOP
+        END IF
+        idPvar(i)=varid
+        DO ng=1,Ngrids
+          Fscale(varid,ng)=1.0_r8
+          Iinfo(1,varid,ng)=0
+        END DO
+        WRITE (Vname(1,varid),'(a,i2.2)') 'P', i
+        WRITE (Vname(2,varid),'(a)') 'Parameter of control variables'
+        WRITE (Vname(3,varid),'(a)') 'units of the parameter'
+        WRITE (Vname(4,varid),'(a,a)')                                  &
+     &        TRIM(Vname(1,varid)), ', scalar, series'
+        WRITE (Vname(5,varid),'(a)') '1.e+37f'
       END DO
 #endif
 !

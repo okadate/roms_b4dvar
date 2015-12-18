@@ -449,7 +449,7 @@
         Vinfo(24)='_FillValue'
         Aval(6)=spval
 #  endif
-        status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idwsin),    &
+        status=def_var(ng, iNLM, FLT(ng)%ncid, FLT(ng)%Vid(idwsin),     &
      &                 NF_FOUT, 2, fgrd, Aval, Vinfo, ncname)
         IF (exit_flag.ne.NoError) RETURN
 # endif

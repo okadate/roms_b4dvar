@@ -113,6 +113,23 @@
      &                      ncid = ITL(ng)%ncid,                        &
      &                      varid = ITL(ng)%Vid(idtime))
       IF (exit_flag.ne.NoError) RETURN
+
+#ifdef ADJUST_PARAM
+!
+!  Write out model parameters.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          CALL netcdf_put_fvar (ng, iTLM, ITL(ng)%name,                 &
+     &                          TRIM(Vname(1,idPvar(itrc))),            &
+     &                          OCEAN(ng) % tl_p(Tindex,itrc),          &
+     &                          (/OutRec/), (/1/),                      &
+     &                          ncid = ITL(ng)%ncid,                    &
+     &                          varid = ITL(ng)%Vid(idPvar(itrc)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+#endif
 !
 !  Write out free-surface (m)
 !

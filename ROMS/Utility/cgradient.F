@@ -2325,7 +2325,7 @@
 !  Biology parameter.
 !
         DO it=1,Nparam(ng)
-          IF (Lparam(it)) THEN
+          IF (Lparam(it,ng)) THEN
             tl_p(Lout,it)=d_p(it)
           END IF
         END DO
@@ -3113,7 +3113,7 @@
 !  Read in biology parameter.
 !
       DO it=1,Nparam(ng)
-        IF (Lparam(it)) THEN
+        IF (Lparam(it,ng)) THEN
           CALL netcdf_inq_varid (ng, model, ncname,                     &
      &                           Vname(1,idPvar(it)), ncid, varid)
           IF (exit_flag.ne.NoError) RETURN
@@ -3856,10 +3856,10 @@
 
 # ifdef ADJUST_PARAM
 !
-!  Biology parameter.
+!  Model parameter.
 !
       DO it=1,Nparam(ng)
-        IF (Lparam(it)) THEN
+        IF (Lparam(it,ng)) THEN
           d_p(it)=ad_p(Lnew,it)
         END IF
       END DO
@@ -4667,7 +4667,7 @@
 !  Biology parameter.
 !
       DO it=1,Nparam(ng)
-        IF (Lparam(it)) THEN
+        IF (Lparam(it,ng)) THEN
           ad_p(Lnew,it)=ad_p(Lnew,it)-ad_p(Lold,it)*cg_Gnorm(outLoop)
         END IF
       END DO
@@ -8238,4 +8238,3 @@
       END SUBROUTINE precond
 #endif
       END MODULE cgradient_mod
-

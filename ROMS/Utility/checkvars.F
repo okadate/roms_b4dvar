@@ -673,40 +673,40 @@
 # endif
 # if defined BIO_FENNEL && defined DIAGENESIS
       DO itrc=1,NBGCPW
-        IF (.not.have_var(idBpw(itrc)).and.                           &
+        IF (.not.have_var(idBpw(itrc)).and.                             &
      &      get_var(idBpw(itrc))) THEN
           IF (Master) WRITE (stdout,10) string,                         &
-     &                                  TRIM(Vname(1,idBpw(itrc))),   &
+     &                                  TRIM(Vname(1,idBpw(itrc))),     &
      &                                  TRIM(ncname)
           exit_flag=2
           RETURN
         END IF
       END DO
       DO itrc=1,NBGCSM
-        IF (.not.have_var(idBsm(itrc)).and.                           &
+        IF (.not.have_var(idBsm(itrc)).and.                             &
      &      get_var(idBsm(itrc))) THEN
           IF (Master) WRITE (stdout,10) string,                         &
-     &                                  TRIM(Vname(1,idBsm(itrc))),   &
+     &                                  TRIM(Vname(1,idBsm(itrc))),     &
      &                                  TRIM(ncname)
           exit_flag=2
           RETURN
         END IF
       END DO
       DO itrc=1,NBGCPW
-        IF (.not.have_var(idFpw(itrc)).and.                            &
+        IF (.not.have_var(idFpw(itrc)).and.                             &
      &      get_var(idFpw(itrc))) THEN
           IF (Master) WRITE (stdout,10) string,                         &
-     &                                  TRIM(Vname(1,idFpw(itrc))),    &
+     &                                  TRIM(Vname(1,idFpw(itrc))),     &
      &                                  TRIM(ncname)
           exit_flag=2
           RETURN
         END IF
       END DO
       DO itrc=1,NBGCSM
-        IF (.not.have_var(idFsm(itrc)).and.                            &
+        IF (.not.have_var(idFsm(itrc)).and.                             &
      &      get_var(idFsm(itrc))) THEN
           IF (Master) WRITE (stdout,10) string,                         &
-     &                                  TRIM(Vname(1,idFsm(itrc))),    &
+     &                                  TRIM(Vname(1,idFsm(itrc))),     &
      &                                  TRIM(ncname)
           exit_flag=2
           RETURN

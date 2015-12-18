@@ -23,7 +23,7 @@
 !    Wijsman, J. W. M., Herman, P. M. J., Middelburg, J. J., &         !
 !      Soetaert, K. (2002). A Model for Early Diagenetic Processes     !
 !      in Sediments of the Continental Shelf of the Black Sea.         !
-!      Estuarine, Coastal and Shelf Science, 54(3), 403–421.           !
+!      Estuarine, Coastal and Shelf Science, 54(3), 403421.           !
 !      doi:10.1006/ecss.2000.0655                                      !
 !                                                                      !
 !    Berg, P., Rysgaard, S. and Thamdrup, B. 2003: Dynamic Modeling    !
@@ -210,7 +210,7 @@
         END DO
 !
         DO k=0,Nbed-1
-          porod(i,k)=(poro(i,k)*dz(i,k+1)+                                &
+          porod(i,k)=(poro(i,k)*dz(i,k+1)+                              &
      &                poro(i,k+1)*dz(i,k) )*0.5d0/dzd(i,k)
         END DO
         porod(i,Nbed)=poro(i,Nbed)
@@ -566,7 +566,7 @@
             DO k=0,Nbed
               fac=poro(i,k)+dens*(1.0d0-poro(i,k))*Kads(i,k,itrc)
               Thomas_b(k)=1.0d0+Thomas_a(k)+Thomas_c(k)
-              Thomas_d(k)=pw(i,k,itrc)!+                                 &
+              Thomas_d(k)=pw(i,k,itrc)!+                                &
     !&                    irrigation(i,k,itrc)*dtdia/fac
     !&                    (pwflux(i,k,itrc)+irrigation(i,k,itrc))*dtdia/fac
             END DO
@@ -672,24 +672,24 @@
 !  - Wijsman
 !
 !             R(1)=pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KsO2)
-!             R(2)=pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KsNO3)*                   &
+!             R(2)=pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KsNO3)*                 &
 !      &           (1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2dn))
-!             R(3)=sm(i,k,iMnOA)/(sm(i,k,iMnOA)+KsMnO2)*                  &
-!      &           (1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*           &
+!             R(3)=sm(i,k,iMnOA)/(sm(i,k,iMnOA)+KsMnO2)*                &
+!      &           (1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*         &
 !      &           (1.0d0-pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KinNO3))
-!             R(4)=sm(i,k,iFeOA)/(sm(i,k,iFeOA)+KsFeOH)*                  &
-!      &           (1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*           &
-!      &           (1.0d0-pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KinNO3))*          &
+!             R(4)=sm(i,k,iFeOA)/(sm(i,k,iFeOA)+KsFeOH)*                &
+!      &           (1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*         &
+!      &           (1.0d0-pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KinNO3))*        &
 !      &           (1.0d0-sm(i,k,iMnOA)/(sm(i,k,iMnOA)+KinMnO2))
-!             R(5)=pw(i,k,iwSO4)/(pw(i,k,iwSO4)+KsSO4)*                   &
-!      &           (1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*           &
-!      &           (1.0d0-pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KinNO3))*          &
-!      &           (1.0d0-sm(i,k,iMnOA)/(sm(i,k,iMnOA)+KinMnO2))*         &
+!             R(5)=pw(i,k,iwSO4)/(pw(i,k,iwSO4)+KsSO4)*                 &
+!      &           (1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*         &
+!      &           (1.0d0-pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KinNO3))*        &
+!      &           (1.0d0-sm(i,k,iMnOA)/(sm(i,k,iMnOA)+KinMnO2))*       &
 !      &           (1.0d0-sm(i,k,iFeOA)/(sm(i,k,iFeOA)+KinFeOH))
-!             R(6)=(1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*           &
-!      &           (1.0d0-pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KinNO3))*          &
-!      &           (1.0d0-sm(i,k,iMnOA)/(sm(i,k,iMnOA)+KinMnO2))*         &
-!      &           (1.0d0-sm(i,k,iFeOA)/(sm(i,k,iFeOA)+KinFeOH))*         &
+!             R(6)=(1.0d0-pw(i,k,iwO2_)/(pw(i,k,iwO2_)+KinO2))*         &
+!      &           (1.0d0-pw(i,k,iwNO3)/(pw(i,k,iwNO3)+KinNO3))*        &
+!      &           (1.0d0-sm(i,k,iMnOA)/(sm(i,k,iMnOA)+KinMnO2))*       &
+!      &           (1.0d0-sm(i,k,iFeOA)/(sm(i,k,iFeOA)+KinFeOH))*       &
 !      &           (1.0d0-pw(i,k,iwSO4)/(pw(i,k,iwSO4)+KinSO4))
 !
 !  - Fossing

@@ -149,7 +149,7 @@
      &                        LBi, UBi, LBj, UBj, LBk, UBk,             &
      &                        CosAngler, SinAngler,                     &
 # ifdef MASKING
-     &                        rmask_full,                                 &
+     &                        rmask_full,                               &
 # endif
      &                        Uinp, Vinp, Uout, Vout)
 !***********************************************************************

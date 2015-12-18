@@ -910,11 +910,11 @@
      &                   CLIMA(ng) % uclmG)
         IF (exit_flag.ne.NoError) RETURN
 !
-        CALL get_3dfldr (ng, iADM, idVclm, CLM(ng)%ncid,                  &
-     &                   1, CLM(ng), update(1),                           &
-     &                   LBi, UBi, LBj, UBj, 1, N(ng), 2, 1,              &
+        CALL get_3dfldr (ng, iADM, idVclm, CLM(ng)%ncid,                &
+     &                   1, CLM(ng), update(1),                         &
+     &                   LBi, UBi, LBj, UBj, 1, N(ng), 2, 1,            &
 #   ifdef MASKING
-     &                   GRID(ng) % vmask,                                &
+     &                   GRID(ng) % vmask,                              &
 #   endif
      &                   CLIMA(ng) % vclmG)
         IF (exit_flag.ne.NoError) RETURN

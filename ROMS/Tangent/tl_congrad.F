@@ -440,7 +440,7 @@
 !>            IF (Lprecond.and.(outLoop.gt.1)) THEN
 !>              Lscale=2                 ! SQRT spectral LMP
 !>              Ltrans=.FALSE.
-!>              CALL rprecond(ng, Lscale, Ltrans, outLoop, NinnLoop,     &
+!>              CALL rprecond(ng, Lscale, Ltrans, outLoop, NinnLoop,    &
 !>   &                        ADmodVal)
 !>            END IF
 !>

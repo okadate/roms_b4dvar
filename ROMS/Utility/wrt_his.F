@@ -127,6 +127,23 @@
      &                      varid = HIS(ng)%Vid(idtime))
       IF (exit_flag.ne.NoError) RETURN
 
+#ifdef ADJUST_PARAM
+!
+!  Write out model parameters.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          CALL netcdf_put_fvar (ng, iNLM, HIS(ng)%name,                 &
+     &                          TRIM(Vname(1,idPvar(itrc))),            &
+     &                          OCEAN(ng) % p(NOUT,itrc),               &
+     &                          (/HIS(ng)%Rindex/), (/1/),              &
+     &                          ncid = HIS(ng)%ncid,                    &
+     &                          varid = HIS(ng)%Vid(idPvar(itrc)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+#endif
+
 #if defined SEDIMENT && defined SED_MORPH
 !
 !  Write out time-dependent bathymetry (m)

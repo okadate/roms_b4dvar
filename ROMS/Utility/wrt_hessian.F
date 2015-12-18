@@ -104,6 +104,23 @@
      &                      ncid = HSS(ng)%ncid,                        &
      &                      varid = HSS(ng)%Vid(idtime))
       IF (exit_flag.ne.NoError) RETURN
+
+#ifdef ADJUST_PARAM
+!
+!  Write out model parameters.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          CALL netcdf_put_fvar (ng, iADM, HSS(ng)%name,                 &
+     &                          TRIM(Vname(1,idPvar(itrc))),            &
+     &                          OCEAN(ng) % ad_p(nout,itrc),            &
+     &                          (/HSS(ng)%Rindex/), (/1/),              &
+     &                          ncid = HSS(ng)%ncid,                    &
+     &                          varid = HSS(ng)%Vid(idPvar(itrc)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+#endif
 !
 !  Write out free-surface.
 !

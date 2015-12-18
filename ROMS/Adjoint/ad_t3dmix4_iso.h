@@ -1426,8 +1426,8 @@
      &            CompositeGrid(iwest ,ng).or.EWperiodic(ng))) THEN
           IF (DOMAIN(ng)%SouthWest_Corner(tile)) THEN
             DO k=1,N(ng)
-!>            tl_LapT(Istr-1,Jstr-1,k)=0.5_r8*                        &
-!>   &                                 (tl_LapT(Istr  ,Jstr-1,k)+     &
+!>            tl_LapT(Istr-1,Jstr-1,k)=0.5_r8*                          &
+!>   &                                 (tl_LapT(Istr  ,Jstr-1,k)+       &
 !>                                      tl_LapT(Istr-1,Jstr  ,k))
 !>
               adfac=0.5_r8*ad_LapT(Istr-1,Jstr-1,k)

@@ -2916,13 +2916,13 @@
 #  ifdef DIAGENESIS
         DO i=1,NBGCPW
           IF (.not.got_var(idBpw(i)).and.Aout(idBpw(i),ng)) THEN
-            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBpw(i))),     &
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBpw(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN
           END IF
           IF (.not.got_var(idFpw(i)).and.Aout(idFpw(i),ng)) THEN
-            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFpw(i))),     &
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFpw(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN
@@ -2930,13 +2930,13 @@
         END DO
         DO i=1,NBGCSM
           IF (.not.got_var(idBsm(i)).and.Aout(idBsm(i),ng)) THEN
-            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBsm(i))),     &
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idBsm(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN
           END IF
           IF (.not.got_var(idFsm(i)).and.Aout(idFsm(i),ng)) THEN
-            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFsm(i))),     &
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idFsm(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN

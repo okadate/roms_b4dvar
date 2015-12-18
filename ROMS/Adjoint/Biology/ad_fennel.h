@@ -79,33 +79,40 @@
       CALL wclock_on (ng, iADM, 15)
 #endif
       CALL ad_biology_tile (ng, tile,                                   &
-     &                      LBi, UBi, LBj, UBj, N(ng), NT(ng),          &
-     &                      IminS, ImaxS, JminS, JmaxS,                 &
-     &                      nstp(ng), nnew(ng),                         &
-#ifdef MASKING
-     &                      GRID(ng) % rmask,                           &
+     &                   LBi, UBi, LBj, UBj, N(ng), NT(ng),             &
+#ifdef ADJUST_PARAM
+     &                   Nparam(ng),                                    &
 #endif
-     &                      GRID(ng) % Hz,                              &
-     &                      GRID(ng) % ad_Hz,                           &
-     &                      GRID(ng) % z_r,                             &
-     &                      GRID(ng) % ad_z_r,                          &
-     &                      GRID(ng) % z_w,                             &
-     &                      GRID(ng) % ad_z_w,                          &
-     &                      FORCES(ng) % srflx,                         &
-     &                      FORCES(ng) % ad_srflx,                      &
+     &                   IminS, ImaxS, JminS, JmaxS,                    &
+     &                   nstp(ng), nnew(ng),                            &
+#ifdef MASKING
+     &                   GRID(ng) % rmask,                              &
+#endif
+     &                   GRID(ng) % Hz,                                 &
+     &                   GRID(ng) % ad_Hz,                              &
+     &                   GRID(ng) % z_r,                                &
+     &                   GRID(ng) % ad_z_r,                             &
+     &                   GRID(ng) % z_w,                                &
+     &                   GRID(ng) % ad_z_w,                             &
+     &                   FORCES(ng) % srflx,                            &
+     &                   FORCES(ng) % ad_srflx,                         &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
-     &                      FORCES(ng) % Uwind,                         &
-     &                      FORCES(ng) % Vwind,                         &
+     &                   FORCES(ng) % Uwind,                            &
+     &                   FORCES(ng) % Vwind,                            &
 # else
-     &                      FORCES(ng) % sustr,                         &
-     &                      FORCES(ng) % ad_sustr,                      &
-     &                      FORCES(ng) % svstr,                         &
-     &                      FORCES(ng) % ad_svstr,                      &
+     &                   FORCES(ng) % sustr,                            &
+     &                   FORCES(ng) % ad_sustr,                         &
+     &                   FORCES(ng) % svstr,                            &
+     &                   FORCES(ng) % ad_svstr,                         &
 # endif
 #endif
-     &                      OCEAN(ng) % t,                              &
-     &                      OCEAN(ng) % ad_t)
+#ifdef ADJUST_PARAM
+     &                   OCEAN(ng) % p,                                 &
+     &                   OCEAN(ng) % ad_p,                              &
+#endif
+     &                   OCEAN(ng) % t,                                 &
+     &                   OCEAN(ng) % ad_t)
 
 #ifdef PROFILE
       CALL wclock_off (ng, iADM, 15)
@@ -115,25 +122,31 @@
 !
 !-----------------------------------------------------------------------
       SUBROUTINE ad_biology_tile (ng, tile,                             &
-     &                            LBi, UBi, LBj, UBj, UBk, UBt,         &
-     &                            IminS, ImaxS, JminS, JmaxS,           &
-     &                            nstp, nnew,                           &
-#ifdef MASKING
-     &                            rmask,                                &
+     &                         LBi, UBi, LBj, UBj, UBk, UBt,            &
+#ifdef ADJUST_PARAM
+     &                         UBp,                                     &
 #endif
-     &                            Hz, ad_Hz,                            &
-     &                            z_r, ad_z_r,                          &
-     &                            z_w, ad_z_w,                          &
-     &                            srflx, ad_srflx,                      &
+     &                         IminS, ImaxS, JminS, JmaxS,              &
+     &                         nstp, nnew,                              &
+#ifdef MASKING
+     &                         rmask,                                   &
+#endif
+     &                         Hz, ad_Hz,                               &
+     &                         z_r, ad_z_r,                             &
+     &                         z_w, ad_z_w,                             &
+     &                         srflx, ad_srflx,                         &
 #ifdef OXYGEN
 # ifdef BULK_FLUXES
-     &                            Uwind, Vwind,                         &
+     &                         Uwind, Vwind,                            &
 # else
-     &                            sustr, ad_sustr,                      &
-     &                            svstr, ad_svstr,                      &
+     &                         sustr, ad_sustr,                         &
+     &                         svstr, ad_svstr,                         &
 # endif
 #endif
-     &                            t, ad_t)
+#ifdef ADJUST_PARAM
+     &                         p, ad_p,                                 &
+#endif
+     &                         t, ad_t)
 !-----------------------------------------------------------------------
 !
       USE mod_param
@@ -147,6 +160,9 @@
 !
       integer, intent(in) :: ng, tile
       integer, intent(in) :: LBi, UBi, LBj, UBj, UBk, UBt
+#ifdef ADJUST_PARAM
+      integer, intent(in) :: UBp
+#endif
       integer, intent(in) :: IminS, ImaxS, JminS, JmaxS
       integer, intent(in) :: nstp, nnew
 
@@ -175,6 +191,10 @@
       real(r8), intent(inout) :: ad_svstr(LBi:,LBj:)
 #  endif
 # endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: p(:,:)
+      real(r8), intent(inout) :: ad_p(:,:)
+# endif
       real(r8), intent(inout) :: t(LBi:,LBj:,:,:,:)
       real(r8), intent(inout) :: ad_t(LBi:,LBj:,:,:,:)
 #else
@@ -201,6 +221,10 @@
       real(r8), intent(inout) :: ad_sustr(LBi:UBi,LBj:UBj)
       real(r8), intent(inout) :: ad_svstr(LBi:UBi,LBj:UBj)
 #  endif
+# endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: p(2,UBp)
+      real(r8), intent(inout) :: ad_p(2,UBp)
 # endif
       real(r8), intent(inout) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
       real(r8), intent(inout) :: ad_t(LBi:UBi,LBj:UBj,UBk,3,UBt)
@@ -373,15 +397,19 @@
 !  Set vertical sinking velocity vector in the same order as the
 !  identification vector, IDSINK.
 !
+#ifdef ADJUST_PARAM
+      wPhy(ng)=p(nstp,iwPhy)
+      wSDet(ng)=p(nstp,iwSDet)
+      wLDet(ng)=p(nstp,iwLDet)
+      
+      ad_wPhy(ng)=0.0_r8
+      ad_wSDet(ng)=0.0_r8
+      ad_wLDet(ng)=0.0_r8
+#endif
       Wbio(1)=wPhy(ng)                ! phytoplankton
       Wbio(2)=wPhy(ng)                ! chlorophyll
       Wbio(3)=wSDet(ng)               ! small Nitrogen-detritus
       Wbio(4)=wLDet(ng)               ! large Nitrogen-detritus
-
-!>    tl_Wbio(1)=tl_wPhy(ng)                ! phytoplankton
-!>    tl_Wbio(2)=tl_wPhy(ng)                ! chlorophyll
-!>    tl_Wbio(3)=tl_wSDet(ng)               ! small Nitrogen-detritus
-!>    tl_Wbio(4)=tl_wLDet(ng)               ! large Nitrogen-detritus
 
       ad_Wbio(1)=0.0_r8
       ad_Wbio(2)=0.0_r8
@@ -390,9 +418,6 @@
 #ifdef PHOSPHORUS
       Wbio(5)=wSDet(ng)               ! small Phosphorus-detritus
       Wbio(6)=wLDet(ng)               ! large Phosphorus-detritus
-
-!>    tl_Wbio(5)=tl_wSDet(ng)               ! small Phosphorus-detritus
-!>    tl_Wbio(6)=tl_wLDet(ng)               ! large Phosphorus-detritus
 
       ad_Wbio(5)=0.0_r8
       ad_Wbio(6)=0.0_r8
@@ -722,11 +747,43 @@
 !
 !  Set adjoint parameters
 !
+#ifdef PHOSPHORUS
+!>    tl_Wbio(6)=tl_wLDet(ng)
+      ad_wLDet(ng)=ad_wLDet(ng)+ad_Wbio(6)
+      ad_Wbio(6)=0.0_r8
 
+!>    tl_Wbio(5)=tl_wSDet(ng)
+      ad_wSDet(ng)=ad_wSDet(ng)+ad_Wbio(5)
+      ad_Wbio(5)=0.0_r8
+#endif
+!>    tl_Wbio(4)=tl_wLDet(ng)
+      ad_wLDet(ng)=ad_wLDet(ng)+ad_Wbio(4)
+      ad_Wbio(4)=0.0_r8
 
+!>    tl_Wbio(3)=tl_wSDet(ng)
+      ad_wSDet(ng)=ad_wSDet(ng)+ad_Wbio(3)
+      ad_Wbio(3)=0.0_r8
 
+!>    tl_Wbio(2)=tl_wPhy(ng)
+      ad_wPhy(ng)=ad_wPhy(ng)+ad_Wbio(2)
+      ad_Wbio(2)=0.0_r8
 
+!>    tl_Wbio(1)=tl_wPhy(ng)
+      ad_wPhy(ng)=ad_wPhy(ng)+ad_Wbio(1)
+      ad_Wbio(1)=0.0_r8
+#ifdef ADJUST_PARAM
+!>    tl_wLDet(ng)=tl_p(nstp,iwLDet)
+      ad_p(nstp,iwLDet)=ad_p(nstp,iwLDet)+ad_wLDet(ng)
+      ad_wLDet(ng)=0.0_r8
+      
+!>    tl_wSDet(ng)=tl_p(nstp,iwSDet)
+      ad_p(nstp,iwSDet)=ad_p(nstp,iwSDet)+ad_wSDet(ng)
+      ad_wSDet(ng)=0.0_r8
 
+!>    tl_wPhy(ng)=tl_p(nstp,iwPhy)
+      ad_p(nstp,iwPhy)=ad_p(nstp,iwPhy)+ad_wPhy(ng)
+      ad_wPhy(ng)=0.0_r8
+#endif
 
       RETURN
       END SUBROUTINE ad_biology_tile

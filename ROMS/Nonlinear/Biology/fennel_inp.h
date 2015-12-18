@@ -17,6 +17,9 @@
       USE mod_biology
       USE mod_ncparam
       USE mod_scalars
+#ifdef ADJUST_PARAM
+      USE mod_ocean
+#endif
 !
       implicit none
 !
@@ -181,17 +184,14 @@
               Npts=load_r(Nval, Rval, Ngrids, wPhy)
             CASE ('wLDet')
               Npts=load_r(Nval, Rval, Ngrids, wLDet)
-#ifdef ADJUST_PARAM
-!!            p(1,iwLDet)=wLDet(ng)
-#endif
             CASE ('wSDet')
               Npts=load_r(Nval, Rval, Ngrids, wSDet)
-            CASE ('pCO2air')
-              Npts=load_r(Nval, Rval, Ngrids, pCO2air)
 #ifdef ADJUST_PARAM
             CASE ('Lparam')
-              Npts=load_l(Nval, Cval, Nparam(ng), Lparam)
+              Npts=load_l(Nval, Cval, Nparam*Ngrids, Lparam)
 #endif
+            CASE ('pCO2air')
+              Npts=load_r(Nval, Rval, Ngrids, pCO2air)
             CASE ('TNU2')
               Npts=load_r(Nval, Rval, NBT*Ngrids, Rbio)
               DO ng=1,Ngrids
@@ -920,7 +920,11 @@
             WRITE (out,80) R_SODf(ng), 'R_SODf', 'R_SODf'
             WRITE (out,80) R_NH4f(ng), 'R_NH4f', 'R_NH4f'
             WRITE (out,80) R_PO4f(ng), 'R_PO4f', 'R_PO4f'
-
+#ifdef ADJUST_PARAM
+            DO i=1,Nparam(ng)
+              WRITE (out,110) Lparam(i,ng), 'Lparam', i, 'Lparam', i,' '
+            END DO
+#endif
             WRITE (out,70) BioIter(ng), 'BioIter',                      &
      &            'Number of iterations for nonlinear convergence.'
             WRITE (out,80) AttSW(ng), 'AttSW',                          &

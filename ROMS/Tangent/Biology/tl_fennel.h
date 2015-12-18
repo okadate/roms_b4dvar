@@ -102,6 +102,9 @@
 #endif
       CALL tl_biology_tile (ng, tile,                                   &
      &                   LBi, UBi, LBj, UBj, N(ng), NT(ng),             &
+#ifdef ADJUST_PARAM
+     &                   Nparam(ng),                                    &
+#endif
      &                   IminS, ImaxS, JminS, JmaxS,                    &
      &                   nstp(ng), nnew(ng),                            &
 #ifdef MASKING
@@ -126,6 +129,10 @@
      &                   FORCES(ng) % tl_svstr,                         &
 # endif
 #endif
+#ifdef ADJUST_PARAM
+     &                   OCEAN(ng) % p,                                 &
+     &                   OCEAN(ng) % tl_p,                              &
+#endif
      &                   OCEAN(ng) % t,                                 &
      &                   OCEAN(ng) % tl_t)
 
@@ -139,6 +146,9 @@
 !-----------------------------------------------------------------------
       SUBROUTINE tl_biology_tile (ng, tile,                             &
      &                         LBi, UBi, LBj, UBj, UBk, UBt,            &
+#ifdef ADJUST_PARAM
+     &                         UBp,                                     &
+#endif
      &                         IminS, ImaxS, JminS, JmaxS,              &
      &                         nstp, nnew,                              &
 #ifdef MASKING
@@ -156,6 +166,9 @@
      &                         svstr, tl_svstr,                         &
 # endif
 #endif
+#ifdef ADJUST_PARAM
+     &                         p, tl_p,                                 &
+#endif
      &                         t, tl_t)
 !-----------------------------------------------------------------------
 !
@@ -170,6 +183,9 @@
 !
       integer, intent(in) :: ng, tile
       integer, intent(in) :: LBi, UBi, LBj, UBj, UBk, UBt
+#ifdef ADJUST_PARAM
+      integer, intent(in) :: UBp
+#endif
       integer, intent(in) :: IminS, ImaxS, JminS, JmaxS
       integer, intent(in) :: nstp, nnew
 
@@ -198,6 +214,11 @@
       real(r8), intent(in) :: tl_svstr(LBi:,LBj:)
 #  endif
 # endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(in) :: p(:,:)
+
+      real(r8), intent(inout) :: tl_p(:,:)
+# endif
       real(r8), intent(in) :: t(LBi:,LBj:,:,:,:)
 
       real(r8), intent(inout) :: tl_t(LBi:,LBj:,:,:,:)
@@ -225,6 +246,11 @@
       real(r8), intent(in) :: tl_sustr(LBi:UBi,LBj:UBj)
       real(r8), intent(in) :: tl_svstr(LBi:UBi,LBj:UBj)
 #  endif
+# endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(in) :: p(2,UBp)
+
+      real(r8), intent(inout) :: tl_p(2,UBp)
 # endif
       real(r8), intent(in) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
 
@@ -400,6 +426,15 @@
 !  Set vertical sinking velocity vector in the same order as the
 !  identification vector, IDSINK.
 !
+#ifdef ADJUST_PARAM
+      wPhy(ng)=p(nstp,iwPhy)
+      wSDet(ng)=p(nstp,iwSDet)
+      wLDet(ng)=p(nstp,iwLDet)
+
+      tl_wPhy(ng)=tl_p(nstp,iwPhy)
+      tl_wSDet(ng)=tl_p(nstp,iwSDet)
+      tl_wLDet(ng)=tl_p(nstp,iwLDet)
+#endif
       Wbio(1)=wPhy(ng)                ! phytoplankton
       Wbio(2)=wPhy(ng)                ! chlorophyll
       Wbio(3)=wSDet(ng)               ! small Nitrogen-detritus

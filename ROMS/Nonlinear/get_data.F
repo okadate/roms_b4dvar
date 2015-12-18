@@ -364,7 +364,7 @@
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
 #  ifdef MASKING
-     &                GRID(ng) % rmask,                      &
+     &                GRID(ng) % rmask,                                 &
 #  endif
      &                FORCES(ng) % lrflxG)
       IF (exit_flag.ne.NoError) RETURN
@@ -916,20 +916,20 @@
 !  2D momentum.
 !
       IF (Lm2CLM(ng)) THEN
-        CALL get_2dfld (ng, iNLM, idUbcl, CLM(ng)%ncid,                   &
-     &                  1, CLM(ng), update(1),                            &
-     &                  LBi, UBi, LBj, UBj, 2, 1,                         &
+        CALL get_2dfld (ng, iNLM, idUbcl, CLM(ng)%ncid,                 &
+     &                  1, CLM(ng), update(1),                          &
+     &                  LBi, UBi, LBj, UBj, 2, 1,                       &
 # ifdef MASKING
-     &                  GRID(ng) % umask,                                 &
+     &                  GRID(ng) % umask,                               &
 # endif
      &                  CLIMA(ng) % ubarclmG)
         IF (exit_flag.ne.NoError) RETURN
 !
-        CALL get_2dfld (ng, iNLM, idVbcl, CLM(ng)%ncid,                   &
-     &                  1, CLM(ng), update(1),                            &
-     &                  LBi, UBi, LBj, UBj, 2, 1,                         &
+        CALL get_2dfld (ng, iNLM, idVbcl, CLM(ng)%ncid,                 &
+     &                  1, CLM(ng), update(1),                          &
+     &                  LBi, UBi, LBj, UBj, 2, 1,                       &
 # ifdef MASKING
-     &                  GRID(ng) % vmask,                                 &
+     &                  GRID(ng) % vmask,                               &
 # endif
      &                  CLIMA(ng) % vbarclmG)
         IF (exit_flag.ne.NoError) RETURN

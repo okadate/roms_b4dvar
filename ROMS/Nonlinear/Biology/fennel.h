@@ -108,6 +108,9 @@
 #endif
       CALL biology_tile (ng, tile,                                      &
      &                   LBi, UBi, LBj, UBj, N(ng), NT(ng),             &
+#ifdef ADJUST_PARAM
+     &                   Nparam(ng),                                    &
+#endif
      &                   IminS, ImaxS, JminS, JmaxS,                    &
      &                   nstp(ng), nnew(ng),                            &
 #ifdef MASKING
@@ -143,6 +146,9 @@
      &                   BGCBED(ng) % bpwflux,                          &
      &                   BGCBED(ng) % bsmflux,                          &
 #endif
+#ifdef ADJUST_PARAM
+     &                   OCEAN(ng) % p,                                 &
+#endif
      &                   OCEAN(ng) % t)
 
 #ifdef PROFILE
@@ -155,6 +161,9 @@
 !-----------------------------------------------------------------------
       SUBROUTINE biology_tile (ng, tile,                                &
      &                         LBi, UBi, LBj, UBj, UBk, UBt,            &
+#ifdef ADJUST_PARAM
+     &                         UBp,                                     &
+#endif
      &                         IminS, ImaxS, JminS, JmaxS,              &
      &                         nstp, nnew,                              &
 #ifdef MASKING
@@ -182,6 +191,9 @@
      &                         bpw, bsm,                                &
      &                         bpwflux, bsmflux,                        &
 #endif
+#ifdef ADJUST_PARAM
+     &                         p,                                       &
+#endif
      &                         t)
 !-----------------------------------------------------------------------
 !
@@ -196,6 +208,9 @@
 !
       integer, intent(in) :: ng, tile
       integer, intent(in) :: LBi, UBi, LBj, UBj, UBk, UBt
+#ifdef ADJUST_PARAM
+      integer, intent(in) :: UBp
+#endif
       integer, intent(in) :: IminS, ImaxS, JminS, JmaxS
       integer, intent(in) :: nstp, nnew
 
@@ -225,6 +240,9 @@
 # ifdef DIAGNOSTICS_BIO
       real(r8), intent(inout) :: DiaBio2d(LBi:,LBj:,:)
       real(r8), intent(inout) :: DiaBio3d(LBi:,LBj:,:,:)
+# endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: p(:,:)
 # endif
       real(r8), intent(inout) :: t(LBi:,LBj:,:,:,:)
 # ifdef BIO_SED_DIAGENESIS
@@ -260,6 +278,9 @@
 # ifdef DIAGNOSTICS_BIO
       real(r8), intent(inout) :: DiaBio2d(LBi:UBi,LBj:UBj,NDbio2d)
       real(r8), intent(inout) :: DiaBio3d(LBi:UBi,LBj:UBj,UBk,NDbio3d)
+# endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: p(2,UBp)
 # endif
       real(r8), intent(inout) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
 # ifdef BIO_SED_DIAGENESIS
@@ -486,6 +507,11 @@
 !  Set vertical sinking velocity vector in the same order as the
 !  identification vector, IDSINK.
 !
+#ifdef ADJUST_PARAM
+      wPhy(ng)=p(nstp,iwPhy)
+      wSDet(ng)=p(nstp,iwSDet)
+      wLDet(ng)=p(nstp,iwLDet)
+#endif
       Wbio(1)=wPhy(ng)                ! phytoplankton
       Wbio(2)=wPhy(ng)                ! chlorophyll
       Wbio(3)=wSDet(ng)               ! small Nitrogen-detritus

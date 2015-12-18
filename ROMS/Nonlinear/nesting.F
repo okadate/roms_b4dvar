@@ -883,13 +883,13 @@
 !
 !  Collect data from all nodes.
 !
-          CALL mp_assemble (dg, model, NptsWE, spv,                      &
+          CALL mp_assemble (dg, model, NptsWE, spv,                     &
      &                      BRY_CONTACT(iwest ,cjcr)%Mflux(JLB:))
-          CALL mp_assemble (dg, model, NptsWE, spv,                      &
+          CALL mp_assemble (dg, model, NptsWE, spv,                     &
      &                      BRY_CONTACT(ieast ,cjcr)%Mflux(JLB:))
-          CALL mp_assemble (dg, model, NptsSN, spv,                      &
+          CALL mp_assemble (dg, model, NptsSN, spv,                     &
      &                      BRY_CONTACT(isouth,cjcr)%Mflux(ILB:))
-          CALL mp_assemble (dg, model, NptsSN, spv,                      &
+          CALL mp_assemble (dg, model, NptsSN, spv,                     &
      &                      BRY_CONTACT(inorth,cjcr)%Mflux(ILB:))
 # endif
         END IF
@@ -5685,13 +5685,13 @@
      &                      OCEAN(ng)%vbar(:,:,2),                      &
      &                      OCEAN(ng)%vbar(:,:,3))
 !
-        CALL mp_assemble (ng, model, NptsWE, spv,                        &
+        CALL mp_assemble (ng, model, NptsWE, spv,                       &
      &                    BRY_CONTACT(iwest ,cr)%Mflux(JLB:))
-        CALL mp_assemble (ng, model, NptsWE, spv,                        &
+        CALL mp_assemble (ng, model, NptsWE, spv,                       &
      &                    BRY_CONTACT(ieast ,cr)%Mflux(JLB:))
-        CALL mp_assemble (ng, model, NptsSN, spv,                        &
+        CALL mp_assemble (ng, model, NptsSN, spv,                       &
      &                    BRY_CONTACT(isouth,cr)%Mflux(ILB:))
-        CALL mp_assemble (ng, model, NptsSN, spv,                        &
+        CALL mp_assemble (ng, model, NptsSN, spv,                       &
      &                    BRY_CONTACT(inorth,cr)%Mflux(ILB:))
       END IF
 # endif

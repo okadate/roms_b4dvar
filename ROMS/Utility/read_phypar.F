@@ -331,6 +331,17 @@
               END IF
               NST=NST+NNS
 #endif
+#ifdef ADJUST_PARAM
+            CASE ('Nparam')
+              Npts=load_i(Nval, Rval, 1, Ivalue)
+              Nparam=Ivalue(1)
+              IF (Nparam(1).le.0) THEN
+                IF (Master) WRITE (out,290) 'Nparam = ', Nparam(1),     &
+     &            'must be greater than zero.'
+                exit_flag=5
+                RETURN
+              END IF
+#endif
             CASE ('NtileI')
               Npts=load_i(Nval, Rval, Ngrids, NtileI)
               NtileX(1:Ngrids)=NtileI(1:Ngrids)
@@ -3385,7 +3396,7 @@
      &            TRIM(Vname(1,idTvar(i)))
             ELSE
               WRITE (out,185) LtracerSponge(i,ng), 'LtracerSponge', i,  &
-     &            'Turning OFF sponge on tracer ', i,   &
+     &            'Turning OFF sponge on tracer ', i,                   &
      &            TRIM(Vname(1,idTvar(i)))
             END IF
           END DO

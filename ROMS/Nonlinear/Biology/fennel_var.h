@@ -61,8 +61,14 @@
                 idTvar(iH2S_)=varid
 # endif
 # ifdef ADJUST_PARAM
-              CASE ('idPvar(iChl2C_m)')
-                idPvar(iChl2C_m)=varid
+              CASE ('idPvar(iwPhy)')
+                idPvar(iwPhy)=varid
+              CASE ('idPvar(iwLDet)')
+                idPvar(iwLDet)=varid
+              CASE ('idPvar(iwSDet)')
+                idPvar(iwSDet)=varid
+!             CASE ('idPvar(iChl2C_m)')
+!               idPvar(iChl2C_m)=varid
 # endif
 # ifdef DIAGENESIS
               CASE ('idBpw(iwO2_)')
@@ -207,8 +213,14 @@
                 idTads(iH2S_)=varid
 # endif
 # ifdef ADJUST_PARAM
-              CASE ('idPads(iChl2C_m)')
-                idPads(iChl2C_m)=varid
+              CASE ('idPads(iwPhy)')
+                idPads(iwPhy)=varid
+              CASE ('idPads(iwLDet)')
+                idPads(iwLDet)=varid
+              CASE ('idPads(iwSDet)')
+                idPads(iwSDet)=varid
+!              CASE ('idPads(iChl2C_m)')
+!                idPads(iChl2C_m)=varid
 # endif
 #endif
 

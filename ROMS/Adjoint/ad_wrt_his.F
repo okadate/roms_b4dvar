@@ -156,6 +156,23 @@
         IF (exit_flag.ne.NoError) RETURN
       END IF
 
+#ifdef ADJUST_PARAM
+!
+!  Write out model parameters.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          CALL netcdf_put_fvar (ng, iADM, ADM(ng)%name,                 &
+     &                          TRIM(Vname(1,idPvar(itrc))),            &
+     &                          OCEAN(ng) % ad_p(nout,itrc),            &
+     &                          (/ADM(ng)%Rindex/), (/1/),              &
+     &                          ncid = ADM(ng)%ncid,                    &
+     &                          varid = ADM(ng)%Vid(idPvar(itrc)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+#endif
+
 # ifdef ADJUST_WSTRESS
 !
 !  Write out surface U-momentum stress.  Notice that the stress has its

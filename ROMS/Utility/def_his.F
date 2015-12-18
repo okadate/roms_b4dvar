@@ -427,7 +427,26 @@
      &                 NF_TYPE, 1, (/recdim/), Aval, Vinfo, ncname,     &
      &                 SetParAccess = .FALSE.)
         IF (exit_flag.ne.NoError) RETURN
-
+        
+#ifdef ADJUST_PARAM
+!
+!  Define tracer type variables.
+!
+        DO itrc=1,Nparam(ng)
+          IF (Lparam(itrc,ng)) THEN
+            Vinfo( 1)=Vname(1,idPvar(itrc))
+            Vinfo( 2)=Vname(2,idPvar(itrc))
+            Vinfo( 3)=Vname(3,idPvar(itrc))
+            Vinfo(14)=Vname(4,idPvar(itrc))
+            Vinfo(16)=Vname(1,idtime)
+            status=def_var(ng, iNLM, HIS(ng)%ncid,                      & 
+     &                     HIS(ng)%Vid(idPvar(itrc)),                   &
+     &                     NF_TYPE, 1, (/recdim/), Aval, Vinfo, ncname, &
+     &                     SetParAccess = .FALSE.)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+#endif
 #ifdef SO_SEMI
 !
 !  Define Ritz eigenvalues and Ritz eigenvectors Euclidean norm.
@@ -2821,6 +2840,15 @@
             HIS(ng)%Vid(idWdis)=var_id(i)
 #endif
           END IF
+
+#ifdef ADJUST_PARAM
+          DO itrc=1,Nparam(ng)
+            IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idPvar(itrc)))) THEN
+              got_var(idPvar(itrc))=.TRUE.
+              HIS(ng)%Vid(idPvar(itrc))=var_id(i)
+            END IF
+          END DO
+#endif
 #ifdef SOLVE3D
           DO itrc=1,NT(ng)
             IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idTvar(itrc)))) THEN
@@ -2894,6 +2922,16 @@
           exit_flag=3
           RETURN
         END IF
+#ifdef ADJUST_PARAM
+        DO itrc=i,Nparam(ng)
+          IF (.not.got_var(idPvar(itrc))) THEN
+            IF (Master) WRITE (stdout,60) TRIM(Vname(1,idPvar(itrc))),  &
+     &                                    TRIM(ncname)
+            exit_flag=3
+            RETURN
+          END IF
+        END DO
+#endif
 #if defined SEDIMENT && defined SED_MORPH
         IF (.not.got_var(idbath).and.Hout(idbath,ng)) THEN
           IF (Master) WRITE (stdout,70) TRIM(Vname(1,idbath)),          &

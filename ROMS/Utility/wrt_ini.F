@@ -383,9 +383,6 @@
       USE mod_scalars
       USE mod_stepping
 !
-# ifdef ADJUST_PARAM
-      USE nf_fwrite0d_mod, ONLY : nf_fwrite0d
-# endif
 # ifdef ADJUST_BOUNDARY
       USE nf_fwrite2d_bry_mod, ONLY : nf_fwrite2d_bry
 #  ifdef SOLVE3D
@@ -439,6 +436,23 @@
       gfactor=-1
 #  else
       gfactor=1
+#  endif
+
+#  ifdef ADJUST_PARAM
+!
+!  Write out biology parameters.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          CALL netcdf_put_fvar (ng, iNLM, INI(ng)%name,                 &
+     &                          TRIM(Vname(idPvar(itrc),ng)),           &
+     &                          OCEAN(ng) % p(Tindex,itrc),             &
+     &                          (/OutRec/), (/1/),                      &
+     &                          ncid = INI(ng)%ncid,                    &
+     &                          varid = INI(ng)%Vid(idPvar(itrc)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
 #  endif
 
 #  ifdef ADJUST_BOUNDARY
@@ -660,28 +674,6 @@
         END IF
       END DO
 #  endif
-
-#  ifdef ADJUST_PARAM
-!
-!  Write out biology parameters.
-!
-      DO itrc=1,Nparam(ng)
-        IF (Lparam(itrc)) THEN
-          status=nf_fwrite0d(ng, iNLM, INI(ng)%ncid,                    &
-     &                       INI(ng)%Vid(idPvar(itrc)),                 &
-     &                       OutRec,                                    &
-     &                       OCEAN(ng) % p(Tindex,itrc))
-          IF (status.ne.nf90_noerr) THEN
-            IF (Master) THEN
-              WRITE (stdout,10) TRIM(Vname(1,idPvar(itrc))), OutRec
-            END IF
-            exit_flag=3
-            ioerror=status
-            RETURN
-          END IF
-        END IF
-      END DO
-#  endif
 !
 !-----------------------------------------------------------------------
 !  Synchronize initial NetCDF file to disk to allow other processes
@@ -744,9 +736,6 @@
       USE mod_scalars
       USE mod_stepping
 !
-# ifdef ADJUST_PARAM
-      USE nf_fwrite0d_mod, ONLY : nf_fwrite0d
-# endif
 # ifdef ADJUST_BOUNDARY
       USE nf_fwrite2d_bry_mod, ONLY : nf_fwrite2d_bry
 #  ifdef SOLVE3D
@@ -1009,28 +998,6 @@
             IF (Master) THEN
               WRITE (stdout,10) TRIM(Vname(1,idTsur(itrc))),            &
      &                          OutRec
-            END IF
-            exit_flag=3
-            ioerror=status
-            RETURN
-          END IF
-        END IF
-      END DO
-#  endif
-
-#  ifdef ADJUST_PARAM
-!
-!  Write out biology parameters.
-!
-      DO itrc=1,Nparam(ng)
-        IF (Lparam(itrc)) THEN
-          status=nf_fwrite0d(ng, iNLM, INI(ng)%ncid,                    &
-     &                       INI(ng)%Vid(idPvar(itrc)),                 &
-     &                       OutRec,                                    &
-     &                       OCEAN(ng) % ad_p(Tindex,itrc))
-          IF (status.ne.nf90_noerr) THEN
-            IF (Master) THEN
-              WRITE (stdout,10) TRIM(Vname(1,idPvar(itrc))), OutRec
             END IF
             exit_flag=3
             ioerror=status

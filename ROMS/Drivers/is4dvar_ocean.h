@@ -311,7 +311,7 @@
 !
       DO ng=1,Ngrids
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS || defined ADJUST_PARAM
+    defined ADJUST_WSTRESS
         Lfinp(ng)=1         ! forcing index for input
         Lfout(ng)=1         ! forcing index for output history files
 #endif
@@ -456,11 +456,6 @@
 #if defined ADJUST_WSTRESS || defined ADJUST_STFLUX
               CALL get_state (ng, 11, 11, NRM(4,ng)%name, NRMrec, 1)
               IF (exit_flag.ne.NoError) RETURN
-#endif
-#ifdef ADJUST_PARAM
-!
-!  Parameter normalization factors are writen in [            ]. (okada)
-!
 #endif
             END IF
           END DO

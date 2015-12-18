@@ -343,13 +343,13 @@
                   ad_Bio(i,k,iNO3_)=ad_Bio(i,k,iNO3_)+adfac*cff4
                   ad_N_Flux_NewProd=0.0_r8
 
-!>                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)*  &
+!>                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)* &
 !>   &                               tl_cff5)/(1.0_r8+cff5)
                   adfac=ad_Bio(i,k,iNH4_)/(1.0_r8+cff5)
                   ad_cff5=ad_cff5-Bio2(i,k,iNH4_)*adfac
                   ad_Bio(i,k,iNH4_)=adfac
 
-!>                tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio2(i,k,iNO3_)*  &
+!>                tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio2(i,k,iNO3_)* &
 !>   &                               tl_cff4)/(1.0_r8+cff4)
                   adfac=ad_Bio(i,k,iNO3_)/(1.0_r8+cff4)
                   ad_cff4=ad_cff4-Bio2(i,k,iNO3_)*adfac
@@ -377,13 +377,13 @@
                 ad_Bio(i,k,iNO3_)=ad_Bio(i,k,iNO3_)+adfac*cff4
                 ad_N_Flux_NewProd=0.0_r8
 
-!>              tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)*    &
+!>              tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)*   &
 !>   &                             tl_cff5)/(1.0_r8+cff5)
                 adfac=ad_Bio(i,k,iNH4_)/(1.0_r8+cff5)
                 ad_cff5=ad_cff5-Bio2(i,k,iNH4_)*adfac
                 ad_Bio(i,k,iNH4_)=adfac
 
-!>              tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio2(i,k,iNO3_)*    &
+!>              tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio2(i,k,iNO3_)*   &
 !>   &                             tl_cff4)/(1.0_r8+cff4)
                 adfac=ad_Bio(i,k,iNO3_)/(1.0_r8+cff4)
                 ad_cff4=ad_cff4-Bio2(i,k,iNO3_)*adfac

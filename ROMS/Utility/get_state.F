@@ -906,7 +906,7 @@
             ELSE
               IF (Master) THEN
                 WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc))),          &
-     &                            OCEAN(ng) % p(Tindex,itrc), &
+     &                            OCEAN(ng) % p(Tindex,itrc),           &
      &                            OCEAN(ng) % p(Tindex,itrc)
               END IF
             END IF
@@ -1103,7 +1103,7 @@
      &                        TRIM(Vname(1,idGhat(itrc))), varid)
           gtype=var_flag(varid)*w3dvar
           status=nf_fread3d(ng, IDmod, ncname, ncINPid,                 &
-     &                      Vname(1,idGhat(itrc)), varid,                     &
+     &                      Vname(1,idGhat(itrc)), varid,               &
      &                      InpRec, gtype, Vsize,                       &
      &                      LBi, UBi, LBj, UBj, 0, N(ng),               &
      &                      Fscl, Fmin,Fmax,                            &
@@ -1113,7 +1113,7 @@
      &                      MIXING(ng) % Ghats(:,:,:,itrc))
           IF (status.ne.nf90_noerr) THEN
             IF (Master) THEN
-              WRITE (stdout,60) string, TRIM(Vname(1,idGhat(itrc))),  &
+              WRITE (stdout,60) string, TRIM(Vname(1,idGhat(itrc))),    &
      &                          InpRec, TRIM(ncname)
             END IF
             exit_flag=2
@@ -1302,7 +1302,7 @@
      &                          BGCBED(ng) % bpw(:,:,:,itrc))
             IF (status.ne.nf90_noerr) THEN
               IF (Master) THEN
-                WRITE (stdout,60) string, TRIM(Vname(1,idBpw(itrc))), &
+                WRITE (stdout,60) string, TRIM(Vname(1,idBpw(itrc))),   &
      &                            InpRec, TRIM(ncname)
               END IF
               exit_flag=2
@@ -1310,7 +1310,7 @@
               RETURN
             ELSE
               IF (Master) THEN
-                WRITE (stdout,70) TRIM(Vname(2,idBpw(itrc))),         &
+                WRITE (stdout,70) TRIM(Vname(2,idBpw(itrc))),           &
      &                            Fmin, Fmax
               END IF
             END IF
@@ -1325,7 +1325,7 @@
      &                          TRIM(Vname(1,idBsm(itrc))), varid)
             gtype=var_flag(varid)*b3dvar
             status=nf_fread3d(ng, IDmod, ncname, ncINPid,               &
-     &                          Vname(1,idBsm(itrc)), varid,          &
+     &                          Vname(1,idBsm(itrc)), varid,            &
      &                          InpRec, gtype, Vsize,                   &
      &                          LBi, UBi, LBj, UBj, 1, Nbed,            &
      &                          Fscl, Fmin, Fmax,                       &
@@ -1335,7 +1335,7 @@
      &                          BGCBED(ng) % bsm(:,:,:,itrc))
             IF (status.ne.nf90_noerr) THEN
               IF (Master) THEN
-                WRITE (stdout,60) string, TRIM(Vname(1,idBsm(itrc))), &
+                WRITE (stdout,60) string, TRIM(Vname(1,idBsm(itrc))),   &
      &                            InpRec, TRIM(ncname)
               END IF
               exit_flag=2
@@ -1343,7 +1343,7 @@
               RETURN
             ELSE
               IF (Master) THEN
-                WRITE (stdout,70) TRIM(Vname(2,idBsm(itrc))),         &
+                WRITE (stdout,70) TRIM(Vname(2,idBsm(itrc))),           &
      &                            Fmin, Fmax
               END IF
             END IF
@@ -1354,22 +1354,22 @@
 !
 !        DO itrc=1,NBGCPW
 !          IF (get_var(idFpw(itrc))) THEN
-!            foundit=find_string(var_name, n_var,                        &
+!            foundit=find_string(var_name, n_var,                       &
 !     &                          TRIM(Vname(1,idFpw(itrc))),            &
 !     &                          varid)
 !            gtype=var_flag(varid)*r2dvar
-!            status=nf_fread2d(ng, IDmod, ncname, ncINPid,               &
+!            status=nf_fread2d(ng, IDmod, ncname, ncINPid,              &
 !     &                          Vname(1,idFpw(itrc)), varid,           &
-!     &                          InpRec, gtype, Vsize,                   &
-!     &                          LBi, UBi, LBj, UBj,                     &
-!     &                          Fscl, Fmin, Fmax,                       &
+!     &                          InpRec, gtype, Vsize,                  &
+!     &                          LBi, UBi, LBj, UBj,                    &
+!     &                          Fscl, Fmin, Fmax,                      &
 !#   ifdef MASKING
-!     &                          GRID(ng) % rmask,                       &
+!     &                          GRID(ng) % rmask,                      &
 !#   endif
 !     &                          BGCBED(ng) % bpwflux(:,:,itrc))
 !            IF (status.ne.nf90_noerr) THEN
 !              IF (Master) THEN
-!                WRITE (stdout,60) string,                               &
+!                WRITE (stdout,60) string,                              &
 !     &                            TRIM(Vname(1,idFpw(itrc))),          &
 !     &                            InpRec, TRIM(ncname)
 !              END IF
@@ -1387,22 +1387,22 @@
 !        
 !        DO itrc=1,NBGCSM
 !          IF (get_var(idFsm(itrc))) THEN
-!            foundit=find_string(var_name, n_var,                        &
+!            foundit=find_string(var_name, n_var,                       &
 !     &                          TRIM(Vname(1,idFsm(itrc))),            &
 !     &                          varid)
 !            gtype=var_flag(varid)*r2dvar
-!            status=nf_fread2d(ng, IDmod, ncname, ncINPid,               &
+!            status=nf_fread2d(ng, IDmod, ncname, ncINPid,              &
 !     &                          Vname(1,idFsm(itrc)), varid,           &
-!     &                          InpRec, gtype, Vsize,                   &
-!     &                          LBi, UBi, LBj, UBj,                     &
-!     &                          Fscl, Fmin, Fmax,                       &
+!     &                          InpRec, gtype, Vsize,                  &
+!     &                          LBi, UBi, LBj, UBj,                    &
+!     &                          Fscl, Fmin, Fmax,                      &
 !#   ifdef MASKING
-!     &                          GRID(ng) % rmask,                       &
+!     &                          GRID(ng) % rmask,                      &
 !#   endif
 !     &                          BGCBED(ng) % bsmflux(:,:,itrc))
 !            IF (status.ne.nf90_noerr) THEN
 !              IF (Master) THEN
-!                WRITE (stdout,60) string,                               &
+!                WRITE (stdout,60) string,                              &
 !     &                            TRIM(Vname(1,idFsm(itrc))),          &
 !     &                            InpRec, TRIM(ncname)
 !              END IF
@@ -2116,7 +2116,7 @@
 !
         DO itrc=1,Nparam(ng)
           IF (get_var(idPvar(itrc)).and.get_adjust.and.                 &
-     &        Lparam(itrc)) THEN
+     &        Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
             status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
@@ -2134,8 +2134,8 @@
             ELSE
               IF (Master) THEN
                 WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc)))//         &
-     &                            ', adjusted tl_p',             &
-     &                            OCEAN(ng)%tl_p(Tindex,itrc),&
+     &                            ', adjusted tl_p',                    &
+     &                            OCEAN(ng)%tl_p(Tindex,itrc),          &
      &                            OCEAN(ng)%tl_p(Tindex,itrc)
               END IF
             END IF
@@ -2828,7 +2828,7 @@
 !  Read in adjoint biological parameters.
 !
         DO itrc=1,Nparam(ng)
-          IF (get_var(idPvar(itrc)).and.Lparam(itrc)) THEN
+          IF (get_var(idPvar(itrc)).and.Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
             status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
@@ -2846,8 +2846,8 @@
             ELSE
               IF (Master) THEN
                 WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc)))//         &
-     &                            ', adjusted ad_p',             &
-     &                            OCEAN(ng)%ad_p(Tindex,itrc),&
+     &                            ', adjusted ad_p',                    &
+     &                            OCEAN(ng)%ad_p(Tindex,itrc),          &
      &                            OCEAN(ng)%ad_p(Tindex,itrc)
               END IF
             END IF
@@ -3527,13 +3527,13 @@
 !
         DO itrc=1,Nparam(ng)
           IF (get_var(idPvar(itrc)).and.(model.eq.11).and.              &
-     &        Lparam(itrc)) THEN
+     &        Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
             OCEAN(ng) % b_p(Tindex,itrc) = 1.0_r8 !okada! std_p(itrc)
             IF (Master) THEN
               WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc))),            &
-     &                          OCEAN(ng) % b_p(Tindex,itrc), &
+     &                          OCEAN(ng) % b_p(Tindex,itrc),           &
      &                          OCEAN(ng) % b_p(Tindex,itrc)
             END IF
           END IF
@@ -3784,7 +3784,7 @@
 !
         DO itrc=1,Nparam(ng)
           IF (get_var(idPvar(itrc)).and.(model.eq.9).and.               &
-     &        Lparam(itrc)) THEN
+     &        Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
             status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
@@ -4648,7 +4648,7 @@
 !
         DO itrc=1,Nparam(ng)
           IF (get_var(idPvar(itrc)).and.get_adjust.and.                 &
-     &        Lparam(itrc)) THEN
+     &        Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
             status=nf_fread3d(ng, IDmod, ncname, ncINPid,               &

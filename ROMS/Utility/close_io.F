@@ -52,7 +52,7 @@
           END DO
           IF (model.eq.iADM) THEN
             DO j=1,FRC(i,ng)%Nfiles
-              IF ((FRC(i,ng)%time_min(j).le.tdays(ng)).and.              &
+              IF ((FRC(i,ng)%time_min(j).le.tdays(ng)).and.             &
      &            (tdays(ng).le.FRC(i,ng)%time_max(j))) THEN
                 Fcount=j
                 EXIT

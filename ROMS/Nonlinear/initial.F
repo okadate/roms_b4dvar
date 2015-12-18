@@ -55,6 +55,9 @@
 #ifdef WAVES_OCEAN
       USE ocean_coupler_mod, ONLY : ocn2wav_coupling
 #endif
+#ifdef ADJUST_PARAM
+      USE param_adjust_mod, ONLY : param_adjust
+#endif
 #ifdef WET_DRY
       USE wetdry_mod, ONLY : wetdry
 #endif
@@ -518,17 +521,6 @@
       END DO
 #endif
 
-#ifdef ADJUST_BIOPARAM
-!
-!  Initial conditions for biological parameters.
-!
-      DO ng=1,Ngrids
-        IF (nrrec(ng).eq.0) THEN
-          !CALL set_param (ng)
-        END IF
-      END DO
-#endif
-
 #ifdef INI_FILE
 !
 !  Read in initial conditions from initial NetCDF file.
@@ -552,7 +544,7 @@
       DO ng=1,Ngrids
         IF (nrrec(ng).ne.0) THEN
 !$OMP MASTER
-          CALL get_state (ng, 0, 1, INI(ng)%name,                      &
+          CALL get_state (ng, 0, 1, INI(ng)%name,                       &
      &                    IniRec(ng), Tindex(ng))
 !$OMP END MASTER
 # ifdef DISTRIBUTE
@@ -770,6 +762,18 @@
 # endif
 !$OMP BARRIER
         IF (exit_flag.ne.NoError) RETURN
+      END DO
+#endif
+
+#ifdef ADJUST_PARAM
+!
+!-----------------------------------------------------------------------
+!  Set and adjust parameters.
+!-----------------------------------------------------------------------
+!
+      DO ng=1,Ngrids
+        CALL param_adjust (ng)
+!$OMP BARRIER
       END DO
 #endif
 

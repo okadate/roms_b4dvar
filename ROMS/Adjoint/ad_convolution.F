@@ -893,7 +893,7 @@
 !
       IF (.not.Lweak) THEN
         DO it=1,Nparam(ng)
-          IF (Lparam(it)) THEN
+          IF (Lparam(it,ng)) THEN
             ad_p(Linp,it)=ad_p(Linp,it)*normP(rec,it)
           END IF
         END DO
@@ -1246,7 +1246,7 @@
 !
       IF (.not.Lweak) THEN
         DO it=1,Nparam(ng)
-          IF (Lparam(it)) THEN
+          IF (Lparam(it,ng)) THEN
             is=isPvar(it)
 !okada!     CALL ad_conv_0d_tile ()
           END IF

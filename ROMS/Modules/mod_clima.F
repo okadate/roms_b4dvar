@@ -198,7 +198,7 @@
       IF (ANY(LtracerCLM(:,ng)).or.ANY(LnudgeTCLM(:,ng))) THEN
         allocate ( CLIMA(ng) % tclm(LBi:UBi,LBj:UBj,N(ng),NTCLM(ng)) )
 # ifndef ANA_TCLIMA
-        allocate ( CLIMA(ng) % tclmG(LBi:UBi,LBj:UBj,N(ng),2,          &
+        allocate ( CLIMA(ng) % tclmG(LBi:UBi,LBj:UBj,N(ng),2,           &
      &                               NTCLM(ng)) )
 # endif
       END IF

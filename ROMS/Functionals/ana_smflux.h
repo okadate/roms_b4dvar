@@ -264,9 +264,9 @@
       IF ((tdays(ng)-dstart).le.3.0_r8) THEN
          winddir=60.0_r8
          windamp=0.1_r8
-      ELSE IF (((tdays(ng)-dstart).gt.3.0_r8).and.              &
+      ELSE IF (((tdays(ng)-dstart).gt.3.0_r8).and.                      &
      &        ((tdays(ng)-dstart).le.4.0_r8)) THEN
-         winddir= 60.0_r8*((tdays(ng)-dstart)-2.0_r8)-          &
+         winddir= 60.0_r8*((tdays(ng)-dstart)-2.0_r8)-                  &
      &           120.0_r8*((tdays(ng)-dstart)-2.0_r8)
          windamp=0.0_r8
 # endif

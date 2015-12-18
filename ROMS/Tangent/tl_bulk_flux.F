@@ -673,7 +673,7 @@
 !
 !  Note tl_delW is zero at this point.
 !
-!>        Ri(i)=-fac*g*blk_ZW(ng)*((delT(i)-delTc(i))+                &
+!>        Ri(i)=-fac*g*blk_ZW(ng)*((delT(i)-delTc(i))+                  &
 !>   &                              0.61_r8*TairK(i)*delQ(i))
 !>
           Ri(i)=-g*blk_ZW(ng)*((delT(i)-delTc(i))+                      &
@@ -1440,7 +1440,7 @@
      &       cff*ATAN(fac)+pi/cff
         tl_psic=tl_y*(1.0_r8+2.0_r8*y)*1.5_r8/(1.0_r8+y+y*y)-           &
      &       cff*tl_fac/(1.0_r8+fac*fac)
-!        tl_psic=tl_y*(1.0_r8+2.0_r8*y)*1.5_r8/(1.0_r8+y+y*y)-           &
+!        tl_psic=tl_y*(1.0_r8+2.0_r8*y)*1.5_r8/(1.0_r8+y+y*y)-          &
 !     &       cff*tl_fac/SQRT(1.0_r8+fac*fac)
 !
 !  Match Kansas and free-convection forms with weighting Fw.

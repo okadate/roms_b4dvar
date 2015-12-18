@@ -763,7 +763,7 @@
 !
 !  Note delW is a constant at this point so we do not need tl_fac.
 !
-!>        Ri(i)=-fac*g*blk_ZW(ng)*((delT(i)-delTc(i))+                &
+!>        Ri(i)=-fac*g*blk_ZW(ng)*((delT(i)-delTc(i))+                  &
 !>   &                              0.61_r8*TairK(i)*delQ(i))
 !>
           Ri(i)=-g*blk_ZW(ng)*((delT(i)-delTc(i))+                      &

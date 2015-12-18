@@ -199,7 +199,7 @@
       Coptions(is:is+10)=' ANA_DIAG,'
 #endif
 #if defined ANA_DQDSST && defined QCORRECTION
-      IF (Master) WRITE (stdout,20) 'ANA_DQDSST',                          &
+      IF (Master) WRITE (stdout,20) 'ANA_DQDSST',                       &
      &   'Analytical surface heat flux sensitivity to SST.'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+12)=' ANA_DQDSST,'
@@ -729,7 +729,7 @@
       Coptions(is:is+8)=' FLOATS,'
 #endif
 #if defined FLOAT_BIOLOGY && defined FLOATS
-      IF (Master) WRITE (stdout,20) 'FLOAT_BIOLOGY',                   &
+      IF (Master) WRITE (stdout,20) 'FLOAT_BIOLOGY',                    &
      &   'Biological behavior on Lagrangian drifters.'
       is=LEN_TRIM(Coptions)+1
       Coptions(is:is+15)=' FLOAT_BIOLOGY,'
@@ -2514,8 +2514,8 @@
             EXIT
           END IF
         END DO
- 210    FORMAT (/,' CHECKDEFS - cannot activate option: ',a,           &
-     &          /,13x,'in serial with partitions or shared-memory...', &
+ 210    FORMAT (/,' CHECKDEFS - cannot activate option: ',a,            &
+     &          /,13x,'in serial with partitions or shared-memory...',  &
      &          /,13x,'Use distributed-memory (MPI) in parallel runs.')
       END IF
 #endif

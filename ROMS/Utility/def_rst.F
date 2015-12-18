@@ -1418,7 +1418,7 @@
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idFpw(i),ng),r8)
           status=def_var(ng, iNLM, RST(ng)%ncid,                        &
-     &                   RST(ng)%Vid(idFpw(i)), NF_FRST,               &
+     &                   RST(ng)%Vid(idFpw(i)), NF_FRST,                &
      &                   nvd3, sr2dgrd, Aval, Vinfo, ncname)
           IF (exit_flag.ne.NoError) RETURN
         END DO
@@ -1439,7 +1439,7 @@
           Vinfo(22)='coordinates'
           Aval(5)=REAL(Iinfo(1,idFsm(i),ng),r8)
           status=def_var(ng, iNLM, RST(ng)%ncid,                        &
-     &                   RST(ng)%Vid(idFsm(i)), NF_FRST,               &
+     &                   RST(ng)%Vid(idFsm(i)), NF_FRST,                &
      &                   nvd3, sr2dgrd, Aval, Vinfo, ncname)
           IF (exit_flag.ne.NoError) RETURN
         END DO
@@ -2056,13 +2056,13 @@
 # ifdef DIAGENESIS
         DO i=1,NBGCPW
           IF (.not.got_var(idBpw(i))) THEN
-            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idBpw(i))),     &
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idBpw(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN
           END IF
           IF (.not.got_var(idFpw(i))) THEN
-            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idFpw(i))),     &
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idFpw(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN
@@ -2070,13 +2070,13 @@
         END DO
         DO i=1,NBGCSM
           IF (.not.got_var(idBsm(i))) THEN
-            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idBsm(i))),     &
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idBsm(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN
           END IF
           IF (.not.got_var(idFsm(i))) THEN
-            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idFsm(i))),     &
+            IF (Master) WRITE (stdout,40) TRIM(Vname(1,idFsm(i))),      &
      &                                    TRIM(ncname)
             exit_flag=3
             RETURN

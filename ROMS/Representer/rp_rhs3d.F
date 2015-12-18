@@ -853,7 +853,7 @@
      &                               (CLIMA(ng)%vclm(i,j,k)-            &
      &                                v(i,j,k,nrhs)))+                  &
 # ifdef TL_IOMS
-     &                          cff*(Hz(i,j-1,k)+Hz(i,j,k))*              &
+     &                          cff*(Hz(i,j-1,k)+Hz(i,j,k))*            &
      &                            v(i,j,k,nrhs)
 # endif
             END DO

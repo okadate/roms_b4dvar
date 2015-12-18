@@ -39,7 +39,7 @@
      &                        s_sustr, s_svstr,                         &
 #endif
 #ifdef ADJUST_PARAM
-     &                        s_p,                               &
+     &                        s_p,                                      &
 #endif
 #ifdef SOLVE3D
 # ifdef ADJUST_STFLUX
@@ -640,7 +640,7 @@
 !  Biology parameters.
 !
       DO it=1,Nparam(ng)
-        IF (Lparam(it)) THEN
+        IF (Lparam(it,ng)) THEN
           s_p(Lout,it)=fac*s_p(Linp,it)
         END IF
       END DO

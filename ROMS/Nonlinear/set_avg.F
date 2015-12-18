@@ -460,7 +460,7 @@
               DO i=Istr,IendR
                 BGCBED(ng)%avgpw(i,j,k,it)=BGCBED(ng)%bpw(i,j,k,it)
 #   ifdef WET_DRY
-                BGCBED(ng)%avgpw(i,j,k,it)=BGCBED(ng)%bpw(i,j,it)k,* &
+                BGCBED(ng)%avgpw(i,j,k,it)=BGCBED(ng)%bpw(i,j,it)k,*    &
      &                                       GRID(ng)%umask_full(i,j)
 #   endif
               END DO
@@ -472,7 +472,7 @@
               DO i=IstrR,IendR
                 BGCBED(ng)%avgpwf(i,j,it)=BGCBED(ng)%bpwflux(i,j,it)
 #   ifdef WET_DRY
-                BGCBED(ng)%avgpwf(i,j,it)=BGCBED(ng)%bpwflux(i,j,it)* &
+                BGCBED(ng)%avgpwf(i,j,it)=BGCBED(ng)%bpwflux(i,j,it)*   &
      &                                       GRID(ng)%vmask_full(i,j)
 #   endif
               END DO
@@ -486,7 +486,7 @@
               DO i=Istr,IendR
                 BGCBED(ng)%avgsm(i,j,k,it)=BGCBED(ng)%bsm(i,j,k,it)
 #   ifdef WET_DRY
-                BGCBED(ng)%avgsm(i,j,k,it)=BGCBED(ng)%bsm(i,j,k,it)* &
+                BGCBED(ng)%avgsm(i,j,k,it)=BGCBED(ng)%bsm(i,j,k,it)*    &
      &                                       GRID(ng)%umask_full(i,j)
 #   endif
               END DO
@@ -498,7 +498,7 @@
               DO i=IstrR,IendR
                 BGCBED(ng)%avgsmf(i,j,it)=BGCBED(ng)%bsmflux(i,j,it)
 #   ifdef WET_DRY
-                BGCBED(ng)%avgsmf(i,j,it)=BGCBED(ng)%bsmflux(i,j,it)* &
+                BGCBED(ng)%avgsmf(i,j,it)=BGCBED(ng)%bsmflux(i,j,it)*   &
      &                                       GRID(ng)%vmask_full(i,j)
 #   endif
               END DO

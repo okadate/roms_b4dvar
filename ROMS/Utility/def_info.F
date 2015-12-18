@@ -2204,7 +2204,7 @@
      &            'vertical decorrelation scale'
         Vinfo( 3)='meter'
         status=def_var(ng, model, ncid, varid, NF_TYPE,                 &
-     &                 1, (/statedim/), Aval, Vinfo, ncname,              &
+     &                 1, (/statedim/), Aval, Vinfo, ncname,            &
      &                 SetParAccess = .FALSE.)
         IF (exit_flag.ne.NoError) RETURN
 # endif
