@@ -155,6 +155,11 @@
       USE mod_scalars
       USE mod_parallel  ! (okada)
       USE mod_iounits   ! (okada)
+
+# ifdef DISTRIBUTE
+!
+      USE distribute_mod, ONLY : mp_reduce
+# endif
 !
 !  Imported variable declarations.
 !
@@ -278,13 +283,13 @@
       real(r8) :: ad_Chl2C, ad_t_PPmax, ad_inhNH4
 
       real(r8) :: cff, cff1, cff2, cff3, cff4, cff5
-      real(r8) :: fac1, fac2, fac3
+      real(r8) :: fac1, fac2, fac3, fac4, fac5, fac6
       real(r8) :: cffL, cffR, cu, dltL, dltR
 
       real(r8) :: ad_cff, ad_cff1, ad_cff2, ad_cff3, ad_cff4, ad_cff5
-      real(r8) :: ad_fac1, ad_fac2, ad_fac3
+      real(r8) :: ad_fac1, ad_fac2, ad_fac3, ad_fac4, ad_fac5, ad_fac6
       real(r8) :: ad_cffL, ad_cffR, ad_cu, ad_dltL, ad_dltR
-      real(r8) :: fac, adfac, adfac1, adfac2, adfac3
+      real(r8) :: fac, ad_fac, adfac, adfac1, adfac2, adfac3
 
       real(r8) :: total_N
       real(r8) :: ad_total_N
@@ -369,6 +374,63 @@
 
       real(r8), parameter :: rOxH2S = 2.0_r8     !?
 #endif
+#ifdef ADJUST_PARAM
+      integer :: it
+
+      real(r8) :: ad_AttSW
+      real(r8) :: ad_AttChl
+      real(r8) :: ad_Vp0
+      real(r8) :: ad_I_thNH4
+      real(r8) :: ad_D_p5NH4
+      real(r8) :: ad_K_NO3
+      real(r8) :: ad_K_NH4
+      real(r8) :: ad_K_Phy
+      real(r8) :: ad_Chl2C_m
+      real(r8) :: ad_PhyCN
+      real(r8) :: ad_PhyIP
+      real(r8) :: ad_PhyIS
+      real(r8) :: ad_PhyMR
+      real(r8) :: ad_ZooAE_N
+      real(r8) :: ad_ZooBM
+      real(r8) :: ad_ZooCN
+      real(r8) :: ad_ZooER
+      real(r8) :: ad_ZooGR
+      real(r8) :: ad_ZooMR
+      real(r8) :: ad_LDeRRN
+      real(r8) :: ad_CoagR
+      real(r8) :: ad_SDeRRN
+      real(r8) :: ad_wPhy
+      real(r8) :: ad_wSDet
+      real(r8) :: ad_wLDet
+      
+      real(r8) :: ad_K_Nitri
+      real(r8) :: ad_NitriR
+      real(r8) :: ad_K_Denit
+      real(r8) :: ad_DenitR
+      real(r8) :: ad_K_PO4
+      real(r8) :: ad_PhyPN
+      real(r8) :: ad_ZooPN
+      real(r8) :: ad_K_DO
+      real(r8) :: ad_LDeRRP
+      real(r8) :: ad_SDeRRP
+      real(r8) :: ad_R_SODf
+      real(r8) :: ad_R_NH4f
+      real(r8) :: ad_R_PO4f
+
+      integer :: NSUB
+      real(r8), dimension(Nparam(ng)) :: ad_my_p
+      real(r8), dimension(Nparam(ng)) :: buffer
+# ifdef DISTRIBUTE
+      character (len=3), dimension(Nparam(ng)) :: op_handle
+# endif
+#endif
+#define BLOWINGUP_CHECKER
+#ifdef BLOWINGUP_CHECKER
+      integer :: ii
+      real(r8), dimension(NT(ng)) :: val
+      character (len=8) :: valchar
+#endif
+
 #include "set_bounds.h"
 !
 !-----------------------------------------------------------------------
@@ -382,6 +444,56 @@
 !  Set time-stepping according to the number of iterations.
 !
       dtdays=dt(ng)*sec2day/REAL(BioIter(ng),r8)
+
+#ifdef ADJUST_PARAM
+!
+!  Initialize adjoint private parameters.
+!
+      ad_AttSW=0.0_r8
+      ad_AttChl=0.0_r8
+      ad_Vp0=0.0_r8
+      ad_I_thNH4=0.0_r8
+      ad_D_p5NH4=0.0_r8
+      ad_K_NO3=0.0_r8
+      ad_K_NH4=0.0_r8
+      ad_K_Phy=0.0_r8
+      ad_Chl2C_m=0.0_r8
+      ad_PhyCN=0.0_r8
+      ad_PhyIP=0.0_r8
+      ad_PhyIS=0.0_r8
+      ad_PhyMR=0.0_r8
+      ad_ZooAE_N=0.0_r8
+      ad_ZooBM=0.0_r8
+      ad_ZooCN=0.0_r8
+      ad_ZooER=0.0_r8
+      ad_ZooGR=0.0_r8
+      ad_ZooMR=0.0_r8
+      ad_LDeRRN=0.0_r8
+      ad_CoagR=0.0_r8
+      ad_SDeRRN=0.0_r8
+      ad_wPhy=0.0_r8
+      ad_wSDet=0.0_r8
+      ad_wLDet=0.0_r8
+
+      ad_K_Nitri=0.0_r8
+      ad_NitriR=0.0_r8
+      ad_K_Denit=0.0_r8
+      ad_DenitR=0.0_r8
+      ad_K_PO4=0.0_r8
+      ad_PhyPN=0.0_r8
+      ad_ZooPN=0.0_r8
+      ad_K_DO=0.0_r8
+      ad_LDeRRP=0.0_r8
+      ad_SDeRRP=0.0_r8
+      ad_R_SODf=0.0_r8
+      ad_R_NH4f=0.0_r8
+      ad_R_PO4f=0.0_r8
+!
+      DO it=1,Nparam(ng)
+        ad_my_p(it)=0.0_r8
+        buffer(it)=0.0_r8
+      END DO
+#endif
 !
 !  Set vertical sinking indentification vector.
 !
@@ -397,15 +509,6 @@
 !  Set vertical sinking velocity vector in the same order as the
 !  identification vector, IDSINK.
 !
-#ifdef ADJUST_PARAM
-      wPhy(ng)=p(nstp,iwPhy)
-      wSDet(ng)=p(nstp,iwSDet)
-      wLDet(ng)=p(nstp,iwLDet)
-      
-      ad_wPhy(ng)=0.0_r8
-      ad_wSDet(ng)=0.0_r8
-      ad_wLDet(ng)=0.0_r8
-#endif
       Wbio(1)=wPhy(ng)                ! phytoplankton
       Wbio(2)=wPhy(ng)                ! chlorophyll
       Wbio(3)=wSDet(ng)               ! small Nitrogen-detritus
@@ -422,6 +525,7 @@
       ad_Wbio(5)=0.0_r8
       ad_Wbio(6)=0.0_r8
 #endif
+!
       J_LOOP : DO j=Jstr,Jend
 !
 !-----------------------------------------------------------------------
@@ -457,6 +561,7 @@
         ad_dltL=0.0_r8
         ad_dltR=0.0_r8
         fac=0.0_r8
+        ad_fac=0.0_r8
         adfac=0.0_r8
         adfac1=0.0_r8
         adfac2=0.0_r8
@@ -540,9 +645,24 @@
               Bio(i,k,ibio)=0.0_r8
               Bio1(i,k,ibio)=0.0_r8
               Bio2(i,k,ibio)=0.0_r8
+              Bio_old(i,k,ibio)=0.0_r8
               ad_Bio(i,k,ibio)=0.0_r8
               ad_Bio_old(i,k,ibio)=0.0_r8
             END DO
+          END DO
+#ifdef BLOWINGUP_CHECKER
+          val(ibio)=0.0_r8
+#endif
+        END DO
+!
+        DO k=1,N(ng)
+          DO i=Istr,Iend
+            Bio(i,k,itemp)=0.0_r8
+            ad_Bio(i,k,itemp)=0.0_r8
+            ad_Bio_old(i,k,itemp)=0.0_r8
+            Bio(i,k,isalt)=0.0_r8
+            ad_Bio(i,k,isalt)=0.0_r8
+            ad_Bio_old(i,k,isalt)=0.0_r8
           END DO
         END DO
 !
@@ -577,7 +697,7 @@
 
 !>            tl_cff=tl_Bio(i,k,ibio)-tl_Bio_old(i,k,ibio)
               ad_Bio_old(i,k,ibio)=ad_Bio_old(i,k,ibio)-ad_cff
-              ad_Bio(i,k,ibio)=ad_Bio_old(i,k,ibio)+ad_cff
+              ad_Bio(i,k,ibio)=ad_Bio(i,k,ibio)+ad_cff
               ad_cff=0.0_r8 !okada!
             END DO
           END DO
@@ -607,7 +727,11 @@
 !  and dissolved oxygen.
 #endif
 !
-#include <ad_fennel_4.h>
+#ifdef ADJUST_PARAM
+# include <ad_fennel_4_param.h>
+#else
+# include <ad_fennel_4.h>
+#endif
 !
 #ifdef OXYGEN
 !-----------------------------------------------------------------------
@@ -631,7 +755,11 @@
 !  related excretion (rate: ZooER).
 !-----------------------------------------------------------------------
 !
-#include <ad_fennel_3.h>
+#ifdef ADJUST_PARAM
+# include <ad_fennel_3_param.h>
+#else
+# include <ad_fennel_3.h>
+#endif
 !
 !-----------------------------------------------------------------------
 !  Phytoplankton grazing by zooplankton (rate: ZooGR), phytoplankton
@@ -640,7 +768,11 @@
 !  detritus. [Landry 1993 L&O 38:468-472]
 !-----------------------------------------------------------------------
 !
-#include <ad_fennel_2.h>
+#ifdef ADJUST_PARAM
+# include <ad_fennel_2_param.h>
+#else
+# include <ad_fennel_2.h>
+#endif
 !
 #if defined OXYGEN && defined DENITRIFICATION
 !-----------------------------------------------------------------------
@@ -651,7 +783,11 @@
 !  Light-limited computations.
 !-----------------------------------------------------------------------
 !
-#include <ad_fennel_1.h>
+#ifdef ADJUST_PARAM
+# include <ad_fennel_1_param.h>
+#else
+# include <ad_fennel_1.h>
+#endif
 !
         END DO ITER_LOOP1
 !
@@ -672,8 +808,8 @@
 !>          tlfac=0.5_r8+SIGN(0.5_r8,t(i,j,k,nstp,isalt))
 !>          tl_Bio(i,k,isalt)=tlfac*tl_t(i,j,k,nstp,isalt)
             adfac=0.5_r8+SIGN(0.5_r8,t(i,j,k,nstp,isalt))
-            ad_t(i,j,k,nstp,itemp)=ad_t(i,j,k,nstp,itemp)+              &
-     &                             adfac*ad_Bio(i,k,itemp)
+            ad_t(i,j,k,nstp,isalt)=ad_t(i,j,k,nstp,isalt)+              &
+     &                             adfac*ad_Bio(i,k,isalt)
             ad_Bio(i,k,isalt)=0.0_r8
 
 !>          tlfac=0.5_r8+SIGN(0.5_r8,35.0_r8-t(i,j,k,nstp,itemp))
@@ -706,6 +842,9 @@
               ad_t(i,j,k,nstp,ibio)=ad_t(i,j,k,nstp,ibio)+              &
      &                              adfac*ad_Bio_old(i,k,ibio)
               ad_Bio_old(i,k,ibio)=0.0_r8
+#ifdef BLOWINGUP_CHECKER
+              val(ibio)=val(ibio)+ad_t(i,j,k,nstp,ibio)
+#endif
             END DO
           END DO
         END DO
@@ -745,44 +884,212 @@
 !
       END DO J_LOOP
 !
+#ifdef ADJUST_PARAM
+!
 !  Set adjoint parameters
 !
-#ifdef PHOSPHORUS
-!>    tl_Wbio(6)=tl_wLDet(ng)
-      ad_wLDet(ng)=ad_wLDet(ng)+ad_Wbio(6)
+# ifdef PHOSPHORUS
+!>    tl_Wbio(6)=tl_wLDet
+!>    tl_Wbio(5)=tl_wSDet
+      ad_wLDet=ad_wLDet+ad_Wbio(6)
+      ad_wSDet=ad_wSDet+ad_Wbio(5)
       ad_Wbio(6)=0.0_r8
-
-!>    tl_Wbio(5)=tl_wSDet(ng)
-      ad_wSDet(ng)=ad_wSDet(ng)+ad_Wbio(5)
       ad_Wbio(5)=0.0_r8
-#endif
-!>    tl_Wbio(4)=tl_wLDet(ng)
-      ad_wLDet(ng)=ad_wLDet(ng)+ad_Wbio(4)
+# endif
+!>    tl_Wbio(4)=tl_wLDet
+!>    tl_Wbio(3)=tl_wSDet
+!>    tl_Wbio(2)=tl_wPhy
+!>    tl_Wbio(1)=tl_wPhy
+      ad_wLDet=ad_wLDet+ad_Wbio(4)
+      ad_wSDet=ad_wSDet+ad_Wbio(3)
+      ad_wPhy=ad_wPhy+ad_Wbio(2)
+      ad_wPhy=ad_wPhy+ad_Wbio(1)
       ad_Wbio(4)=0.0_r8
-
-!>    tl_Wbio(3)=tl_wSDet(ng)
-      ad_wSDet(ng)=ad_wSDet(ng)+ad_Wbio(3)
       ad_Wbio(3)=0.0_r8
-
-!>    tl_Wbio(2)=tl_wPhy(ng)
-      ad_wPhy(ng)=ad_wPhy(ng)+ad_Wbio(2)
       ad_Wbio(2)=0.0_r8
-
-!>    tl_Wbio(1)=tl_wPhy(ng)
-      ad_wPhy(ng)=ad_wPhy(ng)+ad_Wbio(1)
       ad_Wbio(1)=0.0_r8
-#ifdef ADJUST_PARAM
-!>    tl_wLDet(ng)=tl_p(nstp,iwLDet)
-      ad_p(nstp,iwLDet)=ad_p(nstp,iwLDet)+ad_wLDet(ng)
-      ad_wLDet(ng)=0.0_r8
-      
-!>    tl_wSDet(ng)=tl_p(nstp,iwSDet)
-      ad_p(nstp,iwSDet)=ad_p(nstp,iwSDet)+ad_wSDet(ng)
-      ad_wSDet(ng)=0.0_r8
+!
+!  Convert parameters.
+!
+# ifdef EXP_PARAM
+!>    tl_wPhy=wPhy(ng)*tl_p(nstp,iwPhy)
+!>    tl_wSDet=wSDet(ng)*tl_p(nstp,iwSDet)
+!>    tl_wLDet=wLDet(ng)*tl_p(nstp,iwLDet)
+!>    tl_Chl2C_m=Chl2C_m(ng)*tl_p(nstp,iChl2C_m)
+!>    tl_Vp0=Vp0(ng)*tl_p(nstp,iVp0)
+!>    tl_R_SODf=R_SODf(ng)*tl_p(nstp,iR_SODf)
+!>    tl_R_NH4f=R_NH4f(ng)*tl_p(nstp,iR_NH4f)
+!>    tl_R_PO4f=R_PO4f(ng)*tl_p(nstp,iR_PO4f)
+      ad_my_p(iwPhy)=ad_my_p(iwPhy)+wPhy(ng)*ad_wPhy
+      ad_my_p(iwSDet)=ad_my_p(iwSDet)+wSDet(ng)*ad_wSDet
+      ad_my_p(iwLDet)=ad_my_p(iwLDet)+wLDet(ng)*ad_wLDet
+      ad_my_p(iChl2C_m)=ad_my_p(iChl2C_m)+Chl2C_m(ng)*ad_Chl2C_m
+      ad_my_p(iVp0)=ad_my_p(iVp0)+Vp0(ng)*ad_Vp0
+      ad_my_p(iR_SODf)=ad_my_p(iR_SODf)+R_SODf(ng)*ad_R_SODf
+      ad_my_p(iR_NH4f)=ad_my_p(iR_NH4f)+R_NH4f(ng)*ad_R_NH4f
+      ad_my_p(iR_PO4f)=ad_my_p(iR_PO4f)+R_PO4f(ng)*ad_R_PO4f
+# else
+!>    tl_AttSW=tl_p(nstp,iAttSW)
 
-!>    tl_wPhy(ng)=tl_p(nstp,iwPhy)
-      ad_p(nstp,iwPhy)=ad_p(nstp,iwPhy)+ad_wPhy(ng)
-      ad_wPhy(ng)=0.0_r8
+      ad_my_p(iAttSW)=ad_my_p(iAttSW)+ad_AttSW
+      ad_my_p(iAttChl)=ad_my_p(iAttChl)+ad_AttChl
+      ad_my_p(iVp0)=ad_my_p(iVp0)+ad_Vp0
+      ad_my_p(iI_thNH4)=ad_my_p(iI_thNH4)+ad_I_thNH4
+      ad_my_p(iD_p5NH4)=ad_my_p(iD_p5NH4)+ad_D_p5NH4
+
+      ad_my_p(iK_Nitri)=ad_my_p(iK_Nitri)+ad_K_Nitri
+      ad_my_p(iNitriR)=ad_my_p(iNitriR)+ad_NitriR
+      ad_my_p(iK_Denit)=ad_my_p(iK_Denit)+ad_K_Denit
+      ad_my_p(iDenitR)=ad_my_p(iDenitR)+ad_DenitR
+      ad_my_p(iK_NO3)=ad_my_p(iK_NO3)+ad_K_NO3
+
+      ad_my_p(iK_NH4)=ad_my_p(iK_NH4)+ad_K_NH4
+      ad_my_p(iK_PO4)=ad_my_p(iK_PO4)+ad_K_PO4
+      ad_my_p(iK_Phy)=ad_my_p(iK_Phy)+ad_K_Phy
+      ad_my_p(iChl2C_m)=ad_my_p(iChl2C_m)+ad_Chl2C_m
+      ad_my_p(iPhyPN)=ad_my_p(iPhyPN)+ad_PhyPN
+      ad_my_p(iPhyCN)=ad_my_p(iPhyCN)+ad_PhyCN
+
+      ad_my_p(iPhyIP)=ad_my_p(iPhyIP)+ad_PhyIP
+      ad_my_p(iPhyIS)=ad_my_p(iPhyIS)+ad_PhyIS
+      ad_my_p(iPhyMR)=ad_my_p(iPhyMR)+ad_PhyMR
+      ad_my_p(iZooAE_N)=ad_my_p(iZooAE_N)+ad_ZooAE_N
+      ad_my_p(iZooBM)=ad_my_p(iZooBM)+ad_ZooBM
+
+      ad_my_p(iZooPN)=ad_my_p(iZooPN)+ad_ZooPN
+      ad_my_p(iZooCN)=ad_my_p(iZooCN)+ad_ZooCN
+      ad_my_p(iZooER)=ad_my_p(iZooER)+ad_ZooER
+      ad_my_p(iZooGR)=ad_my_p(iZooGR)+ad_ZooGR
+      ad_my_p(iZooMR)=ad_my_p(iZooMR)+ad_ZooMR
+      ad_my_p(iK_DO)=ad_my_p(iK_DO)+ad_K_DO
+
+      ad_my_p(iLDeRRN)=ad_my_p(iLDeRRN)+ad_LDeRRN
+      ad_my_p(iLDeRRP)=ad_my_p(iLDeRRP)+ad_LDeRRP
+      ad_my_p(iCoagR)=ad_my_p(iCoagR)+ad_CoagR
+      ad_my_p(iSDeRRN)=ad_my_p(iSDeRRN)+ad_SDeRRN
+      ad_my_p(iSDeRRP)=ad_my_p(iSDeRRP)+ad_SDeRRP
+
+      ad_my_p(iwPhy)=ad_my_p(iwPhy)+ad_wPhy
+      ad_my_p(iwSDet)=ad_my_p(iwSDet)+ad_wSDet
+      ad_my_p(iwLDet)=ad_my_p(iwLDet)+ad_wLDet
+      ad_my_p(iR_SODf)=ad_my_p(iR_SODf)+ad_R_SODf
+      ad_my_p(iR_NH4f)=ad_my_p(iR_NH4f)+ad_R_NH4f
+
+      ad_my_p(iR_PO4f)=ad_my_p(iR_PO4f)+ad_R_PO4f
+# endif
+      ad_AttSW=0.0_r8
+      ad_AttChl=0.0_r8
+      ad_Vp0=0.0_r8
+      ad_I_thNH4=0.0_r8
+      ad_D_p5NH4=0.0_r8
+      ad_K_NO3=0.0_r8
+      ad_K_NH4=0.0_r8
+      ad_K_Phy=0.0_r8
+      ad_Chl2C_m=0.0_r8
+      ad_PhyCN=0.0_r8
+      ad_PhyIP=0.0_r8
+      ad_PhyIS=0.0_r8
+      ad_PhyMR=0.0_r8
+      ad_ZooAE_N=0.0_r8
+      ad_ZooBM=0.0_r8
+      ad_ZooCN=0.0_r8
+      ad_ZooER=0.0_r8
+      ad_ZooGR=0.0_r8
+      ad_ZooMR=0.0_r8
+      ad_LDeRRN=0.0_r8
+      ad_CoagR=0.0_r8
+      ad_SDeRRN=0.0_r8
+      ad_wPhy=0.0_r8
+      ad_wSDet=0.0_r8
+      ad_wLDet=0.0_r8
+
+      ad_K_Nitri=0.0_r8
+      ad_NitriR=0.0_r8
+      ad_K_Denit=0.0_r8
+      ad_DenitR=0.0_r8
+      ad_K_PO4=0.0_r8
+      ad_PhyPN=0.0_r8
+      ad_ZooPN=0.0_r8
+      ad_K_DO=0.0_r8
+      ad_LDeRRP=0.0_r8
+      ad_SDeRRP=0.0_r8
+      ad_R_SODf=0.0_r8
+      ad_R_NH4f=0.0_r8
+      ad_R_PO4f=0.0_r8
+!
+!-----------------------------------------------------------------------
+!  Compute global adjoint parameters.
+!-----------------------------------------------------------------------
+!
+# ifdef DISTRIBUTE
+      NSUB=1                           ! distributed-memory
+# else
+      IF (DOMAIN(ng)%SouthWest_Corner(tile).and.                        &
+     &    DOMAIN(ng)%NorthEast_Corner(tile)) THEN
+        NSUB=1                         ! non-tiled application
+      ELSE
+        NSUB=NtileX(ng)*NtileE(ng)     ! tiled application
+      END IF
+# endif
+!$OMP CRITICAL (AD_BIOLOGY)
+      IF (tile_count.eq.0) THEN
+        DO it=1,Nparam(ng)
+          buffer(it)=ad_my_p(it)
+        END DO
+      ELSE
+        DO it=1,Nparam(ng)
+          buffer(it)=buffer(it)+ad_my_p(it)
+        END DO
+      END IF
+      tile_count=tile_count+1
+      IF (tile_count.eq.NSUB) THEN
+        tile_count=0
+# ifdef DISTRIBUTE
+        DO it=1,Nparam(ng)
+          op_handle(it)='SUM'
+        END DO
+        CALL mp_reduce (ng, iADM, Nparam(ng), buffer, op_handle)
+        DO it=1,Nparam(ng)
+          ad_p(nstp,it)=ad_p(nstp,it)+buffer(it)
+        END DO
+# endif
+      END IF
+!$OMP END CRITICAL (AD_BIOLOGY)
+#endif
+!
+#ifdef CHECKER
+!
+! stdout 
+!
+      if (master.and.(mod(iic(ng)-1,ninfo(ng)).eq.0)) then
+# ifdef ADJUST_PARAM
+        write(stdout,101) 'ad 01:08', ad_p(nstp,1:8)
+        write(stdout,101) 'ad 09:16', ad_p(nstp,9:16)
+        write(stdout,101) 'ad 17:24', ad_p(nstp,17:24)
+        write(stdout,101) 'ad 25:32', ad_p(nstp,25:32)
+        write(stdout,101) 'ad 33:  ', ad_p(nstp,33:)
+        write(stdout,*) ('-',i=1,78)
+# endif
+      end if
+ 101  FORMAT (a,8(1pe9.1))
+#endif
+
+#ifdef BLOWINGUP_CHECKER
+!
+!  If blowing-up, set exit_flag to stop computations. (okada)
+!
+      DO itrc=1,NBT
+        ibio=idbio(itrc)
+        WRITE (valchar,'(1pe8.1)') val(ibio)
+        DO ii=1,8
+          IF ((valchar(ii:ii).eq.'N').or.(valchar(ii:ii).eq.'n').or.    &
+     &        (valchar(ii:ii).eq.'*')) THEN
+            IF (Master) WRITE (stdout,100) ibio
+            exit_flag=1
+          END IF
+        END DO
+      END DO
+ 100  FORMAT ('Blowing-up in ad_fennel.h, varid=',i2)
 #endif
 
       RETURN

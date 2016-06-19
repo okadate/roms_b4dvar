@@ -44,6 +44,11 @@
       USE mod_ncparam
       USE mod_netcdf
       USE mod_scalars
+
+# ifdef DISTRIBUTE
+!
+      USE distribute_mod, ONLY : mp_bcastf
+# endif
 !
       implicit none
 !
@@ -143,6 +148,13 @@
 
       A=wrk(1)
       nf_fread0d=status
+
+#ifdef DISTRIBUTE
+!
+!  Broadcast new solution to other nodes.
+!
+      CALL mp_bcastf (ng, model, A)
+#endif
 
       RETURN
       END FUNCTION nf_fread0d

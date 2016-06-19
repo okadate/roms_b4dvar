@@ -258,7 +258,6 @@
                   CALL ini_fields (ng, tile, iNLM)
                 END DO
 !$OMP BARRIER
-
 # ifdef NESTING
 !
 !  Extract donor grid initial data at contact points and store it in

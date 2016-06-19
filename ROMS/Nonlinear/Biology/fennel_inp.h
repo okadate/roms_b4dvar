@@ -44,6 +44,9 @@
 #endif
 
       real(r8), dimension(NBT,Ngrids) :: Rbio
+#ifdef ADJUST_PARAM
+      real(r8), dimension(3,Ngrids) :: Rparam
+#endif
 
       real(r8), dimension(100) :: Rval
 
@@ -72,7 +75,317 @@
           SELECT CASE (TRIM(KeyWord))
             CASE ('Lbiology')
               Npts=load_l(Nval, Cval, Ngrids, Lbiology)
+            CASE ('BioIter')
+              Npts=load_i(Nval, Rval, Ngrids, BioIter)
 
+#ifdef ADJUST_PARAM
+            CASE ('AttSW')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                AttSW(ng)=Rparam(1,ng)
+                pmin(iAttSW,ng)=Rparam(2,ng)
+                pmax(iAttSW,ng)=Rparam(3,ng)
+              END DO
+            CASE ('AttChl')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                AttChl(ng)=Rparam(1,ng)
+                pmin(iAttChl,ng)=Rparam(2,ng)
+                pmax(iAttChl,ng)=Rparam(3,ng)
+              END DO
+            CASE ('PARfrac')
+              Npts=load_r(Nval, Rval, Ngrids, PARfrac)
+            CASE ('Vp0')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                Vp0(ng)=Rparam(1,ng)
+                pmin(iVp0,ng)=Rparam(2,ng)
+                pmax(iVp0,ng)=Rparam(3,ng)
+              END DO
+            CASE ('g_max')
+              Npts=load_r(Nval, Rval, Ngrids, g_max)
+            CASE ('t_opt')
+              Npts=load_r(Nval, Rval, Ngrids, t_opt)
+            CASE ('I_opt')
+              Npts=load_r(Nval, Rval, Ngrids, I_opt)
+            CASE ('beta1')
+              Npts=load_r(Nval, Rval, Ngrids, beta1)
+            CASE ('beta2')
+              Npts=load_r(Nval, Rval, Ngrids, beta2)
+            CASE ('I_thNH4')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                I_thNH4(ng)=Rparam(1,ng)
+                pmin(iI_thNH4,ng)=Rparam(2,ng)
+                pmax(iI_thNH4,ng)=Rparam(3,ng)
+              END DO
+            CASE ('D_p5NH4')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                D_p5NH4(ng)=Rparam(1,ng)
+                pmin(iD_p5NH4,ng)=Rparam(2,ng)
+                pmax(iD_p5NH4,ng)=Rparam(3,ng)
+              END DO
+            CASE ('NitriR')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                NitriR(ng)=Rparam(1,ng)
+                pmin(iNitriR,ng)=Rparam(2,ng)
+                pmax(iNitriR,ng)=Rparam(3,ng)
+              END DO
+            CASE ('NitriR_t')
+              Npts=load_r(Nval, Rval, Ngrids, NitriR_t)
+            CASE ('K_Nitri')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_Nitri(ng)=Rparam(1,ng)
+                pmin(iK_Nitri,ng)=Rparam(2,ng)
+                pmax(iK_Nitri,ng)=Rparam(3,ng)
+              END DO
+            CASE ('DenitR')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                DenitR(ng)=Rparam(1,ng)
+                pmin(iDenitR,ng)=Rparam(2,ng)
+                pmax(iDenitR,ng)=Rparam(3,ng)
+              END DO
+            CASE ('DenitR_t')
+              Npts=load_r(Nval, Rval, Ngrids, DenitR_t)
+            CASE ('K_Denit')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_Denit(ng)=Rparam(1,ng)
+                pmin(iK_Denit,ng)=Rparam(2,ng)
+                pmax(iK_Denit,ng)=Rparam(3,ng)
+              END DO
+            CASE ('K_NO3')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_NO3(ng)=Rparam(1,ng)
+                pmin(iK_NO3,ng)=Rparam(2,ng)
+                pmax(iK_NO3,ng)=Rparam(3,ng)
+              END DO
+            CASE ('K_NH4')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_NH4(ng)=Rparam(1,ng)
+                pmin(iK_NH4,ng)=Rparam(2,ng)
+                pmax(iK_NH4,ng)=Rparam(3,ng)
+              END DO
+            CASE ('K_PO4')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_PO4(ng)=Rparam(1,ng)
+                pmin(iK_PO4,ng)=Rparam(2,ng)
+                pmax(iK_PO4,ng)=Rparam(3,ng)
+              END DO
+            CASE ('K_Phy')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_Phy(ng)=Rparam(1,ng)
+                pmin(iK_Phy,ng)=Rparam(2,ng)
+                pmax(iK_Phy,ng)=Rparam(3,ng)
+              END DO
+            CASE ('Chl2C_m')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                Chl2C_m(ng)=Rparam(1,ng)
+                pmin(iChl2C_m,ng)=Rparam(2,ng)
+                pmax(iChl2C_m,ng)=Rparam(3,ng)
+              END DO
+            CASE ('ChlMin')
+              Npts=load_r(Nval, Rval, Ngrids, ChlMin)
+            CASE ('PhyPN')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                PhyPN(ng)=Rparam(1,ng)
+                pmin(iPhyPN,ng)=Rparam(2,ng)
+                pmax(iPhyPN,ng)=Rparam(3,ng)
+              END DO
+            CASE ('PhyCN')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                PhyCN(ng)=Rparam(1,ng)
+                pmin(iPhyCN,ng)=Rparam(2,ng)
+                pmax(iPhyCN,ng)=Rparam(3,ng)
+              END DO
+            CASE ('PhyIP')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                PhyIP(ng)=Rparam(1,ng)
+                pmin(iPhyIP,ng)=Rparam(2,ng)
+                pmax(iPhyIP,ng)=Rparam(3,ng)
+              END DO
+            CASE ('PhyIS')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                PhyIS(ng)=Rparam(1,ng)
+                pmin(iPhyIS,ng)=Rparam(2,ng)
+                pmax(iPhyIS,ng)=Rparam(3,ng)
+              END DO
+            CASE ('PhyMin')
+              Npts=load_r(Nval, Rval, Ngrids, PhyMin)
+            CASE ('PhyMR')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                PhyMR(ng)=Rparam(1,ng)
+                pmin(iPhyMR,ng)=Rparam(2,ng)
+                pmax(iPhyMR,ng)=Rparam(3,ng)
+              END DO
+            CASE ('PhyMR_t')
+              Npts=load_r(Nval, Rval, Ngrids, PhyMR_t)
+            CASE ('ZooAE_N')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                ZooAE_N(ng)=Rparam(1,ng)
+                pmin(iZooAE_N,ng)=Rparam(2,ng)
+                pmax(iZooAE_N,ng)=Rparam(3,ng)
+              END DO
+            CASE ('ZooBM')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                ZooBM(ng)=Rparam(1,ng)
+                pmin(iZooBM,ng)=Rparam(2,ng)
+                pmax(iZooBM,ng)=Rparam(3,ng)
+              END DO
+            CASE ('ZooPN')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                ZooPN(ng)=Rparam(1,ng)
+                pmin(iZooPN,ng)=Rparam(2,ng)
+                pmax(iZooPN,ng)=Rparam(3,ng)
+              END DO
+            CASE ('ZooCN')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                ZooCN(ng)=Rparam(1,ng)
+                pmin(iZooCN,ng)=Rparam(2,ng)
+                pmax(iZooCN,ng)=Rparam(3,ng)
+              END DO
+            CASE ('ZooER')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                ZooER(ng)=Rparam(1,ng)
+                pmin(iZooER,ng)=Rparam(2,ng)
+                pmax(iZooER,ng)=Rparam(3,ng)
+              END DO
+            CASE ('ZooGR')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                ZooGR(ng)=Rparam(1,ng)
+                pmin(iZooGR,ng)=Rparam(2,ng)
+                pmax(iZooGR,ng)=Rparam(3,ng)
+              END DO
+            CASE ('ZooGR_t')
+              Npts=load_r(Nval, Rval, Ngrids, ZooGR_t)
+            CASE ('ZooMin')
+              Npts=load_r(Nval, Rval, Ngrids, ZooMin)
+            CASE ('ZooMR')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                ZooMR(ng)=Rparam(1,ng)
+                pmin(iZooMR,ng)=Rparam(2,ng)
+                pmax(iZooMR,ng)=Rparam(3,ng)
+              END DO
+            CASE ('K_DO')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_DO(ng)=Rparam(1,ng)
+                pmin(iK_DO,ng)=Rparam(2,ng)
+                pmax(iK_DO,ng)=Rparam(3,ng)
+              END DO
+            CASE ('LDeRRN')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                LDeRRN(ng)=Rparam(1,ng)
+                pmin(iLDeRRN,ng)=Rparam(2,ng)
+                pmax(iLDeRRN,ng)=Rparam(3,ng)
+              END DO
+            CASE ('LDeRRP')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                LDeRRP(ng)=Rparam(1,ng)
+                pmin(iLDeRRP,ng)=Rparam(2,ng)
+                pmax(iLDeRRP,ng)=Rparam(3,ng)
+              END DO
+            CASE ('LDeRRC')
+              Npts=load_r(Nval, Rval, Ngrids, LDeRRC)
+            CASE ('CoagR')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                CoagR(ng)=Rparam(1,ng)
+                pmin(iCoagR,ng)=Rparam(2,ng)
+                pmax(iCoagR,ng)=Rparam(3,ng)
+              END DO
+            CASE ('SDeRRN')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                SDeRRN(ng)=Rparam(1,ng)
+                pmin(iSDeRRN,ng)=Rparam(2,ng)
+                pmax(iSDeRRN,ng)=Rparam(3,ng)
+              END DO
+            CASE ('SDeRRP')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                SDeRRP(ng)=Rparam(1,ng)
+                pmin(iSDeRRP,ng)=Rparam(2,ng)
+                pmax(iSDeRRP,ng)=Rparam(3,ng)
+              END DO
+            CASE ('SDeRRC')
+              Npts=load_r(Nval, Rval, Ngrids, SDeRRC)
+            CASE ('RR_t')
+              Npts=load_r(Nval, Rval, Ngrids, RR_t)
+            CASE ('wPhy')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                wPhy(ng)=Rparam(1,ng)
+                pmin(iwPhy,ng)=Rparam(2,ng)
+                pmax(iwPhy,ng)=Rparam(3,ng)
+              END DO
+            CASE ('wLDet')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                wLDet(ng)=Rparam(1,ng)
+                pmin(iwLDet,ng)=Rparam(2,ng)
+                pmax(iwLDet,ng)=Rparam(3,ng)
+              END DO
+            CASE ('wSDet')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                wSDet(ng)=Rparam(1,ng)
+                pmin(iwSDet,ng)=Rparam(2,ng)
+                pmax(iwSDet,ng)=Rparam(3,ng)
+              END DO
+            CASE ('pCO2air')
+              Npts=load_r(Nval, Rval, Ngrids, pCO2air)
+            CASE ('H2SOR')
+              Npts=load_r(Nval, Rval, Ngrids, H2SOR)
+            CASE ('R_SODf')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                R_SODf(ng)=Rparam(1,ng)
+                pmin(iR_SODf,ng)=Rparam(2,ng)
+                pmax(iR_SODf,ng)=Rparam(3,ng)
+              END DO
+            CASE ('R_NH4f')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                R_NH4f(ng)=Rparam(1,ng)
+                pmin(iR_NH4f,ng)=Rparam(2,ng)
+                pmax(iR_NH4f,ng)=Rparam(3,ng)
+              END DO
+            CASE ('R_PO4f')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                R_PO4f(ng)=Rparam(1,ng)
+                pmin(iR_PO4f,ng)=Rparam(2,ng)
+                pmax(iR_PO4f,ng)=Rparam(3,ng)
+              END DO
+            CASE ('Lparam')
+              Npts=load_l(Nval, Cval, Nparam*Ngrids, Lparam)
+            CASE ('pfactor')
+              Npts=load_r(Nval, Rval, Nparam*Ngrids, pfactor)
+#else
             CASE ('K_PO4')
               Npts=load_r(Nval, Rval, Ngrids, K_PO4)
             CASE ('PhyPN')
@@ -120,8 +433,6 @@
             CASE ('R_PO4f')
               Npts=load_r(Nval, Rval, Ngrids, R_PO4f)
 
-            CASE ('BioIter')
-              Npts=load_i(Nval, Rval, Ngrids, BioIter)
             CASE ('AttSW')
               Npts=load_r(Nval, Rval, Ngrids, AttSW)
             CASE ('AttChl')
@@ -186,12 +497,9 @@
               Npts=load_r(Nval, Rval, Ngrids, wLDet)
             CASE ('wSDet')
               Npts=load_r(Nval, Rval, Ngrids, wSDet)
-#ifdef ADJUST_PARAM
-            CASE ('Lparam')
-              Npts=load_l(Nval, Cval, Nparam*Ngrids, Lparam)
-#endif
             CASE ('pCO2air')
               Npts=load_r(Nval, Rval, Ngrids, pCO2air)
+#endif
             CASE ('TNU2')
               Npts=load_r(Nval, Rval, NBT*Ngrids, Rbio)
               DO ng=1,Ngrids
@@ -924,6 +1232,15 @@
             DO i=1,Nparam(ng)
               WRITE (out,110) Lparam(i,ng), 'Lparam', i, 'Lparam', i,' '
             END DO
+            DO i=1,Nparam(ng)
+              WRITE (out,111) pfactor(i,ng), 'pfactor', i, 'pfactor', i
+            END DO
+            DO i=1,Nparam(ng)
+              WRITE (out,111) pmax(i,ng), 'pmax', i, 'pmax', i
+            END DO
+            DO i=1,Nparam(ng)
+              WRITE (out,111) pmin(i,ng), 'pmin', i, 'pmin', i
+            END DO
 #endif
             WRITE (out,70) BioIter(ng), 'BioIter',                      &
      &            'Number of iterations for nonlinear convergence.'
@@ -1333,6 +1650,7 @@
   90  FORMAT (1p,e11.4,2x,a,t32,a,/,t34,a)
  100  FORMAT (1p,e11.4,2x,a,'(',i2.2,')',t32,a,/,t34,a,i2.2,':',1x,a)
  110  FORMAT (10x,l1,2x,a,'(',i2.2,')',t32,a,i2.2,':',1x,a)
+ 111  FORMAT (1p,e11.4,2x,a,'(',i2.2,')',t32,a,i2.2)
  120  FORMAT (10x,l1,2x,a,t32,a,i2.2,':',1x,a)
  130  FORMAT (10x,l1,2x,a,t32,a,1x,a)
 

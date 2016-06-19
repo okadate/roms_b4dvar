@@ -381,6 +381,7 @@
      &                     INI(ng)%Vid(idPvar(itrc)), NF_TYPE,          &
      &                     1, (/recdim/), Aval, Vinfo, ncname)
             IF (exit_flag.ne.NoError) RETURN
+            Ldef_p(itrc,ng)=.TRUE.
           END IF
         END DO
 #  endif

@@ -243,76 +243,58 @@
       real(r8), allocatable :: ZooMR(:)              ! 1/day
       real(r8), allocatable :: pCO2air(:)            ! ppmv
 #ifdef TANGENT
-      real(r8), allocatable :: tl_wSDet(:)
-      real(r8), allocatable :: tl_wPhy(:)
-      real(r8), allocatable :: tl_wLDet(:)
+!      real(r8), allocatable :: tl_wSDet(:)
+!      real(r8), allocatable :: tl_wPhy(:)
+!      real(r8), allocatable :: tl_wLDet(:)
       real(r8), allocatable :: tl_PARfrac(:)
 #endif
 #ifdef ADJOINT
-      real(r8), allocatable :: ad_wSDet(:)
-      real(r8), allocatable :: ad_wPhy(:)
-      real(r8), allocatable :: ad_wLDet(:)
+!      real(r8), allocatable :: ad_wSDet(:)
+!      real(r8), allocatable :: ad_wPhy(:)
+!      real(r8), allocatable :: ad_wLDet(:)
       real(r8), allocatable :: ad_PARfrac(:)
 #endif
 
 #ifdef ADJUST_PARAM
-      integer :: iwPhy    = 1
-      integer :: iwLDet   = 2
-      integer :: iwSDet   = 3
+      integer :: iAttSW   = 1
+      integer :: iAttChl  = 2
+      integer :: iVp0     = 3
+      integer :: iI_thNH4 = 4
+      integer :: iD_p5NH4 = 5
+      integer :: iNitriR  = 6
+      integer :: iK_NO3   = 7
+      integer :: iK_NH4   = 8
+      integer :: iK_Phy   = 9
+      integer :: iChl2C_m = 10
+      integer :: iPhyCN   = 11
+      integer :: iPhyIP   = 12
+      integer :: iPhyIS   = 13
+      integer :: iPhyMR   = 14
+      integer :: iZooAE_N = 15
+      integer :: iZooBM   = 16
+      integer :: iZooCN   = 17
+      integer :: iZooER   = 18
+      integer :: iZooGR   = 19
+      integer :: iZooMR   = 20
+      integer :: iLDeRRN  = 21
+      integer :: iCoagR   = 22
+      integer :: iSDeRRN  = 23
+      integer :: iwPhy    = 24
+      integer :: iwLDet   = 25
+      integer :: iwSDet   = 26
 
-!      integer :: iAttSW   = 1
-!      integer :: iAttChl  = 2
-!      integer :: iChl2C_m = 3
-!      integer :: iChlMin  = 4
-!      integer :: iCoagR   = 5
-!      integer :: iD_p5NH4 = 6
-!      integer :: iI_thNH4 = 7
-!      integer :: iK_NH4   = 8
-!      integer :: iK_NO3   = 9
-!      integer :: iK_Phy   = 10
-!      integer :: iLDeRRN  = 11
-!      integer :: iLDeRRC  = 12
-!      integer :: iNitriR  = 13
-!      integer :: iPARfrac = 14
-!      integer :: iPhyCN   = 15
-!      integer :: iPhyIP   = 16
-!      integer :: iPhyIS   = 17
-!      integer :: iPhyMin  = 18
-!      integer :: iPhyMR   = 19
-!      integer :: iSDeAR   = 20
-!      integer :: iSDeBR   = 21
-!      integer :: iSDeRRN  = 22
-!      integer :: iSDeRRC  = 23
-!      integer :: iVp0     = 24
-
-!      integer :: iZooAE_N = 28
-!      integer :: iZooBM   = 29
-!      integer :: iZooCN   = 30
-!      integer :: iZooER   = 31
-!      integer :: iZooGR   = 32
-!      integer :: iZooMin  = 33
-!      integer :: iZooMR   = 34
-!      integer :: ipCO2air = 35
-
-!      integer :: iK_PO4    = 36 
-!      integer :: iPhyPN    = 37
-!      integer :: iZooPN    = 38
-!      integer :: iLDeRRP   = 39
-!      integer :: iSDeRRP   = 40
-!      integer :: iH2SOR    = 41
-!      integer :: iK_DO     = 42
-!      integer :: iK_Nitri  = 43
-!      integer :: ithNitriR = 44
-!      integer :: ig_max    = 45
-!      integer :: it_opt    = 46
-!      integer :: iI_opt    = 47
-!      integer :: ibeta1    = 48
-!      integer :: ibeta2    = 49
-!      integer :: iDenitR   = 50
-!      integer :: iK_Denit  = 51
-!      integer :: ithDenitR = 52
-!      integer :: ithPhyMR  = 53
-!      integer :: ithRRN    = 54
+      integer :: iK_Nitri = 27
+      integer :: iK_Denit = 28
+      integer :: iDenitR  = 29
+      integer :: iK_PO4   = 30
+      integer :: iPhyPN   = 31
+      integer :: iZooPN   = 32
+      integer :: iK_DO    = 33
+      integer :: iLDeRRP  = 34
+      integer :: iSDeRRP  = 35
+      integer :: iR_SODf  = 36
+      integer :: iR_NH4f  = 37
+      integer :: iR_PO4f  = 38
 #endif
 
       CONTAINS
@@ -539,16 +521,6 @@
       IF (.not.allocated(PARfrac)) THEN
         allocate ( PARfrac(Ngrids) )
       END IF
-#ifdef TANGENT
-      IF (.not.allocated(tl_PARfrac)) THEN
-        allocate ( tl_PARfrac(Ngrids) )
-      END IF
-#endif
-#ifdef ADJOINT
-      IF (.not.allocated(ad_PARfrac)) THEN
-        allocate ( ad_PARfrac(Ngrids) )
-      END IF
-#endif
       IF (.not.allocated(PhyCN)) THEN
         allocate ( PhyCN(Ngrids) )
       END IF
@@ -582,42 +554,12 @@
       IF (.not.allocated(wLDet)) THEN
         allocate ( wLDet(Ngrids) )
       END IF
-#ifdef TANGENT
-      IF (.not.allocated(tl_wLDet)) THEN
-        allocate ( tl_wLDet(Ngrids) )
-      END IF
-#endif
-#ifdef ADJOINT
-      IF (.not.allocated(ad_wLDet)) THEN
-        allocate ( ad_wLDet(Ngrids) )
-      END IF
-#endif
       IF (.not.allocated(wPhy)) THEN
         allocate ( wPhy(Ngrids) )
       END IF
-#ifdef TANGENT
-      IF (.not.allocated(tl_wPhy)) THEN
-        allocate ( tl_wPhy(Ngrids) )
-      END IF
-#endif
-#ifdef ADJOINT
-      IF (.not.allocated(ad_wPhy)) THEN
-        allocate ( ad_wPhy(Ngrids) )
-      END IF
-#endif
       IF (.not.allocated(wSDet)) THEN
         allocate ( wSDet(Ngrids) )
       END IF
-#ifdef TANGENT
-      IF (.not.allocated(tl_wSDet)) THEN
-        allocate ( tl_wSDet(Ngrids) )
-      END IF
-#endif
-#ifdef ADJOINT
-      IF (.not.allocated(ad_wSDet)) THEN
-        allocate ( ad_wSDet(Ngrids) )
-      END IF
-#endif
       IF (.not.allocated(ZooAE_N)) THEN
         allocate ( ZooAE_N(Ngrids) )
       END IF
@@ -642,6 +584,34 @@
       IF (.not.allocated(pCO2air)) THEN
         allocate ( pCO2air(Ngrids) )
       END IF
+#ifdef TANGENT
+!      IF (.not.allocated(tl_wLDet)) THEN
+!        allocate ( tl_wLDet(Ngrids) )
+!      END IF
+!      IF (.not.allocated(tl_wPhy)) THEN
+!        allocate ( tl_wPhy(Ngrids) )
+!      END IF
+!      IF (.not.allocated(tl_wSDet)) THEN
+!        allocate ( tl_wSDet(Ngrids) )
+!      END IF
+      IF (.not.allocated(tl_PARfrac)) THEN
+        allocate ( tl_PARfrac(Ngrids) )
+      END IF
+#endif
+#ifdef ADJOINT
+!      IF (.not.allocated(ad_wLDet)) THEN
+!        allocate ( ad_wLDet(Ngrids) )
+!      END IF
+!      IF (.not.allocated(ad_wPhy)) THEN
+!        allocate ( ad_wPhy(Ngrids) )
+!      END IF
+!      IF (.not.allocated(ad_wSDet)) THEN
+!        allocate ( ad_wSDet(Ngrids) )
+!      END IF
+      IF (.not.allocated(ad_PARfrac)) THEN
+        allocate ( ad_PARfrac(Ngrids) )
+      END IF
+#endif
 !
 !  Allocate biological tracer vector.
 !

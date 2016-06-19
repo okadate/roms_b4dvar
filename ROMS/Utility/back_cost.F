@@ -113,6 +113,9 @@
      &                     FORCES(ng) % tl_ustr,                        &
      &                     FORCES(ng) % tl_vstr,                        &
 # endif
+# ifdef ADJUST_PARAM
+     &                     OCEAN(ng) % tl_p,                            &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                     FORCES(ng) % tl_tflux,                       &
@@ -147,6 +150,9 @@
 # ifdef ADJUST_WSTRESS
      &                           tl_ustr,                               &
      &                           tl_vstr,                               &
+# endif
+# ifdef ADJUST_PARAM
+     &                           tl_p,                                  &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -200,6 +206,9 @@
       real(r8), intent(in) :: tl_ustr(LBi:,LBj:,:,:)
       real(r8), intent(in) :: tl_vstr(LBi:,LBj:,:,:)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(:,:)
+#  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
       real(r8), intent(in) :: tl_tflux(LBi:,LBj:,:,:,:)
@@ -234,6 +243,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(in) :: tl_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(in) :: tl_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(2,Nparam(ng))
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -835,6 +847,20 @@
         END IF
       END DO
 #  endif
+# endif
+
+# ifdef ADJUST_PARAM
+!
+!  Parameters contribution.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Master.and.Lparam(itrc,ng)) THEN
+          cff1=tl_p(Lsum,itrc)
+          cff2=0.5_r8*cff1*cff1
+          my_BackCost(0)=my_BackCost(0)+cff2
+          my_BackCost(isPvar(itrc))=my_BackCost(isPvar(itrc))+cff2
+        END IF
+      END DO
 # endif
 !
 !-----------------------------------------------------------------------

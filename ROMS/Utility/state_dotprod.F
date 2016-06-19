@@ -757,15 +757,18 @@
 
 # ifdef ADJUST_PARAM
 !
-!  Biology parameter.
+!  Parameters.
 !
       DO it=1,Nparam(ng)
-        IF (Lparam(it,ng)) THEN
+        IF (Master.and.Lparam(it,ng)) THEN
           cff=s1_p(it)*s2_p(it)
           my_DotProd(0)=my_DotProd(0)+cff
           my_DotProd(isPvar(it))=my_DotProd(isPvar(it))+cff
         END IF
       END DO
+#  ifdef CHECKER
+      if (Master) print*, 'state_dotprod', s1_p(1), s2_p(1)
+#  endif
 # endif
 
 #endif
@@ -805,6 +808,9 @@
 #endif
       END IF
 !$OMP END CRITICAL (DOT_PROD)
+#  ifdef CHECKER
+      if (Master) print*, 'state_dotprod', DotProd(0)
+#  endif
 
       RETURN
       END SUBROUTINE state_dotprod

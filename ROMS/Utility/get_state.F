@@ -90,8 +90,7 @@
 !
       logical :: Perfect2D, Perfect3D, foundit
 #if defined ADJUST_BOUNDARY || \
-    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX || \
-    defined ADJUST_PARAM
+    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX
       logical :: get_adjust
 #endif
       logical, dimension(NV) :: get_var, have_var
@@ -885,16 +884,16 @@
 
 #  ifdef ADJUST_PARAM
 !
-!  Read in nonlinear biological parameter.
+!  Read in nonlinear parameters.
 !
         DO itrc=1,Nparam(ng)
-          IF (get_var(idPvar(itrc))) THEN
+          IF (get_var(idPvar(itrc)).and.Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
-              status=nf_fread0d(ng, IDmod, ncname, ncINPid,             &
-     &                          Vname(1,idPvar(itrc)), varid,           &
-     &                          InpRec,                                 &
-     &                          OCEAN(ng) % p(Tindex,itrc))
+            status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
+     &                        Vname(1,idPvar(itrc)), varid,             &
+     &                        InpRec,                                   &
+     &                        OCEAN(ng) % p(Tindex,itrc))
             IF (status.ne.nf90_noerr) THEN
               IF (Master) THEN
                 WRITE (stdout,60) string, TRIM(Vname(1,idPvar(itrc))),  &
@@ -910,6 +909,7 @@
      &                            OCEAN(ng) % p(Tindex,itrc)
               END IF
             END IF
+            OCEAN(ng)%p(:,itrc)=OCEAN(ng)%p(Tindex,itrc)
           END IF
         END DO
 #  endif
@@ -1627,8 +1627,7 @@
       TLM_STATE: IF ((model.eq.iTLM).or.(model.eq.iRPM)) THEN
 
 # if defined ADJUST_BOUNDARY || \
-    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX || \
-    defined ADJUST_PARAM
+    defined ADJUST_WSTRESS  || defined ADJUST_STFLUX
         IF (inner.eq.0.and.model.eq.iRPM) THEN
           get_adjust=.FALSE.
         ELSE
@@ -2112,11 +2111,10 @@
 #  endif
 #  ifdef ADJUST_PARAM
 !
-!  Read in tangent linear biological parameters.
+!  Read in tangent linear parameters.
 !
         DO itrc=1,Nparam(ng)
-          IF (get_var(idPvar(itrc)).and.get_adjust.and.                 &
-     &        Lparam(itrc,ng)) THEN
+          IF (get_var(idPvar(itrc)).and.Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
             status=nf_fread0d(ng, IDmod, ncname, ncINPid,               &
@@ -2133,8 +2131,7 @@
               RETURN
             ELSE
               IF (Master) THEN
-                WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc)))//         &
-     &                            ', adjusted tl_p',                    &
+                WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc))),          &
      &                            OCEAN(ng)%tl_p(Tindex,itrc),          &
      &                            OCEAN(ng)%tl_p(Tindex,itrc)
               END IF
@@ -2825,7 +2822,7 @@
 #  endif
 #  ifdef ADJUST_PARAM
 !
-!  Read in adjoint biological parameters.
+!  Read in adjoint parameters.
 !
         DO itrc=1,Nparam(ng)
           IF (get_var(idPvar(itrc)).and.Lparam(itrc,ng)) THEN
@@ -2845,8 +2842,7 @@
               RETURN
             ELSE
               IF (Master) THEN
-                WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc)))//         &
-     &                            ', adjusted ad_p',                    &
+                WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc))),          &
      &                            OCEAN(ng)%ad_p(Tindex,itrc),          &
      &                            OCEAN(ng)%ad_p(Tindex,itrc)
               END IF
@@ -3521,9 +3517,9 @@
           END IF
         END DO
 # endif
-# if defined ADJUST_PARAM && defined SOLVE3D
+# ifdef ADJUST_PARAM_PASS
 !
-!  Read in biological parameter normalization factors.
+!  Read in parameter normalization factors.
 !
         DO itrc=1,Nparam(ng)
           IF (get_var(idPvar(itrc)).and.(model.eq.11).and.              &
@@ -3778,9 +3774,9 @@
           END IF
         END DO
 # endif
-# ifdef ADJUST_PARAM
+# ifdef ADJUST_PARAM_PASS
 !
-!  Read in biological parameter standard deviations.
+!  Read in parameter standard deviations.
 !
         DO itrc=1,Nparam(ng)
           IF (get_var(idPvar(itrc)).and.(model.eq.9).and.               &
@@ -4345,7 +4341,7 @@
 #if (defined W4DPSAS || defined TL_W4DPSAS || \
      defined W4DPSAS_SENSITIVITY)          && \
     (defined ADJUST_BOUNDARY || defined ADJUST_WSTRESS ||\
-     defined ADJUST_STFLUX || defined ADJUST_PARAM)
+     defined ADJUST_STFLUX)
 !
 !-----------------------------------------------------------------------
 !  Read in tangent linear forcing corrections.
@@ -4642,13 +4638,12 @@
           END IF
         END DO
 # endif
-# if defined ADJUST_PARAM
+# ifdef ADJUST_PARAM
 !
-!  Read in tangent linear biological parameters.
+!  Read in tangent linear parameters.
 !
         DO itrc=1,Nparam(ng)
-          IF (get_var(idPvar(itrc)).and.get_adjust.and.                 &
-     &        Lparam(itrc,ng)) THEN
+          IF (get_var(idPvar(itrc)).and.Lparam(itrc,ng)) THEN
             foundit=find_string(var_name, n_var,                        &
      &                          TRIM(Vname(1,idPvar(itrc))), varid)
             status=nf_fread3d(ng, IDmod, ncname, ncINPid,               &
@@ -4665,8 +4660,7 @@
               RETURN
             ELSE
               IF (Master) THEN
-                WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc)))//         &
-     &                            ', adjusted tl_p',                    &
+                WRITE (stdout,70) TRIM(Vname(2,idPvar(itrc))),          &
      &                            OCEAN(ng) % tl_p(Tindex,itrc),        &
      &                            OCEAN(ng) % tl_p(Tindex,itrc)
               END IF

@@ -25,13 +25,16 @@
             cff=fac1*Hz_inv(i,1)
 # ifdef OXYGEN
             fac3=MAX(Bio(i,1,iOxyg),0.0_r8)
+            cff4=MIN(fac3,cff*cff1)
 !           ============================================================
 !>          tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff4
             ad_cff4=ad_cff4-ad_Bio(i,1,iOxyg)
 
 !>          tlfac=SIGN(0.5_r8,cff*cff1-fac3)
-!>          tl_cff4=(0.5_r8+tlfac)*tl_fac3+(0.5_r8-tlfac)*tl_cff*cff1
+!>          tl_cff4=(0.5_r8+tlfac)*tl_fac3+                             &
+!>   &              (0.5_r8-tlfac)*(tl_cff*cff1+cff*tl_cff1)
             adfac=SIGN(0.5_r8,cff*cff1-fac3)
+            ad_cff1=ad_cff1+(0.5_r8-adfac)*cff*ad_cff4
             ad_cff=ad_cff+(0.5_r8-adfac)*ad_cff4*cff1
             ad_fac3=ad_fac3+(0.5_r8+adfac)*ad_cff4
             ad_cff4=0.0_r8
@@ -44,10 +47,12 @@
             ad_fac3=0.0_r8
 # endif
 # ifdef PHOSPHORUS
-!>          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff*cff3
+!>          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff*cff3+cff*tl_cff3
+            ad_cff3=ad_cff3+ad_Bio(i,1,iPO4_)*cff
             ad_cff=ad_cff+ad_Bio(i,1,iPO4_)*cff3
 # endif
-!>          tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff*cff2
+!>          tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff*cff2+cff*tl_cff2
+            ad_cff2=ad_cff2+ad_Bio(i,1,iNH4_)*cff
             ad_cff=ad_cff+ad_Bio(i,1,iNH4_)*cff2
 
 !>          tl_cff=tl_fac1*Hz_inv(i,1)+fac1*tl_Hz_inv(i,1)
@@ -68,6 +73,17 @@
             ad_fac1=0.0_r8
 # endif
           END DO
+!>        tl_cff1=tl_R_SODf/mol2g_O2
+          ad_R_SODf=ad_R_SODf+ad_cff1/mol2g_O2
+          ad_cff1=0.0_r8
+
+!>        tl_cff2=tl_R_NH4f/14.0_r8
+          ad_R_NH4f=ad_R_NH4f+ad_cff2/14.0_r8
+          ad_cff2=0.0_r8
+
+!>        tl_cff3=tl_R_PO4f/31.0_r8
+          ad_R_PO4f=ad_R_PO4f+ad_cff3/31.0_r8
+          ad_cff3=0.0_r8
 #endif
 !
 !-----------------------------------------------------------------------

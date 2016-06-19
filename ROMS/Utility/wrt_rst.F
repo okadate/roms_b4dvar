@@ -135,11 +135,28 @@
 !  Write out model time (s).
 !
       CALL netcdf_put_fvar (ng, iNLM, RST(ng)%name,                     &
-     &                      TRIM(Vname(idtime,ng)), time(ng:),          &
+     &                      TRIM(Vname(1,idtime)), time(ng:),           &
      &                      (/RST(ng)%Rindex/), (/1/),                  &
      &                      ncid = RST(ng)%ncid,                        &
      &                      varid = RST(ng)%Vid(idtime))
       IF (exit_flag.ne.NoError) RETURN
+
+# ifdef ADJUST_PARAM
+!
+!  Write out biology parameters.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          CALL netcdf_put_fvar (ng, iNLM, RST(ng)%name,                 &
+     &                          TRIM(Vname(1,idPvar(itrc))),            &
+     &                          OCEAN(ng) % p(RST(ng)%Rindex,itrc),     &
+     &                          (/RST(ng)%Rindex/), (/1/),              &
+     &                          ncid = RST(ng)%ncid,                    &
+     &                          varid = RST(ng)%Vid(idPvar(itrc)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+# endif
 
 #if defined SEDIMENT && defined SED_MORPH
 !

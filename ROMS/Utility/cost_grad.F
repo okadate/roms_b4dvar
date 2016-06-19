@@ -77,6 +77,9 @@
      &                     FORCES(ng) % tl_ustr,                        &
      &                     FORCES(ng) % tl_vstr,                        &
 # endif
+# ifdef ADJUST_PARAM
+     &                     OCEAN(ng) % tl_p,                            &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                     FORCES(ng) % tl_tflux,                       &
@@ -102,6 +105,9 @@
 # ifdef ADJUST_WSTRESS
      &                     FORCES(ng) % ad_ustr,                        &
      &                     FORCES(ng) % ad_vstr,                        &
+# endif
+# ifdef ADJUST_PARAM
+     &                     OCEAN(ng) % ad_p,                            &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -133,6 +139,9 @@
 # ifdef ADJUST_WSTRESS
      &                           tl_ustr, tl_vstr,                      &
 # endif
+# ifdef ADJUST_PARAM
+     &                           tl_p,                                  &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                           tl_tflux,                              &
@@ -152,6 +161,9 @@
 # ifdef ADJUST_WSTRESS
      &                           ad_ustr, ad_vstr,                      &
 # endif
+# ifdef ADJUST_PARAM
+     &                           ad_p,                                  &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                           ad_tflux,                              &
@@ -166,7 +178,7 @@
       USE mod_param
       USE mod_ncparam
 # if defined ADJUST_STFLUX || defined ADJUST_WSTRESS || \
-     defined ADJUST_BOUNDARY
+     defined ADJUST_BOUNDARY || defined ADJUST_PARAM
       USE mod_scalars
 # endif
 !
@@ -191,6 +203,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(in) :: tl_ustr(LBi:,LBj:,:,:)
       real(r8), intent(in) :: tl_vstr(LBi:,LBj:,:,:)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(:,:)
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -218,6 +233,9 @@
       real(r8), intent(inout) :: ad_ustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: ad_vstr(LBi:,LBj:,:,:)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: ad_p(:,:)
+#  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
       real(r8), intent(inout) :: ad_tflux(LBi:,LBj:,:,:,:)
@@ -234,6 +252,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(in) :: tl_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(in) :: tl_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(2,Nparam(ng))
 #  endif
 #  ifdef ADJUST_BOUNDARY
 #   ifdef SOLVE3D
@@ -274,6 +295,9 @@
       real(r8), intent(inout) :: ad_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: ad_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: ad_p(2,Nparam(ng))
+#  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
       real(r8), intent(inout) :: ad_tflux(LBi:UBi,LBj:UBj,              &
@@ -291,7 +315,7 @@
 !
 !  Local variable declarations.
 !
-      integer :: i, ib, ir, j, k
+      integer :: i, ib, ir, j, k, it
 # ifdef SOLVE3D
       integer :: itrc
 # endif
@@ -725,6 +749,16 @@
         END IF
       END DO
 #  endif
+# endif
+# ifdef ADJUST_PARAM
+!
+!  Parameters.
+!
+      DO it=1,Nparam(ng)
+        IF (Lparam(it,ng)) THEN
+          ad_p(Lout,it)=tl_p(Linp1,it)+tl_p(Linp2,it)+ad_p(Lout,it)
+        END IF
+      END DO
 # endif
 
       RETURN

@@ -242,7 +242,7 @@
       real(r8), intent(inout) :: DiaBio3d(LBi:,LBj:,:,:)
 # endif
 # ifdef ADJUST_PARAM
-      real(r8), intent(inout) :: p(:,:)
+      real(r8), intent(in) :: p(:,:)
 # endif
       real(r8), intent(inout) :: t(LBi:,LBj:,:,:,:)
 # ifdef BIO_SED_DIAGENESIS
@@ -280,7 +280,7 @@
       real(r8), intent(inout) :: DiaBio3d(LBi:UBi,LBj:UBj,UBk,NDbio3d)
 # endif
 # ifdef ADJUST_PARAM
-      real(r8), intent(inout) :: p(2,UBp)
+      real(r8), intent(in) :: p(2,UBp)
 # endif
       real(r8), intent(inout) :: t(LBi:UBi,LBj:UBj,UBk,3,UBt)
 # ifdef BIO_SED_DIAGENESIS
@@ -436,6 +436,13 @@
       real(r8), parameter :: PON2COD = 8.625_r8  !? 138/16
       real(r8), parameter :: H2S2COD = 2.0_r8    !?
 #endif
+#define BLOWINGUP_CHECKER
+#ifdef BLOWINGUP_CHECKER
+      integer :: ii
+      real(r8), dimension(NT(ng)) :: val
+      character (len=8) :: valchar
+#endif
+
 #include "set_bounds.h"
 #ifdef DIAGNOSTICS_BIO
 !
@@ -503,15 +510,87 @@
       idsink(5)=iSDeP
       idsink(6)=iLDeP
 #endif
+#ifdef ADJUST_PARAM
+!
+!  Convert parameters.
+!
+# ifdef EXP_PARAM
+      wPhy(ng)=wPhy(ng)*EXP(p(nstp,iwPhy))
+      wSDet(ng)=wSDet(ng)*EXP(p(nstp,iwSDet))
+      wLDet(ng)=wLDet(ng)*EXP(p(nstp,iwLDet))
+      Chl2C_m(ng)=Chl2C_m(ng)*EXP(p(nstp,iChl2C_m))
+      Vp0(ng)=Vp0(ng)*EXP(p(nstp,iVp0))
+      R_SODf(ng)=R_SODf(ng)*EXP(p(nstp,iR_SODf))
+      R_NH4f(ng)=R_NH4f(ng)*EXP(p(nstp,iR_NH4f))
+      R_PO4f(ng)=R_PO4f(ng)*EXP(p(nstp,iR_PO4f))
+# else
+      AttSW(ng)=p(nstp,iAttSW)
+      AttChl(ng)=p(nstp,iAttChl)
+      Vp0(ng)=p(nstp,iVp0)
+      I_thNH4(ng)=p(nstp,iI_thNH4)
+      D_p5NH4(ng)=p(nstp,iD_p5NH4)
+
+      K_Nitri(ng)=p(nstp,iK_Nitri)
+      NitriR(ng)=p(nstp,iNitriR)
+      K_Denit(ng)=p(nstp,iK_Denit)
+      DenitR(ng)=p(nstp,iDenitR)
+      K_NO3(ng)=p(nstp,iK_NO3)
+
+      K_NH4(ng)=p(nstp,iK_NH4)
+      K_PO4(ng)=p(nstp,iK_PO4)
+      K_Phy(ng)=p(nstp,iK_Phy)
+      Chl2C_m(ng)=p(nstp,iChl2C_m)
+      PhyPN(ng)=p(nstp,iPhyPN)
+      PhyCN(ng)=p(nstp,iPhyCN)
+
+      PhyIP(ng)=p(nstp,iPhyIP)
+      PhyIS(ng)=p(nstp,iPhyIS)
+      PhyMR(ng)=p(nstp,iPhyMR)
+      ZooAE_N(ng)=p(nstp,iZooAE_N)
+      ZooBM(ng)=p(nstp,iZooBM)
+
+      ZooPN(ng)=p(nstp,iZooPN)
+      ZooCN(ng)=p(nstp,iZooCN)
+      ZooER(ng)=p(nstp,iZooER)
+      ZooGR(ng)=p(nstp,iZooGR)
+      ZooMR(ng)=p(nstp,iZooMR)
+      K_DO(ng)=p(nstp,iK_DO)
+
+      LDeRRN(ng)=p(nstp,iLDeRRN)
+      LDeRRP(ng)=p(nstp,iLDeRRP)
+      CoagR(ng)=p(nstp,iCoagR)
+      SDeRRN(ng)=p(nstp,iSDeRRN)
+      SDeRRP(ng)=p(nstp,iSDeRRP)
+
+      wPhy(ng)=p(nstp,iwPhy)
+      wSDet(ng)=p(nstp,iwSDet)
+      wLDet(ng)=p(nstp,iwLDet)
+      R_SODf(ng)=p(nstp,iR_SODf)
+      R_NH4f(ng)=p(nstp,iR_NH4f)
+
+      R_PO4f(ng)=p(nstp,iR_PO4f)
+# endif
+#endif
+#ifdef CHECKER
+!
+! stdout 
+!
+      if (master.and.(mod(iic(ng)-1,ninfo(ng)).eq.0)) then
+# ifdef ADJUST_PARAM
+        write(stdout,101) 'NL 01:08', p(nstp,1:8)
+        write(stdout,101) 'NL 09:16', p(nstp,9:16)
+        write(stdout,101) 'NL 17:24', p(nstp,17:24)
+        write(stdout,101) 'NL 25:32', p(nstp,25:32)
+        write(stdout,101) 'NL 33:  ', p(nstp,33:)
+        write(stdout,*) ('-',i=1,78)
+# endif
+      end if
+ 101  FORMAT (a,8(1pe9.1))
+#endif
 !
 !  Set vertical sinking velocity vector in the same order as the
 !  identification vector, IDSINK.
 !
-#ifdef ADJUST_PARAM
-      wPhy(ng)=p(nstp,iwPhy)
-      wSDet(ng)=p(nstp,iwSDet)
-      wLDet(ng)=p(nstp,iwLDet)
-#endif
       Wbio(1)=wPhy(ng)                ! phytoplankton
       Wbio(2)=wPhy(ng)                ! chlorophyll
       Wbio(3)=wSDet(ng)               ! small Nitrogen-detritus
@@ -563,6 +642,9 @@
               Bio(i,k,ibio)=Bio_old(i,k,ibio)
             END DO
           END DO
+#ifdef BLOWINGUP_CHECKER
+          val(ibio)=0.0_r8
+#endif
         END DO
 #ifdef CARBON
         DO k=1,N(ng)
@@ -1733,9 +1815,13 @@
 !
 !  Elution and oxygen consumption parameters (okada)
 !
+# ifdef OXYGEN
           cff1=R_SODf(ng)/mol2g_O2    !SOD flux
+# endif
           cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
+# ifdef PHOSPHORUS
           cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
+# endif
 !
 !-----------------------------------------------------------------------
 !  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)
@@ -1815,10 +1901,31 @@
             DO i=Istr,Iend
               cff=Bio(i,k,ibio)-Bio_old(i,k,ibio)
               t(i,j,k,nnew,ibio)=t(i,j,k,nnew,ibio)+cff*Hz(i,j,k)
+#ifdef BLOWINGUP_CHECKER
+              val(ibio)=val(ibio)+t(i,j,k,nnew,ibio)
+#endif
             END DO
           END DO
         END DO
       END DO J_LOOP
+
+#ifdef BLOWINGUP_CHECKER
+!
+!  If blowing-up, set exit_flag to stop computations. (okada)
+!
+      DO itrc=1,NBT
+        ibio=idbio(itrc)
+        WRITE (valchar,'(1pe8.1)') val(ibio)
+        DO ii=1,8
+          IF ((valchar(ii:ii).eq.'N').or.(valchar(ii:ii).eq.'n').or.    &
+     &        (valchar(ii:ii).eq.'*')) THEN
+            IF (Master) WRITE (stdout,100) ibio
+            exit_flag=1
+          END IF
+        END DO
+      END DO
+ 100  FORMAT ('Blowing-up in fennel.h, varid=',i2)
+#endif
 
 #ifdef BIO_SED_DIAGENESIS
       !IF (dia_count.ge.20) THEN

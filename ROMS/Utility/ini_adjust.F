@@ -93,6 +93,9 @@
      &                      GRID(ng) % umask,                           &
      &                      GRID(ng) % vmask,                           &
 #   endif
+#   ifdef ADJUST_PARAM
+     &                      OCEAN(ng) % tl_p,                           &
+#   endif
 #   ifdef SOLVE3D
      &                      OCEAN(ng) % tl_t,                           &
      &                      OCEAN(ng) % tl_u,                           &
@@ -101,6 +104,9 @@
      &                      OCEAN(ng) % tl_ubar,                        &
      &                      OCEAN(ng) % tl_vbar,                        &
      &                      OCEAN(ng) % tl_zeta,                        &
+#   ifdef ADJUST_PARAM
+     &                      OCEAN(ng) % p,                              &
+#   endif
 #   ifdef SOLVE3D
      &                      OCEAN(ng) % t,                              &
      &                      OCEAN(ng) % u,                              &
@@ -124,10 +130,16 @@
 #   ifdef MASKING
      &                            rmask, umask, vmask,                  &
 #   endif
+#   ifdef ADJUST_PARAM
+     &                            tl_p,                                 &
+#   endif
 #   ifdef SOLVE3D
      &                            tl_t, tl_u, tl_v,                     &
 #   endif
      &                            tl_ubar, tl_vbar, tl_zeta,            &
+#   ifdef ADJUST_PARAM
+     &                            p,                                    &
+#   endif
 #   ifdef SOLVE3D
      &                            t, u, v,                              &
 #   endif
@@ -135,6 +147,9 @@
 !***********************************************************************
 !
       USE mod_param
+#   ifdef ADJUST_PARAM
+      USE mod_scalars
+#   endif
 !
 !  Imported variable declarations.
 !
@@ -149,6 +164,9 @@
       real(r8), intent(in) :: umask(LBi:,LBj:)
       real(r8), intent(in) :: vmask(LBi:,LBj:)
 #    endif
+#    ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(:,:)
+#    endif
 #    ifdef SOLVE3D
       real(r8), intent(in) :: tl_t(LBi:,LBj:,:,:,:)
       real(r8), intent(in) :: tl_u(LBi:,LBj:,:,:)
@@ -157,6 +175,9 @@
       real(r8), intent(in) :: tl_ubar(LBi:,LBj:,:)
       real(r8), intent(in) :: tl_vbar(LBi:,LBj:,:)
       real(r8), intent(in) :: tl_zeta(LBi:,LBj:,:)
+#    ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: p(:,:)
+#    endif
 #    ifdef SOLVE3D
       real(r8), intent(inout) :: t(LBi:,LBj:,:,:,:)
       real(r8), intent(inout) :: u(LBi:,LBj:,:,:)
@@ -171,6 +192,9 @@
       real(r8), intent(in) :: umask(LBi:UBi,LBj:UBj)
       real(r8), intent(in) :: vmask(LBi:UBi,LBj:UBj)
 #    endif
+#    ifdef ADJUST_PARAM
+      real(r8), intent(in) :: tl_p(2,Nparam(ng))
+#    endif
 #    ifdef SOLVE3D
       real(r8), intent(in) :: tl_t(LBi:UBi,LBj:UBj,N(ng),3,NT(ng))
       real(r8), intent(in) :: tl_u(LBi:UBi,LBj:UBj,N(ng),2)
@@ -179,6 +203,9 @@
       real(r8), intent(in) :: tl_ubar(LBi:UBi,LBj:UBj,3)
       real(r8), intent(in) :: tl_vbar(LBi:UBi,LBj:UBj,3)
       real(r8), intent(in) :: tl_zeta(LBi:UBi,LBj:UBj,3)
+#    ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: p(2,Nparam(ng))
+#    endif
 #    ifdef SOLVE3D
       real(r8), intent(inout) :: t(LBi:UBi,LBj:UBj,N(ng),3,NT(ng))
       real(r8), intent(inout) :: u(LBi:UBi,LBj:UBj,N(ng),2)
@@ -271,6 +298,18 @@
             END DO
           END DO
         END DO
+      END DO
+#   endif
+
+#   ifdef ADJUST_PARAM
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          p(Lout,itrc)=p(Lout,itrc)+tl_p(Linp,itrc)
+#    ifndef EXP_PARAM
+          p(Lout,itrc)=MAX(p(Lout,itrc),pmin(itrc,ng))
+          p(Lout,itrc)=MIN(p(Lout,itrc),pmax(itrc,ng))
+#    endif
+        END IF
       END DO
 #   endif
 

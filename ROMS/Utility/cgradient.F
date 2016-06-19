@@ -399,6 +399,9 @@
       USE mod_fourdvar
       USE mod_iounits
       USE mod_scalars
+# ifdef CHECKER
+      USE mod_biology
+# endif
 
 # ifdef DISTRIBUTE
 !
@@ -817,6 +820,16 @@
         Lwrk=2
         Linp=1
         Lout=2
+# ifdef CHECKER
+#  ifdef BIOLOGY
+        if (Master) print*, 'hessian tl_t', tl_t(29,30,1,1:2,iOxyg)
+        if (Master) print*, 'hessian ad_t', ad_t(29,30,1,1:2,iOxyg)
+#  endif
+#  ifdef ADJUST_PARAM
+        if (Master) print*, 'hessian tl_p', tl_p(:,1)
+        if (Master) print*, 'hessian ad_p', ad_p(:,1)
+#  endif
+# endif
         CALL hessian (ng, tile, model,                                  &
      &                LBi, UBi, LBj, UBj, LBij, UBij,                   &
      &                IminS, ImaxS, JminS, JmaxS,                       &
@@ -873,12 +886,14 @@
 !
 !  Check for positive Hessian of J.
 !
-        IF (cg_delta(innLoop,outLoop).le.0.0_r8) THEN
+        IF (cg_delta(innLoop,outLoop).le.0.0_r8.and.Master) THEN
           PRINT *, ' CG_DELTA not positive.'
-          PRINT *, ' CG_DELTA = ', cg_delta(innLoop,outLoop),           &
-     &             ', outer = ', outLoop, ', inner = ', innLoop
+          PRINT *, ' CG_DELTA = ', cg_delta(innLoop,outLoop)
+          PRINT *, '  outer = ', outLoop, ', inner = ', innLoop
+# ifndef IGNORE_NEGATIVE_CG_DELTA
           exit_flag=8
           RETURN
+# endif
         END IF
       END IF
 !
@@ -889,6 +904,16 @@
       Linp=1
       Lout=2
       Lwrk=2
+# ifdef CHECKER
+#  ifdef BIOLOGY
+      if (Master) print*, 'lanczos tl_t', tl_t(29,30,1,1:2,iOxyg)
+      if (Master) print*, 'lanczos ad_t', ad_t(29,30,1,1:2,iOxyg)
+#  endif
+#  ifdef ADJUST_PARAM
+      if (Master) print*, 'lanczos tl_p', tl_p(:,1)
+      if (Master) print*, 'lanczos ad_p', ad_p(:,1)
+#  endif
+# endif
       CALL lanczos (ng, tile, model,                                    &
      &              LBi, UBi, LBj, UBj, LBij, UBij,                     &
      &              IminS, ImaxS, JminS, JmaxS,                         &
@@ -945,6 +970,16 @@
 !
 !  Compute new direction, d(k+1).
 !
+# ifdef CHECKER
+#  ifdef BIOLOGY
+      if (Master) print*, 'new_direction tl_t', tl_t(29,30,1,1:2,iOxyg)
+      if (Master) print*, 'new_direction ad_t', ad_t(29,30,1,1:2,iOxyg)
+#  endif
+#  ifdef ADJUST_PARAM
+      if (Master) print*, 'new_direction tl_p', tl_p(:,1)
+      if (Master) print*, 'new_direction ad_p', ad_p(:,1)
+#  endif
+# endif
       CALL new_direction (ng, tile, model,                              &
      &                    LBi, UBi, LBj, UBj, LBij, UBij,               &
      &                    IminS, ImaxS, JminS, JmaxS,                   &
@@ -1034,6 +1069,16 @@
         Linp=1
         Lout=2
         Lwrk=2
+# ifdef CHECKER
+#  ifdef BIOLOGY
+        if (Master) print*, 'new_gradient tl_t', tl_t(29,30,1,1:2,iOxyg)
+        if (Master) print*, 'new_gradient ad_t', ad_t(29,30,1,1:2,iOxyg)
+#  endif
+#  ifdef ADJUST_PARAM
+        if (Master) print*, 'new_gradient tl_p', tl_p(:,1)
+        if (Master) print*, 'new_gradient ad_p', ad_p(:,1)
+#  endif
+# endif
         CALL new_gradient (ng, tile, model,                             &
      &                     LBi, UBi, LBj, UBj, LBij, UBij,              &
      &                     IminS, ImaxS, JminS, JmaxS,                  &
@@ -1170,8 +1215,9 @@
 !  Check for exploding or negative Ritz values.
 !
           DO i=1,innLoop
-            IF (cg_Ritz(i,outLoop).lt.0.0_r8) THEN
+            IF (cg_Ritz(i,outLoop).lt.0.0_r8.and.Master) THEN
               PRINT *, ' Negative Ritz value found.'
+              PRINT *, '  cg_Ritz = ', cg_Ritz(i,outLoop)
               exit_flag=8
               RETURN
             END IF
@@ -1283,6 +1329,16 @@
 !
       Linp=1
       Lout=2
+# ifdef CHECKER
+#  ifdef BIOLOGY
+      if (Master) print*, 'tl_new_state tl_t', tl_t(29,30,1,1:2,iOxyg)
+      if (Master) print*, 'tl_new_state ad_t', ad_t(29,30,1,1:2,iOxyg)
+#  endif
+#  ifdef ADJUST_PARAM
+      if (Master) print*, 'tl_new_state tl_p', tl_p(:,1)
+      if (Master) print*, 'tl_new_state ad_p', ad_p(:,1)
+#  endif
+# endif
       CALL tl_new_state (ng, tile, model,                               &
      &                   LBi, UBi, LBj, UBj, LBij, UBij,                &
      &                   IminS, ImaxS, JminS, JmaxS,                    &
@@ -1518,6 +1574,16 @@
           END DO
         END IF
       END IF
+# ifdef CHECKER
+#  ifdef BIOLOGY
+      if (Master) print*, 'end_cgradient tl_t', tl_t(29,30,1,1:2,iOxyg)
+      if (Master) print*, 'end_cgradient ad_t', ad_t(29,30,1,1:2,iOxyg)
+#  endif
+#  ifdef ADJUST_PARAM
+      if (Master) print*, 'end_cgradient tl_p', tl_p(:,1)
+      if (Master) print*, 'end_cgradient ad_p', ad_p(:,1)
+#  endif
+# endif
 
       RETURN
       END SUBROUTINE cgradient_tile
@@ -1797,7 +1863,7 @@
       real(r8), intent(inout) :: tl_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #  endif
 #  ifdef ADJUST_PARAM
-      real(r8), intent(inout) :: ad_p(2,Nparam(ng))
+      real(r8), intent(inout) :: tl_p(2,Nparam(ng))
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -1830,7 +1896,6 @@
 !-----------------------------------------------------------------------
 !
       IF (innLoop.ne.Ninner) THEN
-# ifndef ADJUST_NOINITIAL
 !
 !  Free-surface.
 !
@@ -1842,7 +1907,7 @@
 # endif
           END DO
         END DO
-# endif
+
 # ifdef ADJUST_BOUNDARY
 !
 !  Free-surface open boundaries.
@@ -2058,8 +2123,6 @@
 # endif
 
 # ifdef SOLVE3D
-
-#  ifndef ADJUST_NOINITIAL
 !
 !  3D U-momentum.
 !
@@ -2073,7 +2136,6 @@
             END DO
           END DO
         END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -2136,8 +2198,6 @@
           END DO
         END IF
 #  endif
-
-#  ifndef ADJUST_NOINITIAL
 !
 !  3D V-momentum.
 !
@@ -2151,7 +2211,6 @@
             END DO
           END DO
         END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -2214,8 +2273,6 @@
           END DO
         END IF
 #  endif
-
-#  ifndef ADJUST_NOINITIAL
 !
 !  Tracers.
 !
@@ -2231,7 +2288,6 @@
             END DO
           END DO
         END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -2683,7 +2739,6 @@
       DO i=1,4
         Vsize(i)=0
       END DO
-# ifndef ADJUST_NOINITIAL
 !
 !  Read in free-surface.
 !
@@ -2710,7 +2765,7 @@
         ioerror=status
         RETURN
       END IF
-# endif
+
 # ifdef ADJUST_BOUNDARY
 !
 !  Read in free-surface open boundaries.
@@ -2901,7 +2956,6 @@
 # endif
 
 # ifdef SOLVE3D
-#  ifndef ADJUST_NOINITIAL
 !
 !  Read in 3D U-momentum component.
 !
@@ -2928,7 +2982,7 @@
         ioerror=status
         RETURN
       END IF
-#  endif
+
 #  ifdef ADJUST_BOUNDARY
 !
 !  Read in 3D U-momentum component open boundaries.
@@ -2957,7 +3011,6 @@
         END IF
       END IF
 #  endif
-#  ifndef ADJUST_NOINITIAL
 !
 !  Read in 3D U-momentum component.
 !
@@ -2984,7 +3037,7 @@
         ioerror=status
         RETURN
       END IF
-#  endif
+
 #  ifdef ADJUST_BOUNDARY
 !
 !  Read in 3D V-momentum component open boundaries.
@@ -3013,7 +3066,6 @@
         END IF
       END IF
 #  endif
-#  ifndef ADJUST_NOINITIAL
 !
 !  Read in tracers.
 !
@@ -3043,7 +3095,7 @@
           RETURN
         END IF
       END DO
-#  endif
+
 #  ifdef ADJUST_BOUNDARY
 !
 !  Read in tracers open boundaries.
@@ -3365,7 +3417,6 @@
 !  Compute new conjugate descent direction, d(k+1). Notice that the old
 !  descent direction is overwritten.
 !-----------------------------------------------------------------------
-# ifndef ADJUST_NOINITIAL
 !
 !  Free-sruface.
 !
@@ -3377,7 +3428,6 @@
 #  endif
         END DO
       END DO
-# endif
 
 # ifdef ADJUST_BOUNDARY
 !
@@ -3594,8 +3644,6 @@
 # endif
 
 # ifdef SOLVE3D
-
-#  ifndef ADJUST_NOINITIAL
 !
 !  3D U-momentum.
 !
@@ -3609,7 +3657,6 @@
           END DO
         END DO
       END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -3672,8 +3719,6 @@
         END DO
       END IF
 #  endif
-
-#  ifndef ADJUST_NOINITIAL
 !
 !  3D V-momentum.
 !
@@ -3687,7 +3732,6 @@
           END DO
         END DO
       END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -3750,8 +3794,6 @@
         END DO
       END IF
 #  endif
-
-#  ifndef ADJUST_NOINITIAL
 !
 !  Tracers.
 !
@@ -3767,7 +3809,6 @@
           END DO
         END DO
       END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -4101,8 +4142,6 @@
 !
 !  Need to multiply the adjoint state arrays (index Lold) by zgnorm to
 !  convert back to the non-normalized gradient.
-
-# ifndef ADJUST_NOINITIAL
 !
 !  Free-surface.
 !
@@ -4116,7 +4155,6 @@
 #  endif
         END DO
       END DO
-# endif
 
 # ifdef ADJUST_BOUNDARY
 !
@@ -4365,8 +4403,6 @@
 # endif
 
 # ifdef SOLVE3D
-
-#  ifndef ADJUST_NOINITIAL
 !
 !  3D U-momentum.
 !
@@ -4382,7 +4418,6 @@
           END DO
         END DO
       END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -4454,7 +4489,6 @@
       END IF
 #  endif
 
-#  ifndef ADJUST_NOINITIAL
 !
 !  3D V-momentum.
 !
@@ -4470,7 +4504,6 @@
           END DO
         END DO
       END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -4542,7 +4575,6 @@
       END IF
 #  endif
 
-#  ifndef ADJUST_NOINITIAL
 !
 !  Tracers.
 !
@@ -4560,7 +4592,6 @@
           END DO
         END DO
       END DO
-#  endif
 
 #  ifdef ADJUST_BOUNDARY
 !
@@ -5226,8 +5257,7 @@
      &                      ad_vstr(:,:,:,Lnew), tl_vstr(:,:,:,Lwrk),   &
 # endif
 # ifdef ADJUST_PARAM
-     &                      ad_p(Lnew,:),                               &
-     &                      tl_p(Lwrk,:),                               &
+     &                      ad_p(Lnew,:), tl_p(Lwrk,:),                 &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -5411,8 +5441,7 @@
      &                      ad_vstr(:,:,:,Lnew), ad_vstr(:,:,:,Lnew),   &
 # endif
 # ifdef ADJUST_PARAM
-     &                      ad_p(Lnew,:),                               &
-     &                      ad_p(Lnew,:),                               &
+     &                      ad_p(Lnew,:), ad_p(Lnew,:),                 &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -5455,8 +5484,7 @@
      &                      ad_vstr(:,:,:,Lold), ad_vstr(:,:,:,Lnew),   &
 # endif
 # ifdef ADJUST_PARAM
-     &                      ad_p(Lold,:),                               &
-     &                      ad_p(Lnew,:),                               &
+     &                      ad_p(Lold,:), ad_p(Lnew,:),                 &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -6656,8 +6684,7 @@
      &                        ad_vstr(:,:,:,Lold), tl_vstr(:,:,:,Lwrk), &
 # endif
 # ifdef ADJUST_PARAM
-     &                        ad_p(Lold,:),                             &
-     &                        tl_p(Lwrk,:),                             &
+     &                        ad_p(Lold,:), tl_p(Lwrk,:),               &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX

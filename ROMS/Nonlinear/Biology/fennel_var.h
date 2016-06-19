@@ -61,14 +61,83 @@
                 idTvar(iH2S_)=varid
 # endif
 # ifdef ADJUST_PARAM
+              CASE ('idPvar(iAttSW)')
+                idPvar(iAttSW)=varid
+              CASE ('idPvar(iAttChl)')
+                idPvar(iAttChl)=varid
+              CASE ('idPvar(iVp0)')
+                idPvar(iVp0)=varid
+              CASE ('idPvar(iI_thNH4)')
+                idPvar(iI_thNH4)=varid
+              CASE ('idPvar(iD_p5NH4)')
+                idPvar(iD_p5NH4)=varid
+              CASE ('idPvar(iNitriR)')
+                idPvar(iNitriR)=varid
+              CASE ('idPvar(iK_NO3)')
+                idPvar(iK_NO3)=varid
+              CASE ('idPvar(iK_NH4)')
+                idPvar(iK_NH4)=varid
+              CASE ('idPvar(iK_Phy)')
+                idPvar(iK_Phy)=varid
+              CASE ('idPvar(iChl2C_m)')
+                idPvar(iChl2C_m)=varid
+              CASE ('idPvar(iPhyCN)')
+                idPvar(iPhyCN)=varid
+              CASE ('idPvar(iPhyIP)')
+                idPvar(iPhyIP)=varid
+              CASE ('idPvar(iPhyIS)')
+                idPvar(iPhyIS)=varid
+              CASE ('idPvar(iPhyMR)')
+                idPvar(iPhyMR)=varid
+              CASE ('idPvar(iZooAE_N)')
+                idPvar(iZooAE_N)=varid
+              CASE ('idPvar(iZooBM)')
+                idPvar(iZooBM)=varid
+              CASE ('idPvar(iZooCN)')
+                idPvar(iZooCN)=varid
+              CASE ('idPvar(iZooER)')
+                idPvar(iZooER)=varid
+              CASE ('idPvar(iZooGR)')
+                idPvar(iZooGR)=varid
+              CASE ('idPvar(iZooMR)')
+                idPvar(iZooMR)=varid
+              CASE ('idPvar(iLDeRRN)')
+                idPvar(iLDeRRN)=varid
+              CASE ('idPvar(iCoagR)')
+                idPvar(iCoagR)=varid
+              CASE ('idPvar(iSDeRRN)')
+                idPvar(iSDeRRN)=varid
               CASE ('idPvar(iwPhy)')
                 idPvar(iwPhy)=varid
               CASE ('idPvar(iwLDet)')
                 idPvar(iwLDet)=varid
               CASE ('idPvar(iwSDet)')
                 idPvar(iwSDet)=varid
-!             CASE ('idPvar(iChl2C_m)')
-!               idPvar(iChl2C_m)=varid
+
+              CASE ('idPvar(iK_Nitri)')
+                idPvar(iK_Nitri)=varid
+              CASE ('idPvar(iK_Denit)')
+                idPvar(iK_Denit)=varid
+              CASE ('idPvar(iDenitR)')
+                idPvar(iDenitR)=varid
+              CASE ('idPvar(iK_PO4)')
+                idPvar(iK_PO4)=varid
+              CASE ('idPvar(iPhyPN)')
+                idPvar(iPhyPN)=varid
+              CASE ('idPvar(iZooPN)')
+                idPvar(iZooPN)=varid
+              CASE ('idPvar(iK_DO)')
+                idPvar(iK_DO)=varid
+              CASE ('idPvar(iLDeRRP)')
+                idPvar(iLDeRRP)=varid
+              CASE ('idPvar(iSDeRRP)')
+                idPvar(iSDeRRP)=varid
+              CASE ('idPvar(iR_SODf)')
+                idPvar(iR_SODf)=varid
+              CASE ('idPvar(iR_NH4f)')
+                idPvar(iR_NH4f)=varid
+              CASE ('idPvar(iR_PO4f)')
+                idPvar(iR_PO4f)=varid
 # endif
 # ifdef DIAGENESIS
               CASE ('idBpw(iwO2_)')
@@ -211,16 +280,6 @@
 # ifdef H2S
               CASE ('idTads(iH2S_)')
                 idTads(iH2S_)=varid
-# endif
-# ifdef ADJUST_PARAM
-              CASE ('idPads(iwPhy)')
-                idPads(iwPhy)=varid
-              CASE ('idPads(iwLDet)')
-                idPads(iwLDet)=varid
-              CASE ('idPads(iwSDet)')
-                idPads(iwSDet)=varid
-!              CASE ('idPads(iChl2C_m)')
-!                idPads(iChl2C_m)=varid
 # endif
 #endif
 

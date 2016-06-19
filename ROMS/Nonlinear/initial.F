@@ -55,9 +55,6 @@
 #ifdef WAVES_OCEAN
       USE ocean_coupler_mod, ONLY : ocn2wav_coupling
 #endif
-#ifdef ADJUST_PARAM
-      USE param_adjust_mod, ONLY : param_adjust
-#endif
 #ifdef WET_DRY
       USE wetdry_mod, ONLY : wetdry
 #endif
@@ -762,18 +759,6 @@
 # endif
 !$OMP BARRIER
         IF (exit_flag.ne.NoError) RETURN
-      END DO
-#endif
-
-#ifdef ADJUST_PARAM
-!
-!-----------------------------------------------------------------------
-!  Set and adjust parameters.
-!-----------------------------------------------------------------------
-!
-      DO ng=1,Ngrids
-        CALL param_adjust (ng)
-!$OMP BARRIER
       END DO
 #endif
 

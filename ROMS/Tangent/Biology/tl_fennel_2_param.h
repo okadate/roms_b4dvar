@@ -9,8 +9,8 @@
 !
           fac1=dtdays*ZooGR(ng)
           cff2=dtdays*PhyMR(ng)
-          tl_fac1=0.0_r8
-          tl_cff2=0.0_r8
+          tl_fac1=dtdays*tl_ZooGR
+          tl_cff2=dtdays*tl_PhyMR
 
           DO k=1,N(ng)
             DO i=Istr,Iend
@@ -22,19 +22,19 @@
 
               fac1=dtdays*ZooGR(ng)*fac2
               cff2=dtdays*PhyMR(ng)*fac3
-              tl_fac1=dtdays*ZooGR(ng)*tl_fac2
-              tl_cff2=dtdays*PhyMR(ng)*tl_fac3
+              tl_fac1=dtdays*(tl_ZooGR*fac2+ZooGR(ng)*tl_fac2)
+              tl_cff2=dtdays*(tl_PhyMR*fac3+PhyMR(ng)*tl_fac3)
 #endif
 !
 ! Phytoplankton grazing by zooplankton.
 !
-              cff=Bio1(i,k,iPhyt)/                                      &
-     &            (K_Phy(ng)+Bio1(i,k,iPhyt)*Bio1(i,k,iPhyt))
-!!            tl_cff=tl_Bio(i,k,iPhyt)/                                 &
-!!   &            (K_Phy(ng)+Bio1(i,k,iPhyt)*Bio1(i,k,iPhyt))-2.0_r8*cff
-              tl_cff=tl_Bio(i,k,iPhyt)/                                 &
-     &               (K_Phy(ng)+Bio1(i,k,iPhyt)*Bio1(i,k,iPhyt))*       &
-     &               (1.0_r8-2.0_r8*Bio1(i,k,iPhyt)*cff)
+              fac=K_Phy(ng)+Bio1(i,k,iPhyt)*Bio1(i,k,iPhyt)
+              tl_fac=tl_K_Phy+2.0_r8*Bio1(i,k,iPhyt)*tl_Bio(i,k,iPhyt)
+
+!!            cff=Bio1(i,k,iPhyt)/                                      &
+!!   &            (K_Phy(ng)+Bio1(i,k,iPhyt)*Bio1(i,k,iPhyt))
+              cff=Bio1(i,k,iPhyt)/fac
+              tl_cff=(tl_Bio(i,k,iPhyt)-cff*tl_fac)/fac
 
               cff1=fac1*Bio1(i,k,iZoop)*cff
               tl_cff1=tl_fac1*Bio1(i,k,iZoop)*cff+                      &
@@ -56,14 +56,17 @@
 ! Phytoplankton assimilated to zooplankton and egested to small
 ! detritus.
 !
-              N_Flux_Assim=Bio2(i,k,iPhyt)*cff1*ZooAE_N(ng)
-              tl_N_Flux_Assim=(tl_Bio(i,k,iPhyt)*cff1+                  &
-     &                         Bio2(i,k,iPhyt)*tl_cff1)*ZooAE_N(ng)
+              fac4=Bio2(i,k,iPhyt)*cff1
+              tl_fac4=tl_Bio(i,k,iPhyt)*cff1+Bio(i,k,iPhyt)*tl_cff1
 
-              N_Flux_Egest=Bio2(i,k,iPhyt)*cff1*(1.0_r8-ZooAE_N(ng))
-              tl_N_Flux_Egest=(tl_Bio(i,k,iPhyt)*cff1+                  &
-     &                         Bio2(i,k,iPhyt)*tl_cff1)*                &
-     &                        (1.0_r8-ZooAE_N(ng))
+!!            N_Flux_Assim=Bio2(i,k,iPhyt)*cff1*ZooAE_N(ng)
+              N_Flux_Assim=fac4*ZooAE_N(ng)
+              tl_N_Flux_Assim=tl_fac4*ZooAE_N(ng)+fac4*tl_ZooAE_N
+
+!!            N_Flux_Egest=Bio2(i,k,iPhyt)*cff1*(1.0_r8-ZooAE_N(ng))
+              N_Flux_Egest=fac4*(1.0_r8-ZooAE_N(ng))
+              tl_N_Flux_Egest=tl_fac4*(1.0_r8-ZooAE_N(ng))-             &
+     &                        fac4*tl_ZooAE_N
 
 !>            Bio1(i,k,iZoop)=Bio(i,k,iZoop)
 !>            Bio1(i,k,iSDeN)=Bio(i,k,iSDeN)
@@ -98,9 +101,12 @@
      &                          (tl_cff2*cff+cff2*tl_cff)
 #ifdef PHOSPHORUS
               cff1=PhyPN(ng)*(N_Flux_Egest+N_Flux_Pmortal)
+              tl_cff1=tl_PhyPN*(N_Flux_Egest+N_Flux_Pmortal)+           &
+     &                PhyPN(ng)*(tl_N_Flux_Egest+tl_N_Flux_Pmortal)
+
               cff2=(PhyPN(ng)-ZooPN(ng))*N_Flux_Assim
-              tl_cff1=PhyPN(ng)*(tl_N_Flux_Egest+tl_N_Flux_Pmortal)
-              tl_cff2=(PhyPN(ng)-ZooPN(ng))*tl_N_Flux_Assim
+              tl_cff2=(tl_PhyPN-tl_ZooPN)*N_Flux_Assim+                 &
+     &                (PhyPN(ng)-ZooPN(ng))*tl_N_Flux_Assim
 
 !>            Bio1(i,k,iSDeP)=Bio(i,k,iSDeP)
 !>            Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+cff1+cff2

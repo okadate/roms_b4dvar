@@ -863,6 +863,9 @@
           CASE ('Hdecay')
             IF ((model.eq.5).or.(model.eq.11)) THEN
               Npts=UBOUND(Hdecay,DIM=2)
+# ifdef ADJUST_PARAM
+              Npts=Npts-Mparam
+# endif
               CALL netcdf_get_fvar (ng, IDmod, ncname, var_name(i),     &
      &                              FvarV,                              &
      &                              start = (/1/), total = (/Npts/))
@@ -901,6 +904,9 @@
           CASE ('Vdecay')
             IF ((model.eq.5).or.(model.eq.11)) THEN
               Npts=UBOUND(Vdecay,DIM=2)
+# ifdef ADJUST_PARAM
+              Npts=Npts-Mparam
+# endif
               CALL netcdf_get_fvar (ng, IDmod, ncname, var_name(i),     &
      &                              FvarV,                              &
      &                              start = (/1/), total = (/Npts/))
@@ -932,6 +938,9 @@
           CASE ('HdecayM')
             IF ((model.eq.5).and.(NSA.eq.2)) THEN
               Npts=UBOUND(Hdecay,DIM=2)
+# ifdef ADJUST_PARAM
+              Npts=Npts-Mparam
+# endif
               CALL netcdf_get_fvar (ng, IDmod, ncname, var_name(i),     &
      &                              FvarV,                              &
      &                              start = (/1/), total = (/Npts/))
@@ -960,6 +969,9 @@
           CASE ('VdecayM')
             IF ((model.eq.5).and.(NSA.eq.2)) THEN
               Npts=UBOUND(Vdecay,DIM=2)
+# ifdef ADJUST_PARAM
+              Npts=Npts-Mparam
+# endif
               CALL netcdf_get_fvar (ng, IDmod, ncname, var_name(i),     &
      &                              FvarV,                              &
      &                              start = (/1/), total = (/Npts/))

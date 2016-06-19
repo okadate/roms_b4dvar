@@ -847,6 +847,9 @@
 #  ifdef ADJUST_WSTRESS
         NstateVar(ng)=NstateVar(ng)+2
 #  endif
+#  ifdef ADJUST_PARAM
+        NstateVar(ng)=NstateVar(ng)+Nparam(ng)
+#  endif
 
         allocate ( FOURDVAR(ng) % NobsSurvey(Nsurvey(ng)) )
         FOURDVAR(ng) % NobsSurvey = 0
@@ -1131,6 +1134,9 @@
 #  endif
 #  ifdef ADJUST_WSTRESS
         NstateVar(ng)=NstateVar(ng)+2
+#  endif
+#  ifdef ADJUST_PARAM
+        NstateVar(ng)=NstateVar(ng)+Nparam(ng)
 #  endif
       END DO
 # endif

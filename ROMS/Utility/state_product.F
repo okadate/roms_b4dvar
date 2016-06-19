@@ -41,6 +41,9 @@
      &                          s1_sustr, s2_sustr, s3_sustr,           &
      &                          s1_svstr, s2_svstr, s3_svstr,           &
 #endif
+#ifdef ADJUST_PARAM
+     &                          s1_p, s2_p, s3_p,                       &
+#endif
 #ifdef SOLVE3D
 # ifdef ADJUST_STFLUX
      &                          s1_tflux, s2_tflux, s3_tflux,           &
@@ -59,7 +62,7 @@
       USE mod_parallel
       USE mod_ncparam
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS
+    defined ADJUST_WSTRESS || defined ADJUST_PARAM
       USE mod_scalars
 #endif
 #ifdef DISTRIBUTE
@@ -110,6 +113,12 @@
 
       real(r8), intent(inout) :: s3_sustr(LBi:,LBj:,:)
       real(r8), intent(inout) :: s3_svstr(LBi:,LBj:,:)
+# endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(in) :: s1_p(:)
+      real(r8), intent(in) :: s2_p(:)
+
+      real(r8), intent(inout) :: s3_p(:)
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -185,6 +194,12 @@
 
       real(r8), intent(inout) :: s3_sustr(LBi:UBi,LBj:UBj,Nfrec(ng))
       real(r8), intent(inout) :: s3_svstr(LBi:UBi,LBj:UBj,Nfrec(ng))
+# endif
+# ifdef ADJUST_PARAM
+      real(r8), intent(in) :: s1_p(Nparam(ng))
+      real(r8), intent(in) :: s2_p(Nparam(ng))
+
+      real(r8), intent(inout) :: s3_p(Nparam(ng))
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -713,6 +728,17 @@
               END DO
             END DO
           END DO
+        END IF
+      END DO
+# endif
+
+# ifdef ADJUST_PARAM
+!
+!  Parameters.
+!
+      DO it=1,Nparam(ng)
+        IF (Lparam(it,ng)) THEN
+          s3_p(it)=s1_p(it)*s2_p(it)
         END IF
       END DO
 # endif

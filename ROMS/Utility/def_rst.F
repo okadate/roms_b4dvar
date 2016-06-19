@@ -608,6 +608,25 @@
      &                 SetParAccess = .FALSE.)
         IF (exit_flag.ne.NoError) RETURN
 
+#  ifdef ADJUST_PARAM
+!
+!  Define parameters.
+!
+        DO itrc=1,Nparam(ng)
+          IF (Lparam(itrc,ng)) THEN
+            Vinfo( 1)=Vname(1,idPvar(itrc))
+            Vinfo( 2)=Vname(2,idPvar(itrc))
+            Vinfo( 3)=Vname(3,idPvar(itrc))
+            Vinfo(14)=Vname(4,idPvar(itrc))
+            Vinfo(16)=Vname(1,idtime)
+            status=def_var(ng, iNLM, RST(ng)%ncid,                      &
+     &                     RST(ng)%Vid(idPvar(itrc)), NF_TYPE,          &
+     &                     1, (/recdim/), Aval, Vinfo, ncname)
+            IF (exit_flag.ne.NoError) RETURN
+          END IF
+        END DO
+#  endif
+
 #ifdef WET_DRY
 !
 !  Define wet/dry mask on PSI-points.

@@ -349,10 +349,13 @@
 !
 # ifdef OXYGEN
           cff1=R_SODf(ng)/mol2g_O2    !SOD flux
+          tl_cff1=tl_R_SODf/mol2g_O2
 # endif
           cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
+          tl_cff2=tl_R_NH4f/14.0_r8
 # ifdef PHOSPHORUS
           cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
+          tl_cff3=tl_R_PO4f/31.0_r8
 # endif
 !
 !-----------------------------------------------------------------------
@@ -374,10 +377,10 @@
             tl_cff=tl_fac1*Hz_inv(i,1)+fac1*tl_Hz_inv(i,1)
 
 !>          Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2
-            tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff*cff2
+            tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff*cff2+cff*tl_cff2
 # ifdef PHOSPHORUS
 !>          Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3
-            tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff*cff3
+            tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff*cff3+cff*tl_cff3
 # endif
 # ifdef OXYGEN
             fac3=MAX(Bio(i,1,iOxyg),0.0_r8)
@@ -386,7 +389,8 @@
 
             cff4=MIN(fac3,cff*cff1)
             tlfac=SIGN(0.5_r8,cff*cff1-fac3)
-            tl_cff4=(0.5_r8+tlfac)*tl_fac3+(0.5_r8-tlfac)*tl_cff*cff1
+            tl_cff4=(0.5_r8+tlfac)*tl_fac3+                             &
+     &              (0.5_r8-tlfac)*(tl_cff*cff1+cff*tl_cff1)
 
 !>          Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
             tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff4

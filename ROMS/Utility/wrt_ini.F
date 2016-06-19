@@ -95,6 +95,31 @@
      &                      ncid = INI(ng)%ncid,                        &
      &                      varid = INI(ng)%Vid(idtime))
       IF (exit_flag.ne.NoError) RETURN
+
+# ifdef ADJUST_PARAM
+!
+!  Write out biology parameters.
+!
+      DO itrc=1,Nparam(ng)
+        IF (Lparam(itrc,ng)) THEN
+          IF (Nrun.eq.1) THEN
+            CALL netcdf_put_fvar (ng, iNLM, INI(ng)%name,               &
+     &                          TRIM(Vname(1,idPvar(itrc))),            &
+     &                          OCEAN(ng) % p(Tindex,itrc),             &
+     &                          (/1/), (/1/),                           &
+     &                          ncid = INI(ng)%ncid,                    &
+     &                          varid = INI(ng)%Vid(idPvar(itrc)))
+          END IF
+          CALL netcdf_put_fvar (ng, iNLM, INI(ng)%name,                 &
+     &                          TRIM(Vname(1,idPvar(itrc))),            &
+     &                          OCEAN(ng) % p(Tindex,itrc),             &
+     &                          (/INI(ng)%Rindex/), (/1/),              &
+     &                          ncid = INI(ng)%ncid,                    &
+     &                          varid = INI(ng)%Vid(idPvar(itrc)))
+          IF (exit_flag.ne.NoError) RETURN
+        END IF
+      END DO
+# endif
 !
 !  Write out free-surface (m)
 !
@@ -348,8 +373,7 @@
       END SUBROUTINE wrt_ini
 
 # if defined ADJUST_BOUNDARY || \
-     defined ADJUST_WSTRESS  || defined ADJUST_STFLUX || \
-     defined ADJUST_PARAM
+     defined ADJUST_WSTRESS  || defined ADJUST_STFLUX
       SUBROUTINE wrt_frc (ng, Tindex, OutRec)
 !
 !=======================================================================
@@ -373,9 +397,6 @@
 #  if defined ADJUST_WSTRESS || defined ADJUST_STFLUX
       USE mod_forces
       USE mod_grid
-#  endif
-#  ifdef ADJUST_PARAM
-      USE mod_ocean
 #  endif
       USE mod_iounits
       USE mod_ncparam
@@ -436,23 +457,6 @@
       gfactor=-1
 #  else
       gfactor=1
-#  endif
-
-#  ifdef ADJUST_PARAM
-!
-!  Write out biology parameters.
-!
-      DO itrc=1,Nparam(ng)
-        IF (Lparam(itrc,ng)) THEN
-          CALL netcdf_put_fvar (ng, iNLM, INI(ng)%name,                 &
-     &                          TRIM(Vname(idPvar(itrc),ng)),           &
-     &                          OCEAN(ng) % p(Tindex,itrc),             &
-     &                          (/OutRec/), (/1/),                      &
-     &                          ncid = INI(ng)%ncid,                    &
-     &                          varid = INI(ng)%Vid(idPvar(itrc)))
-          IF (exit_flag.ne.NoError) RETURN
-        END IF
-      END DO
 #  endif
 
 #  ifdef ADJUST_BOUNDARY
@@ -726,9 +730,6 @@
 #  if defined ADJUST_WSTRESS || defined ADJUST_STFLUX
       USE mod_forces
       USE mod_grid
-#  endif
-#  ifdef ADJUST_PARAM
-      USE mod_ocean
 #  endif
       USE mod_iounits
       USE mod_ncparam

@@ -756,9 +756,13 @@
 !
 !  Elution and oxygen consumption parameters (okada)
 !
+# ifdef OXYGEN
           cff1=R_SODf(ng)/mol2g_O2    !SOD flux
+# endif
           cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
+# ifdef PHOSPHORUS
           cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
+# endif
 !
 !-----------------------------------------------------------------------
 !  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)

@@ -42,7 +42,7 @@
       USE set_depth_mod, ONLY : set_depth
       USE set_massflux_mod, ONLY : set_massflux
 # endif
-# if defined BIOLOGY && defined ADJUST_BIOLOGY
+# ifdef BIOLOGY
       USE tl_biology_mod, ONLY : tl_biology
 # endif
 # ifdef BBL_MODEL_NOT_YET
@@ -561,7 +561,7 @@
 # elif defined GLS_MIXING_NOT_YET
             CALL tl_gls_corstep (ng, tile)
 # endif
-# if defined BIOLOGY && defined ADJUST_BIOLOGY
+# ifdef BIOLOGY
             CALL tl_biology (ng, tile)
 # endif
 # ifdef SEDIMENT_NOT_YET

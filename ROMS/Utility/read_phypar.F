@@ -333,14 +333,15 @@
 #endif
 #ifdef ADJUST_PARAM
             CASE ('Nparam')
-              Npts=load_i(Nval, Rval, 1, Ivalue)
-              Nparam=Ivalue(1)
-              IF (Nparam(1).le.0) THEN
-                IF (Master) WRITE (out,290) 'Nparam = ', Nparam(1),     &
-     &            'must be greater than zero.'
-                exit_flag=5
-                RETURN
-              END IF
+              Npts=load_i(Nval, Rval, Ngrids, Nparam)
+              DO ng=1,Ngrids
+                IF (Nparam(ng).le.0) THEN
+                  IF (Master) WRITE (out,300) 'Nparam', ng,             &
+     &              'must be greater than zero.'
+                  exit_flag=5
+                  RETURN
+                END IF
+              END DO
 #endif
             CASE ('NtileI')
               Npts=load_i(Nval, Rval, Ngrids, NtileI)

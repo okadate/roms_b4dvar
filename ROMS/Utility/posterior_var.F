@@ -79,6 +79,9 @@
      &                         FORCES(ng) % e_sustr,                    &
      &                         FORCES(ng) % e_svstr,                    &
 # endif
+# ifdef ADJUST_PARAM
+     &                        OCEAN(ng) % e_p,                          &
+# endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                        FORCES(ng) % e_stflx,                     &
 # endif
@@ -104,6 +107,9 @@
 # ifdef ADJUST_WSTRESS
      &                        FORCES(ng) % ustr,                        &
      &                        FORCES(ng) % vstr,                        &
+# endif
+# ifdef ADJUST_PARAM
+     &                        OCEAN(ng) % p,                            &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -131,6 +137,9 @@
      &                        FORCES(ng) % tl_ustr,                     &
      &                        FORCES(ng) % tl_vstr,                     &
 # endif
+# ifdef ADJUST_PARAM
+     &                        OCEAN(ng) % tl_p,                         &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                        FORCES(ng) % tl_tflux,                    &
@@ -156,6 +165,9 @@
 # ifdef ADJUST_WSTRESS
      &                        FORCES(ng) % ad_ustr,                     &
      &                        FORCES(ng) % ad_vstr,                     &
+# endif
+# ifdef ADJUST_PARAM
+     &                        OCEAN(ng) % ad_p,                         &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -193,6 +205,9 @@
 # ifdef ADJUST_WSTRESS
      &                               sustr_std, svstr_std,              &
 # endif
+# ifdef ADJUST_PARAM
+     &                               p_std,                             &
+# endif
 # if defined ADJUST_STFLUX && defined SOLVE3D
      &                               stflx_std,                         &
 # endif
@@ -211,6 +226,9 @@
 # endif
 # ifdef ADJUST_WSTRESS
      &                               nl_ustr, nl_vstr,                  &
+# endif
+# ifdef ADJUST_PARAM
+     &                               nl_p,                              &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -231,6 +249,9 @@
 # ifdef ADJUST_WSTRESS
      &                               tl_ustr, tl_vstr,                  &
 # endif
+# ifdef ADJUST_PARAM
+     &                               tl_p,                              &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                               tl_tflux,                          &
@@ -249,6 +270,9 @@
 # endif
 # ifdef ADJUST_WSTRESS
      &                               ad_ustr, ad_vstr,                  &
+# endif
+# ifdef ADJUST_PARAM
+     &                               ad_p,                              &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -305,6 +329,9 @@
       real(r8), intent(in) :: sustr_std(LBi:,LBj:)
       real(r8), intent(in) :: svstr_std(LBi:,LBj:)
 #   endif
+#   ifdef ADJUST_PARAM
+      real(r8), intent(in) :: p_std(:,:)
+#   endif
 #   if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(in) :: stflx_std(LBi:,LBj:,:)
 #   endif
@@ -330,6 +357,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(inout) :: ad_ustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: ad_vstr(LBi:,LBj:,:,:)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: ad_p(:,:)
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -357,6 +387,9 @@
       real(r8), intent(inout) :: nl_ustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: nl_vstr(LBi:,LBj:,:,:)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: nl_p(:,:)
+#  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
       real(r8), intent(inout) :: nl_tflux(LBi:,LBj:,:,:,:)
@@ -382,6 +415,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(inout) :: tl_ustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: tl_vstr(LBi:,LBj:,:,:)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: tl_p(:,:)
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -417,6 +453,9 @@
       real(r8), intent(in) :: sustr_std(LBi:,LBj:)
       real(r8), intent(in) :: svstr_std(LBi:,LBj:)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(in) :: p_std(NSA,Nparam(ng))
+#  endif
 #  if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(in) :: stflx_std(LBi:UBi,LBj:UBj,NT(ng))
 #  endif
@@ -443,6 +482,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(inout) :: ad_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: ad_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: ad_p(2,Nparam(ng))
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -472,6 +514,9 @@
       real(r8), intent(inout) :: nl_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: nl_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: nl_p(2,Nparam(ng))
+#  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
       real(r8), intent(inout) :: nl_tflux(LBi:UBi,LBj:UBj,              &
@@ -499,6 +544,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(inout) :: tl_ustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: tl_vstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: tl_p(2,Nparam(ng))
 #  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
@@ -630,6 +678,9 @@
 # ifdef ADJUST_WSTRESS
      &                       tl_ustr, tl_vstr,                          &
 # endif
+# ifdef ADJUST_PARAM
+     &                       tl_p,                                      &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                       tl_tflux,                                  &
@@ -667,6 +718,9 @@
 # endif
 # ifdef ADJUST_WSTRESS
      &                   ad_ustr, ad_vstr,                              &
+# endif
+# ifdef ADJUST_PARAM
+     &                   ad_p,                                          &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -715,6 +769,11 @@
      &                      ad_vstr(:,:,:,L1),                          &
      &                      ad_vstr(:,:,:,L1),                          &
      &                      nl_vstr(:,:,:,L1),                          &
+# endif
+# ifdef ADJUST_PARAM
+     &                      ad_p(L1,:),                                 &
+     &                      ad_p(L1,:),                                 &
+     &                      nl_p(L1,:),                                 &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -768,6 +827,9 @@
      &                       tl_ustr, nl_ustr,                          &
      &                       tl_vstr, nl_vstr,                          &
 # endif
+# ifdef ADJUST_WSTRESS
+     &                       tl_p, nl_p,                                &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                       tl_tflux, nl_tflux,                        &
@@ -803,6 +865,9 @@
 # endif
 # ifdef ADJUST_WSTRESS
      &                     ad_ustr, ad_vstr,                            &
+# endif
+# ifdef ADJUST_PARAM
+     &                     ad_p, ad_p,                                  &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -851,6 +916,11 @@
      &                        ad_vstr(:,:,:,L1),                        &
      &                        ad_vstr(:,:,:,L2),                        &
      &                        nl_vstr(:,:,:,L1),                        &
+# endif
+# ifdef ADJUST_PARAM
+     &                        ad_p(L1,:),                               &
+     &                        ad_p(L2,:),                               &
+     &                        nl_p(L1,:),                               &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -904,6 +974,9 @@
      &                         tl_ustr, nl_ustr,                        &
      &                         tl_vstr, nl_vstr,                        &
 # endif
+# ifdef ADJUST_PARAM
+     &                         tl_p, nl_p,                              &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                         tl_tflux, nl_tflux,                      &
@@ -937,6 +1010,9 @@
 # ifdef ADJUST_WSTRESS
      &                   sustr_std, svstr_std,                          &
 # endif
+# ifdef ADJUST_PARAM
+     &                   p_std,                                         &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                   stflx_std,                                     &
@@ -954,6 +1030,9 @@
 # endif
 # ifdef ADJUST_WSTRESS
      &                   tl_ustr, tl_vstr,                              &
+# endif
+# ifdef ADJUST_PARAM
+     &                   tl_p,                                          &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -985,6 +1064,9 @@
 # ifdef ADJUST_WSTRESS
      &                         sustr_std, svstr_std,                    &
 # endif
+# ifdef ADJUST_PARAM
+     &                         p_std,                                   &
+# endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
      &                         stflx_std,                               &
@@ -1003,6 +1085,9 @@
 # endif
 # ifdef ADJUST_WSTRESS
      &                         s1_sustr, s1_svstr,                      &
+# endif
+# ifdef ADJUST_PARAM
+     &                         s1_p,                                    &
 # endif
 # ifdef SOLVE3D
 #  ifdef ADJUST_STFLUX
@@ -1053,6 +1138,9 @@
       real(r8), intent(inout) :: s1_sustr(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: s1_svstr(LBi:,LBj:,:,:)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: s1_p(:,:)
+#  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
       real(r8), intent(inout) :: s1_tflux(LBi:,LBj:,:,:,:)
@@ -1078,6 +1166,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(in) :: sustr_std(LBi:,LBj:)
       real(r8), intent(in) :: svstr_std(LBi:,LBj:)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(in) :: p_std(:,:)
 #  endif
 #  if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(in) :: stflx_std(LBi:,LBj:,:)
@@ -1115,6 +1206,9 @@
       real(r8), intent(inout) :: s1_sustr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
       real(r8), intent(inout) :: s1_svstr(LBi:UBi,LBj:UBj,Nfrec(ng),2)
 #  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(inout) :: s1_p(2,Nparam(ng))
+#  endif
 #  ifdef SOLVE3D
 #   ifdef ADJUST_STFLUX
       real(r8), intent(inout) :: s1_tflux(LBi:UBi,LBj:UBj,              &
@@ -1141,6 +1235,9 @@
 #  ifdef ADJUST_WSTRESS
       real(r8), intent(in) :: sustr_std(LBi:,LBj:)
       real(r8), intent(in) :: svstr_std(LBi:,LBj:)
+#  endif
+#  ifdef ADJUST_PARAM
+      real(r8), intent(in) :: p_std(NSA,Nparam(ng))
 #  endif
 #  if defined ADJUST_STFLUX && defined SOLVE3D
       real(r8), intent(in) :: stflx_std(LBi:UBi,LBj:UBj,NT(ng))
@@ -1191,7 +1288,6 @@
           s1_zeta(i,j,Lout)=cff
         END DO
       END DO
-
 # ifdef ADJUST_BOUNDARY
 !
 !  Free-surface open boundaries.
@@ -1673,6 +1769,17 @@
       END DO
 #  endif
 
+# endif
+
+# ifdef ADJUST_PARAM
+!
+!  Parameters.
+!
+      DO it=1,Nparam(ng)
+        IF (Lparam(it,ng)) THEN
+          s1_p(Lout,it)=p_std(Lout,it)*p_std(Lout,it)-s1_p(Lout,it)
+        END IF
+      END DO
 # endif
 
       RETURN

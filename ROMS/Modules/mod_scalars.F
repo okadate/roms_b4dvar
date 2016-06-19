@@ -931,6 +931,16 @@
 !  Logical switches to process parameters during 4DVar adjustments.
 !
         logical, allocatable :: Lparam(:,:)
+        logical, allocatable :: Ldef_p(:,:)
+!
+!  Parameter error standard deviations.
+!
+        real(r8), allocatable :: pfactor(:,:)
+!
+!  Parameter max and min values.
+!
+        real(r8), allocatable :: pmax(:,:)
+        real(r8), allocatable :: pmin(:,:)
 #endif
 
 #ifdef ADJUST_STFLUX
@@ -1687,7 +1697,9 @@
 # ifdef ADJUST_STFLUX
       MstateVar=MstateVar+MT
 # endif
-!
+# ifdef ADJUST_PARAM
+      MstateVar=MstateVar+Mparam
+# endif
 #endif
 
 #ifdef T_PASSIVE
@@ -1953,6 +1965,10 @@
 
 #ifdef ADJUST_PARAM
       allocate ( Lparam(Mparam,Ngrids) )
+      allocate ( Ldef_p(Mparam,Ngrids) )
+      allocate ( pfactor(Mparam,Ngrids) )
+      allocate ( pmax(Mparam,Ngrids) )
+      allocate ( pmin(Mparam,Ngrids) )
 #endif
 
 #ifdef ADJUST_STFLUX
@@ -2230,8 +2246,12 @@
 !-----------------------------------------------------------------------
 !
       DO ng=1,Ngrids
-        DO i=1,MT
+        DO i=1,Mparam
           Lparam(i,ng)=.FALSE.
+          Ldef_p(i,ng)=.FALSE.
+          pfactor(i,ng)=0.0_r8
+          pmax(i,ng)=0.0_r8
+          pmin(i,ng)=0.0_r8
         END DO
       END DO
 #endif

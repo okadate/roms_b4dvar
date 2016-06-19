@@ -427,7 +427,7 @@
         integer, allocatable :: idSvar(:)     ! state vector indices
         integer, allocatable :: idSbry(:)     ! state boundaries indices
 #ifdef ADJUST_PARAM
-        integer, allocatable :: isPvar(:)     ! tracers
+        integer, allocatable :: isPvar(:)     ! parameters
 #endif
 !
 !  Generic state variables lateral boundary indices.
@@ -773,9 +773,7 @@
         isTsur(i)=ic
       END DO
 #endif
-#if defined ADJUST_PARAM   || defined FORCING_SV     || \
-    defined HESSIAN_FSV    || defined SO_SEMI        || \
-    defined STOCHASTIC_OPT
+#ifdef ADJUST_PARAM
       DO i=1,Mparam
         ic=ic+1
         isPvar(i)=ic
@@ -2319,11 +2317,6 @@
         idSvar(isTsur(i))=idTsur(i)
       END DO
 #endif
-#ifdef ADJUST_PARAM
-      DO i=1,Mparam
-        idSvar(isPvar(i))=idPvar(i)
-      END DO
-#endif
 #ifdef ADJUST_BOUNDARY
 !
 !-----------------------------------------------------------------------
@@ -2357,7 +2350,7 @@
 #ifdef ADJUST_PARAM
 !
 !-----------------------------------------------------------------------
-!
+!  If adjusting parameters, set metadata variables. (okada)
 !-----------------------------------------------------------------------
 !
       DO i=1,Mparam
@@ -2367,12 +2360,13 @@
           STOP
         END IF
         idPvar(i)=varid
+        idSvar(isPvar(i))=varid
         DO ng=1,Ngrids
           Fscale(varid,ng)=1.0_r8
           Iinfo(1,varid,ng)=0
         END DO
         WRITE (Vname(1,varid),'(a,i2.2)') 'P', i
-        WRITE (Vname(2,varid),'(a)') 'Parameter of control variables'
+        WRITE (Vname(2,varid),'(a,1x,i2.2)') 'Parameter',i
         WRITE (Vname(3,varid),'(a)') 'units of the parameter'
         WRITE (Vname(4,varid),'(a,a)')                                  &
      &        TRIM(Vname(1,varid)), ', scalar, series'

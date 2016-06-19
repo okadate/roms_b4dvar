@@ -889,7 +889,7 @@
 # endif
 # ifdef ADJUST_PARAM
 !
-!  Adjoint biology parameter.
+!  Adjoint parameter.
 !
       IF (.not.Lweak) THEN
         DO it=1,Nparam(ng)
@@ -1242,16 +1242,8 @@
 # endif
 # ifdef ADJUST_PARAM
 !
-!  Adjoint biology parameter.
+!  Adjoint parameters. (pass)
 !
-      IF (.not.Lweak) THEN
-        DO it=1,Nparam(ng)
-          IF (Lparam(it,ng)) THEN
-            is=isPvar(it)
-!okada!     CALL ad_conv_0d_tile ()
-          END IF
-        END DO
-      END IF
 # endif
 !
 !-----------------------------------------------------------------------
@@ -1629,13 +1621,8 @@
 
 # ifdef ADJUST_PARAM
 !
-!  Adjoint biology parameter.
+!  Adjoint parameters. (pass)
 !
-      IF (.not.Lweak) THEN
-        DO it=1,Nparam(ng)
-          ad_p(Linp,it)=ad_p(Linp,it)
-        END DO
-      END IF
 # endif
 
       RETURN

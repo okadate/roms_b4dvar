@@ -9,19 +9,29 @@
           cff1=dtdays*ZooBM(ng)
           fac2=dtdays*ZooMR(ng)
           fac3=dtdays*ZooER(ng)
+          tl_cff1=dtdays*tl_ZooBM
+          tl_fac2=dtdays*tl_ZooMR
+          tl_fac3=dtdays*tl_ZooER
+
           DO k=1,N(ng)
             DO i=Istr,Iend
-              fac1=fac3*Bio(i,k,iPhyt)*Bio(i,k,iPhyt)/                  &
-     &             (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
-              tl_fac1=fac3*(1.0_r8-fac1)*2.0_r8*                        &
-     &                Bio(i,k,iPhyt)*tl_Bio(i,k,iPhyt)/                 &
-     &                (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
+              fac4=K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt)
+              tl_fac4=tl_K_Phy+2.0_r8*Bio(i,k,iPhyt)*tl_Bio(i,k,iPhyt)
+
+              fac5=fac3*Bio(i,k,iPhyt)*Bio(i,k,iPhyt)
+              tl_fac5=tl_fac3*Bio(i,k,iPhyt)*Bio(i,k,iPhyt)+            &
+     &                fac3*2.0_r8*Bio(i,k,iPhyt)*tl_Bio(i,k,iPhyt)
+
+!!            fac1=fac3*Bio(i,k,iPhyt)*Bio(i,k,iPhyt)/                  &
+!!   &             (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
+              fac1=fac5/fac4
+              tl_fac1=(tl_fac5-fac1*tl_fac4)/fac4
 
               cff2=fac2*Bio(i,k,iZoop)
-              tl_cff2=fac2*tl_Bio(i,k,iZoop)
+              tl_cff2=tl_fac2*Bio(i,k,iZoop)+fac2*tl_Bio(i,k,iZoop)
 
               cff3=fac1*ZooAE_N(ng)
-              tl_cff3=tl_fac1*ZooAE_N(ng)
+              tl_cff3=tl_fac1*ZooAE_N(ng)+fac1*tl_ZooAE_N
 
 !>            Bio(i,k,iZoop)=Bio(i,k,iZoop)/(1.0_r8+cff2+cff3)
               tl_Bio(i,k,iZoop)=(tl_Bio(i,k,iZoop)-Bio(i,k,iZoop)*      &
@@ -29,8 +39,8 @@
 !
 !  Zooplankton mortality and excretion.
 !
-!>            N_Flux_Zmortal=cff2*Bio(i,k,iZoop)
-!>            N_Flux_Zexcret=cff3*Bio(i,k,iZoop)
+              N_Flux_Zmortal=cff2*Bio(i,k,iZoop)
+              N_Flux_Zexcret=cff3*Bio(i,k,iZoop)
               tl_N_Flux_Zmortal=tl_cff2*Bio(i,k,iZoop)+                 &
      &                          cff2*tl_Bio(i,k,iZoop)
               tl_N_Flux_Zexcret=tl_cff3*Bio(i,k,iZoop)+                 &
@@ -43,10 +53,13 @@
 !
 !  Zooplankton basal metabolism (limited by a zooplankton minimum).
 !
-!>            N_Flux_Zmetabo=cff1*MAX(Bio(i,k,iZoop)-ZooMin(ng),0.0_r8)
-              tl_N_Flux_Zmetabo=cff1*(0.5_r8+SIGN(0.5_r8,               &
-     &                                Bio(i,k,iZoop)-ZooMin(ng)))*      &
-     &                               tl_Bio(i,k,iZoop)
+              fac6=MAX(Bio(i,k,iZoop)-ZooMin(ng),0.0_r8)
+              tl_fac6=(0.5_r8+SIGN(0.5_r8,Bio(i,k,iZoop)-ZooMin(ng)))*  &
+     &                tl_Bio(i,k,iZoop)
+
+!!            N_Flux_Zmetabo=cff1*MAX(Bio(i,k,iZoop)-ZooMin(ng),0.0_r8)
+              N_Flux_Zmetabo=cff1*fac6
+              tl_N_Flux_Zmetabo=tl_cff1*fac6+cff1*tl_fac6
 
 !>            Bio(i,k,iZoop)=Bio(i,k,iZoop)-N_Flux_Zmetabo
 !>            Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Zmetabo
@@ -61,11 +74,14 @@
 #ifdef PHOSPHORUS
 !>            Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+                            &
 !>   &                       ZooPN(ng)*(N_Flux_Zmetabo+N_Flux_Zexcret)
+              tl_Bio(i,k,iPO4_)=tl_Bio(i,k,iPO4_)+ZooPN(ng)*            &
+     &                          (tl_N_Flux_Zmetabo+tl_N_Flux_Zexcret)+  &
+     &                          tl_ZooPN*(N_Flux_Zmetabo+N_Flux_Zexcret)
+
 !>            Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+                            &
 !>   &                       ZooPN(ng)*N_Flux_Zmortal
-              tl_Bio(i,k,iPO4_)=tl_Bio(i,k,iPO4_)+ZooPN(ng)*            &
-     &                          (tl_N_Flux_Zmetabo+tl_N_Flux_Zexcret)
               tl_Bio(i,k,iSDeP)=tl_Bio(i,k,iSDeP)+                      &
+     &                          tl_ZooPN*N_Flux_Zmortal+                &
      &                          ZooPN(ng)*tl_N_Flux_Zmortal
 #endif
             END DO
@@ -76,10 +92,13 @@
 !-----------------------------------------------------------------------
 !
           fac1=dtdays*CoagR(ng)
+          tl_fac1=dtdays*tl_CoagR
+
           DO k=1,N(ng)
             DO i=Istr,Iend
               cff1=fac1*(Bio(i,k,iSDeN)+Bio(i,k,iPhyt))
-              tl_cff1=fac1*(tl_Bio(i,k,iSDeN)+tl_Bio(i,k,iPhyt))
+              tl_cff1=tl_fac1*(Bio(i,k,iSDeN)+Bio(i,k,iPhyt))+          &
+     &                fac1*(tl_Bio(i,k,iSDeN)+tl_Bio(i,k,iPhyt))
 
               cff2=1.0_r8/(1.0_r8+cff1)
               tl_cff2=-cff2*cff2*tl_cff1
@@ -107,13 +126,15 @@
      &                          tl_N_Flux_CoagP+tl_N_Flux_CoagD
 #ifdef PHOSPHORUS
 !>            Bio(i,k,iSDeP)=Bio(i,k,iSDeP)-PhyPN(ng)*N_Flux_CoagD
+              tl_Bio(i,k,iSDeP)=tl_Bio(i,k,iSDeP)-                      &
+     &                          (tl_PhyPN*N_Flux_CoagD+                 &
+     &                           PhyPN(ng)*tl_N_Flux_CoagD)
+
 !>            Bio(i,k,iLDeP)=Bio(i,k,iLDeP)+                            &
 !>   &                       PhyPN(ng)*(N_Flux_CoagP+N_Flux_CoagD)
-              tl_Bio(i,k,iSDeP)=tl_Bio(i,k,iSDeP)-                      &
-     &                          PhyPN(ng)*tl_N_Flux_CoagD
-              tl_Bio(i,k,iLDeP)=tl_Bio(i,k,iLDeP)+                      &
-     &                          PhyPN(ng)*(tl_N_Flux_CoagP+             &
-     &                                     tl_N_Flux_CoagD)
+              tl_Bio(i,k,iLDeP)=tl_Bio(i,k,iLDeP)+PhyPN(ng)*            &
+     &                          (tl_N_Flux_CoagP+tl_N_Flux_CoagD)+      &
+     &                          tl_PhyPN*(N_Flux_CoagP+N_Flux_CoagD)
 #endif
             END DO
           END DO
@@ -130,16 +151,16 @@
      &                tl_Bio(i,k,iOxyg)
 
               fac2=fac1/(K_DO(ng)+fac1)
-              tl_fac2=-fac2/(K_DO(ng)+fac1)*tl_fac1
+              tl_fac2=(tl_fac1-fac2*(tl_K_DO+tl_fac1))/(K_DO(ng)+fac1)
 
               cff1=dtdays*SDeRRN(ng)*fac2
-              tl_cff1=dtdays*SDeRRN(ng)*tl_fac2
+              tl_cff1=dtdays*(tl_SDeRRN*fac2+SDeRRN(ng)*tl_fac2)
 
               cff2=1.0_r8/(1.0_r8+cff1)
               tl_cff2=-cff2*cff2*tl_cff1
 
               cff3=dtdays*LDeRRN(ng)*fac2
-              tl_cff3=dtdays*LDeRRN(ng)*tl_fac2
+              tl_cff3=dtdays*(tl_LDeRRN*fac2+LDeRRN(ng)*tl_fac2)
 
               cff4=1.0_r8/(1.0_r8+cff3)
               tl_cff4=-cff4*cff4*tl_cff3
@@ -164,13 +185,13 @@
      &                          tl_N_Flux_Remine*rOxNH4
 # ifdef PHOSPHORUS
               cff1=dtdays*SDeRRP(ng)*fac2
-              tl_cff1=dtdays*SDeRRP(ng)*tl_fac2
+              tl_cff1=dtdays*(tl_SDeRRP*fac2+SDeRRP(ng)*tl_fac2)
 
               cff2=1.0_r8/(1.0_r8+cff1)
               tl_cff2=-cff2*cff2*tl_cff1
 
               cff3=dtdays*LDeRRP(ng)*fac2
-              tl_cff3=dtdays*LDeRRP(ng)*tl_fac2
+              tl_cff3=dtdays*(tl_LDeRRP*fac2+LDeRRP(ng)*tl_fac2)
 
               cff4=1.0_r8/(1.0_r8+cff3)
               tl_cff4=-cff4*cff4*tl_cff3
@@ -192,7 +213,7 @@
             END DO
           END DO
 #else
-! pass okada
+! not yet (okada)
           cff1=dtdays*SDeRRN(ng)
           cff2=1.0_r8/(1.0_r8+cff1)
           cff3=dtdays*LDeRRN(ng)
@@ -234,7 +255,7 @@
 !-----------------------------------------------------------------------
 !  H2S Oxidation. okada
 !-----------------------------------------------------------------------
-! pass okada
+! not yet (okada)
           DO k=1,N(ng)
             DO i=Istr,Iend
               fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8)

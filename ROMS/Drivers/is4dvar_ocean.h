@@ -199,7 +199,7 @@
 !-----------------------------------------------------------------------
 !  Read in standard deviation factors for error covariance.
 !-----------------------------------------------------------------------
-#ifndef ADJUST_NOINITIAL
+
 !
 !  Initial conditions standard deviation. They are loaded in Tindex=1
 !  of the e_var(...,Tindex) state variables.
@@ -210,7 +210,7 @@
         CALL get_state (ng, 6, 6, STD(1,ng)%name, STDrec, Tindex)
         IF (exit_flag.ne.NoError) RETURN
       END DO
-#endif
+
 #ifdef ADJUST_BOUNDARY
 !
 !  Open boundary conditions standard deviation.
@@ -232,11 +232,6 @@
         CALL get_state (ng, 9, 9, STD(4,ng)%name, STDrec, Tindex)
         IF (exit_flag.ne.NoError) RETURN
       END DO
-#endif
-#ifdef ADJUST_PARAM
-!
-!  Parameter standard deviations are writen in [            ]. (okada)
-!
 #endif
 
       RETURN
@@ -270,6 +265,9 @@
       USE cost_grad_mod, ONLY : cost_grad
       USE ini_adjust_mod, ONLY : ini_adjust
       USE ini_fields_mod, ONLY : ini_fields
+#ifdef ADJUST_PARAM
+      USE ini_param_mod, ONLY : ini_param
+#endif 
 #if defined ADJUST_STFLUX || defined ADJUST_WSTRESS
       USE mod_forces, ONLY : initialize_forces
 #endif
@@ -383,6 +381,15 @@
         CALL initial
 !$OMP END PARALLEL
         IF (exit_flag.ne.NoError) RETURN
+
+#ifdef ADJUST_PARAM
+!
+!  Initialize parameters.
+!
+        DO ng=1,Ngrids
+          CALL ini_param (ng)
+        END DO
+#endif
 !
 !  If first pass, save nonlinear initial conditions (currently in time
 !  index 1, background) into next record (Lbck) of INI(ng)%name NetCDF
@@ -515,7 +522,7 @@
         END DO
 
 #if defined ADJUST_BOUNDARY || defined ADJUST_STFLUX || \
-    defined ADJUST_WSTRESS || defined ADJUST_PARAM
+    defined ADJUST_WSTRESS
 !
 !  Write out initial and background surface forcing into initial
 !  INI(ng)%name NetCDF file for latter use.
@@ -684,6 +691,14 @@
 !$OMP END PARALLEL
             IF (exit_flag.ne.NoError) RETURN
           END DO
+#ifdef ADJUST_PARAM
+!
+!  Initialize parameters.
+!
+          DO ng=1,Ngrids
+            CALL get_param (ng, iNLM, 2, INI(ng)%name, Lini, Lini)
+          END DO
+#endif
 !
 !  Time-step adjoint model backwards. The adjoint model is forced with
 !  the adjoint of the observation misfit (Jo) term.
@@ -1051,7 +1066,6 @@
           IF (exit_flag.ne.NoError) RETURN
           CALL get_state (ng, iTLM, 1, ITL(ng)%name, LTLM1, LTLM1)
           IF (exit_flag.ne.NoError) RETURN
-
 !$OMP PARALLEL
           DO tile=first_tile(ng),last_tile(ng),+1
             CALL ini_adjust (ng, tile, LTLM1, Lini)
@@ -1096,7 +1110,7 @@
         END DO
 
 #if defined ADJUST_STFLUX   || defined ADJUST_WSTRESS || \
-    defined ADJUST_BOUNDARY || defined ADJUST_PARAM
+    defined ADJUST_BOUNDARY
 !
 !  Set index containing the surface forcing increments used the run
 !  the nonlinear model in the outer loop and read the forcing

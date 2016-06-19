@@ -284,6 +284,20 @@
 # endif
       END IF
 #endif
+#ifdef ADJUST_PARAM
+!
+!  Determine 4DVar parameter variables to adjust.
+!
+      IF ((model.eq.iADM).or.(model.eq.iTLM).or.(model.eq.iNLM).or.     &
+     &    (model.eq.iRPM).or.(model.eq.9).or.(model.eq.11).or.          &
+     &    (model.eq.12)) THEN
+        DO itrc=1,Nparam(ng)
+          IF (Lparam(itrc,ng)) THEN
+            get_var(idPvar(itrc))=.TRUE.
+          END IF
+        END DO
+      END IF
+#endif
 !
 !  Scan variable list from input NetCDF and activate switches for
 !  model state variables.
@@ -389,6 +403,14 @@
         ELSE IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idKhor))) THEN
           have_var(idKhor)=.TRUE.
         END IF
+#ifdef ADJUST_PARAM
+        DO itrc=1,Nparam(ng)
+          IF (Lparam(itrc,ng).and.                                      &
+     &        TRIM(var_name(i)).eq.TRIM(Vname(1,idPvar(itrc)))) THEN
+            have_var(idPvar(itrc))=.TRUE.
+          END IF
+        END DO
+#endif
 #ifdef SOLVE3D
         DO itrc=1,NT(ng)
           IF (TRIM(var_name(i)).eq.TRIM(Vname(1,idTvar(itrc)))) THEN
@@ -569,6 +591,20 @@
           exit_flag=2
           RETURN
         END IF
+      END IF
+#endif
+#ifdef ADJUST_PARAM
+      IF ((model.eq.5).or.(model.eq.6)) THEN
+        DO itrc=1,Nparam(ng)
+          IF (.not.have_var(idPvar(itrc)).and.                          &
+     &      Lparam(itrc,ng).and.get_var(idPvar(itrc))) THEN
+            IF (Master) WRITE (stdout,10) string,                       &
+     &                                    TRIM(Vname(1,idPvar(itrc))),  &
+     &                                    TRIM(ncname)
+            exit_flag=2
+            RETURN
+          END IF
+        END DO
       END IF
 #endif
 #ifdef SOLVE3D
