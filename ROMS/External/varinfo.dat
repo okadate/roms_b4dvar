@@ -1911,6 +1911,23 @@
   'nulvar'
   1.0d0
 
+'river_PO4'                                            ! Input
+  'river runoff PO4'
+  'millimole_phosphorus meter-3'                       ! [millimole/m3]
+  'river_PO4, scalar, series'
+  'river_time'
+  'idRtrc(iPO4_)'
+  'nulvar'
+  1.0d0
+
+'river_SDeP'                                           ! Input
+  'river runoff SDeP'
+  'millimole_phosphorus meter-3'                       ! [millimole/m3]
+  'river_SDeP, scalar, series'
+  'river_time'
+  'idRtrc(iSDeP)'
+  'nulvar'
+  1.0d0
 !
 !------------------------------------------------------------------------------
 !  Boundary layer variables.
@@ -3419,6 +3436,51 @@
   'r2dvar'
   1.0d0
 
+'NH4flux'                                          ! Input/Output
+  'NH4 flux'
+  'millimole_nitrogen meter-2 day-1'               ! [millimole/m2/day]
+  'NH4flux, scalar, series'
+  'ocean_time'
+  'iDbio2(iNH4f)'
+  'r2dvar'
+  1.0d0
+
+'PO4flux'                                          ! Input/Output
+  'PO4 flux'
+  'millimole_phosphorus meter-2 day-1'             ! [millimole/m2/day]
+  'PO4flux, scalar, series'
+  'ocean_time'
+  'iDbio2(iPO4f)'
+  'r2dvar'
+  1.0d0
+
+'PONflux'                                          ! Input/Output
+  'Particle Organic Nitrogen flux'
+  'millimole_nitrogen meter-2 day-1'               ! [millimole/m2/day]
+  'PONflux, scalar, series'
+  'ocean_time'
+  'iDbio2(iPONf)'
+  'r2dvar'
+  1.0d0
+
+'POPflux'                                          ! Input/Output
+  'Particle Organic Phosphorus flux'
+  'millimole_phosphorus meter-2 day-1'             ! [millimole/m2/day]
+  'POPflux, scalar, series'
+  'ocean_time'
+  'iDbio2(iPOPf)'
+  'r2dvar'
+  1.0d0
+
+'SODflux'                                          ! Input/Output
+  'sediment oxygen demand flux'
+  'millimole_oxygen meter-2 day-1'                 ! [millimole/m2/day]
+  'SODflux, scalar, series'
+  'ocean_time'
+  'iDbio2(iSODf)'
+  'r2dvar'
+  1.0d0
+
 'P_Production'                                     ! Input/Output
   'primary production'
   'millimole_nitrogen meter-3 day-1'               ! [millimole/m3/day]
@@ -3437,21 +3499,129 @@
   'r3dvar'
   1.0d0
 
-'LNH4'                                             ! Input/Output
-  'LNH4'
-  'nondimensional'                                 ! [millimole/m3/day]
-  'LNH4, scalar, series'
+'t_PPmax'                                          ! Input/Output
+  'primary production max rate'
+  'day-1'                                          ! [1/day]
+  't_Pmax, scalar, series'
   'ocean_time'
-  'iDbio3(iLNH4)'
+  'iDbio3(iPmax)'
   'r3dvar'
   1.0d0
 
-'LNO3'                                             ! Input/Output
-  'LNO3'
-  'nondimensional'                                 ! [millimole/m3/day]
-  'LNO3, scalar, series'
+'LDIN'                                             ! Input/Output
+  'LDIN'
+  'nondimensional'
+  'LDIN, scalar, series'
   'ocean_time'
-  'iDbio3(iLNO3)'
+  'iDbio3(iLDIN)'
+  'r3dvar'
+  1.0d0
+
+'Nitri'                                            ! Input/Output
+  'nitrification flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Nitri, scalar, series'
+  'ocean_time'
+  'iDbio3(iNitr)'
+  'r3dvar'
+  1.0d0
+
+'Denit'                                            ! Input/Output
+  'nitrification flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Denit, scalar, series'
+  'ocean_time'
+  'iDbio3(iDeni)'
+  'r3dvar'
+  1.0d0
+
+'Assim'                                            ! Input/Output
+  'assimilation flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Assim, scalar, series'
+  'ocean_time'
+  'iDbio3(iAssi)'
+  'r3dvar'
+  1.0d0
+
+'Egest'                                            ! Input/Output
+  'egest flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Egest, scalar, series'
+  'ocean_time'
+  'iDbio3(iEges)'
+  'r3dvar'
+  1.0d0
+
+'Pmortal'                                          ! Input/Output
+  'phytoplankton mortality flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Pmortal, scalar, series'
+  'ocean_time'
+  'iDbio3(iPmor)'
+  'r3dvar'
+  1.0d0
+
+'Zmortal'                                          ! Input/Output
+  'zooplankton mortality flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Zmortal, scalar, series'
+  'ocean_time'
+  'iDbio3(iZmor)'
+  'r3dvar'
+  1.0d0
+
+'Zexcret'                                          ! Input/Output
+  'zooplankton excret flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Zexcret, scalar, series'
+  'ocean_time'
+  'iDbio3(iZexc)'
+  'r3dvar'
+  1.0d0
+
+'Zmetabo'                                          ! Input/Output
+  'zooplankton metabo flux'
+  'millimole_nitrogen meter-2 day-1'
+  'Zmetabo, scalar, series'
+  'ocean_time'
+  'iDbio3(iZmet)'
+  'r3dvar'
+  1.0d0
+
+'CoagP'                                            ! Input/Output
+  'phytoplankton coaguration flux'
+  'millimole_nitrogen meter-2 day-1'
+  'CoagP, scalar, series'
+  'ocean_time'
+  'iDbio3(iCoaP)'
+  'r3dvar'
+  1.0d0
+
+'CoagD'                                            ! Input/Output
+  'detritus coaguration flux'
+  'millimole_nitrogen meter-2 day-1'
+  'CoagD, scalar, series'
+  'ocean_time'
+  'iDbio3(iCoaD)'
+  'r3dvar'
+  1.0d0
+
+'SReN'                                             ! Input/Output
+  'small remineralization nitrate'
+  'millimole_nitrogen meter-2 day-1'
+  'SReN, scalar, series'
+  'ocean_time'
+  'iDbio3(iSReN)'
+  'r3dvar'
+  1.0d0
+
+'LReN'                                             ! Input/Output
+  'large remineralization nitrate'
+  'millimole_nitrogen meter-2 day-1'
+  'LReN, scalar, series'
+  'ocean_time'
+  'iDbio3(iLReN)'
   'r3dvar'
   1.0d0
 
@@ -3464,12 +3634,39 @@
   'r3dvar'
   1.0d0
 
+'SReP'                                             ! Input/Output
+  'small remineralization phosphorus'
+  'millimole_phosphorus meter-2 day-1'
+  'SReP, scalar, series'
+  'ocean_time'
+  'iDbio3(iSReP)'
+  'r3dvar'
+  1.0d0
+
+'LReP'                                             ! Input/Output
+  'large remineralization phosphorus'
+  'millimole_phosphorus meter-2 day-1'
+  'LReP, scalar, series'
+  'ocean_time'
+  'iDbio3(iLReP)'
+  'r3dvar'
+  1.0d0
+
 'COD'                                              ! Input/Output
-  'chemical oxygen comsumption'
+  'chemical oxygen demand'
   'millimole_oxygen meter-3'                       ! [millimole/m3]
   'COD, scalar, series'
   'ocean_time'
   'iDbio3(iCOD_)'
+  'r3dvar'
+  1.0d0
+
+'H2Sflux'                                          ! Input/Output
+  'sediment oxygen demand flux'
+  'millimole_oxygen meter-3 day-1'
+  'H2Sflux, scalar, series'
+  'ocean_time'
+  'iDbio3(iH2Sf)'
   'r3dvar'
   1.0d0
 
@@ -3551,7 +3748,7 @@
 
 'oxygen_east'                                      ! Input
   'oxygen eastern boundary condition'
-  'millimole_carbon meter-3'                       ! [millimole/m3]
+  'millimole_oxygen meter-3'                       ! [millimole/m3]
   'oxygen_east, scalar, series'
   'oxygen_time'
   'idTbry(ieast,iOxyg)'
@@ -3560,7 +3757,7 @@
 
 'oxygen_west'                                      ! Input
   'oxygen western boundary condition'
-  'millimole_carbon meter-3'                       ! [millimole/m3]
+  'millimole_oxygen meter-3'                       ! [millimole/m3]
   'oxygen_west, scalar, series'
   'oxygen_time'
   'idTbry(iwest,iOxyg)'
@@ -3569,7 +3766,7 @@
 
 'oxygen_north'                                     ! Input
   'oxygen northern boundary condition'
-  'millimole_carbon meter-3'                       ! [millimole/m3]
+  'millimole_oxygen meter-3'                       ! [millimole/m3]
   'oxygen_north, scalar, series'
   'oxygen_time'
   'idTbry(inorth,iOxyg)'
@@ -3578,7 +3775,7 @@
 
 'oxygen_south'                                     ! Input
   'oxygen southern boundary condition'
-  'millimole_carbon meter-3'                       ! [millimole/m3]
+  'millimole_oxygen meter-3'                       ! [millimole/m3]
   'oxygen_south, scalar, series'
   'oxygen_time'
   'idTbry(isouth,iOxyg)'
@@ -6132,4 +6329,3 @@
   'idFsm(iFeS2)'
   'r2dvar' 
   1.0d0
-
