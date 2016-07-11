@@ -792,6 +792,15 @@
                 fac1=PAR*PhyIS(ng)
                 Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
                 t_PPmax=Epp*fac1
+# ifdef PHOTO_INHABITATION
+!
+!  Photo-inhabitation of phytoplankton photosynthesis
+!  (c) 2016-7-4 Teruhisa Okada
+!
+                cff=PAR/I_opt(ng)
+                fac2=cff*exp(1.0_r8-cff)
+                t_PPmax=t_PPmax*fac2
+# endif
 #endif
 #ifdef DIAGNOSTICS_BIO
                 DiaBio3d(i,j,k,iPmax)=DiaBio3d(i,j,k,iPmax)+            &
