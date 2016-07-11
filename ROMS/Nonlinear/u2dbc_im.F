@@ -360,7 +360,11 @@
               IF (LBC(iwest,isFsur,ng)%acquire) THEN
                 bry_pgr=-g*(zeta(Istr,j,know)-                          &
      &                      BOUNDARY(ng)%zeta_west(j))*                 &
+#ifdef CHANGE_REDUCED
+     &                  1.0_r8*GRID(ng)%pm(Istr,j)
+#else
      &                  0.5_r8*GRID(ng)%pm(Istr,j)
+#endif
               ELSE
                 bry_pgr=-g*(zeta(Istr  ,j,know)-                        &
      &                      zeta(Istr-1,j,know))*                       &
@@ -678,7 +682,11 @@
               IF (LBC(ieast,isFsur,ng)%acquire) THEN
                 bry_pgr=-g*(BOUNDARY(ng)%zeta_east(j)-                  &
      &                      zeta(Iend,j,know))*                         &
+#ifdef CHANGE_REDUCED
+     &                  1.0_r8*GRID(ng)%pm(Iend,j)
+#else
      &                  0.5_r8*GRID(ng)%pm(Iend,j)
+#endif
               ELSE
                 bry_pgr=-g*(zeta(Iend+1,j,know)-                        &
      &                      zeta(Iend  ,j,know))*                       &
