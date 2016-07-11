@@ -381,6 +381,34 @@
                 pmin(iR_PO4f,ng)=Rparam(2,ng)
                 pmax(iR_PO4f,ng)=Rparam(3,ng)
               END DO
+            CASE ('R_NH4f_max')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                R_NH4f_max(ng)=Rparam(1,ng)
+                pmin(iR_NH4f_m,ng)=Rparam(2,ng)
+                pmax(iR_NH4f_m,ng)=Rparam(3,ng)
+              END DO
+            CASE ('R_PO4f_max')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                R_PO4f_max(ng)=Rparam(1,ng)
+                pmin(iR_PO4f_m,ng)=Rparam(2,ng)
+                pmax(iR_PO4f_m,ng)=Rparam(3,ng)
+              END DO
+            CASE ('K_DO_npflux')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                K_DO_npflux(ng)=Rparam(1,ng)
+                pmin(iK_DO_npf,ng)=Rparam(2,ng)
+                pmax(iK_DO_npf,ng)=Rparam(3,ng)
+              END DO
+            CASE ('t_SODf')
+              Npts=load_r(Nval, Rval, 3*Ngrids, Rparam)
+              DO ng=1,Ngrids
+                t_SODf(ng)=Rparam(1,ng)
+                pmin(it_SODf,ng)=Rparam(2,ng)
+                pmax(it_SODf,ng)=Rparam(3,ng)
+              END DO
             CASE ('Lparam')
               Npts=load_l(Nval, Cval, Nparam*Ngrids, Lparam)
             CASE ('pfactor')
@@ -432,6 +460,14 @@
               Npts=load_r(Nval, Rval, Ngrids, R_NH4f)
             CASE ('R_PO4f')
               Npts=load_r(Nval, Rval, Ngrids, R_PO4f)
+            CASE ('R_NH4f_max')
+              Npts=load_r(Nval, Rval, Ngrids, R_NH4f_max)
+            CASE ('R_PO4f_max')
+              Npts=load_r(Nval, Rval, Ngrids, R_PO4f_max)
+            CASE ('K_DO_npflux')
+              Npts=load_r(Nval, Rval, Ngrids, K_DO_npflux)
+            CASE ('t_SODf')
+              Npts=load_r(Nval, Rval, Ngrids, t_SODf)
 
             CASE ('AttSW')
               Npts=load_r(Nval, Rval, Ngrids, AttSW)
@@ -1228,6 +1264,10 @@
             WRITE (out,80) R_SODf(ng), 'R_SODf', 'R_SODf'
             WRITE (out,80) R_NH4f(ng), 'R_NH4f', 'R_NH4f'
             WRITE (out,80) R_PO4f(ng), 'R_PO4f', 'R_PO4f'
+            WRITE (out,80) R_NH4f_max(ng), 'R_NH4f_max', 'R_NH4f_max'
+            WRITE (out,80) R_PO4f_max(ng), 'R_PO4f_max', 'R_PO4f_max'
+            WRITE (out,80) K_DO_npflux(ng), 'K_DO_npflux', 'K_DO_npflux'
+            WRITE (out,80) t_SODf(ng), 't_SODf', 't_SODf'
 #ifdef ADJUST_PARAM
             DO i=1,Nparam(ng)
               WRITE (out,110) Lparam(i,ng), 'Lparam', i, 'Lparam', i,' '

@@ -129,6 +129,26 @@
      &                      R_PO4f(ng), (/0/), (/0/),                   &
      &                      ncid = ncid)
       IF (exit_flag.ne.NoError) RETURN
+
+      CALL netcdf_put_fvar (ng, model, ncname, 'R_NH4f_max',            &
+     &                      R_NH4f_max(ng), (/0/), (/0/),               &
+     &                      ncid = ncid)
+      IF (exit_flag.ne.NoError) RETURN
+
+      CALL netcdf_put_fvar (ng, model, ncname, 'R_PO4f_max',            &
+     &                      R_PO4f_max(ng), (/0/), (/0/),               &
+     &                      ncid = ncid)
+      IF (exit_flag.ne.NoError) RETURN
+
+      CALL netcdf_put_fvar (ng, model, ncname, 'K_DO_npflux',           &
+     &                      K_DO_npflux(ng), (/0/), (/0/),              &
+     &                      ncid = ncid)
+      IF (exit_flag.ne.NoError) RETURN
+
+      CALL netcdf_put_fvar (ng, model, ncname, 't_SODf',                &
+     &                      t_SODf(ng), (/0/), (/0/),                   &
+     &                      ncid = ncid)
+      IF (exit_flag.ne.NoError) RETURN
 !
 !  Write out Fennel et al. (2006) ecosystem model parameters.
 !

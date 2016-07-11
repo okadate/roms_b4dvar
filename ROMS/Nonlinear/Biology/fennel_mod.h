@@ -206,6 +206,10 @@
       real(r8), allocatable :: R_SODf(:)
       real(r8), allocatable :: R_NH4f(:)
       real(r8), allocatable :: R_PO4f(:)
+      real(r8), allocatable :: R_NH4f_max(:)
+      real(r8), allocatable :: R_PO4f_max(:)
+      real(r8), allocatable :: K_DO_npflux(:)
+      real(r8), allocatable :: t_SODf(:)
 
       real(r8), allocatable :: AttSW(:)              ! 1/m
       real(r8), allocatable :: AttChl(:)             ! 1/(mg_Chl m2)
@@ -295,6 +299,10 @@
       integer :: iR_SODf  = 36
       integer :: iR_NH4f  = 37
       integer :: iR_PO4f  = 38
+      integer :: iR_NH4f_m = 39
+      integer :: iR_PO4f_m = 40
+      integer :: iK_DO_npf = 41
+      integer :: it_SODf = 42
 #endif
 
       CONTAINS
@@ -474,6 +482,18 @@
       END IF
       IF (.not.allocated(R_PO4f)) THEN
         allocate ( R_PO4f(Ngrids) )
+      END IF
+      IF (.not.allocated(R_NH4f_max)) THEN
+        allocate ( R_NH4f_max(Ngrids) )
+      END IF
+      IF (.not.allocated(R_PO4f_max)) THEN
+        allocate ( R_PO4f_max(Ngrids) )
+      END IF
+      IF (.not.allocated(K_DO_npflux)) THEN
+        allocate ( K_DO_npflux(Ngrids) )
+      END IF
+      IF (.not.allocated(t_SODf)) THEN
+        allocate ( t_SODf(Ngrids) )
       END IF
 
       IF (.not.allocated(BioIter)) THEN

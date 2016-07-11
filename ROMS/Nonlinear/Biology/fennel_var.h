@@ -138,6 +138,14 @@
                 idPvar(iR_NH4f)=varid
               CASE ('idPvar(iR_PO4f)')
                 idPvar(iR_PO4f)=varid
+              CASE ('idPvar(iR_NH4f_m)')
+                idPvar(iR_NH4f_m)=varid
+              CASE ('idPvar(iR_PO4f_m)')
+                idPvar(iR_PO4f_m)=varid
+              CASE ('idPvar(iK_DO_npf)')
+                idPvar(iK_DO_npf)=varid
+              CASE ('idPvar(it_SODf)')
+                idPvar(it_SODf)=varid
 # endif
 # ifdef DIAGENESIS
               CASE ('idBpw(iwO2_)')
