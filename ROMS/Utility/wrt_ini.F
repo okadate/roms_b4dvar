@@ -55,6 +55,8 @@
       integer :: Fcount, gfactor, gtype, i, itrc, status, varid
 
       real(r8) :: my_time, scale
+
+      logical :: SetFillVal
 !
       LBi=LBOUND(GRID(ng)%h,DIM=1)
       UBi=UBOUND(GRID(ng)%h,DIM=1)
@@ -62,6 +64,15 @@
       UBj=UBOUND(GRID(ng)%h,DIM=2)
 !
       SourceFile='wrt_ini.F'
+!
+!-----------------------------------------------------------------------
+!  Set SetFillVal to FALSE. This is essential to ensure identical
+!  outer-loop solutions when increments are zero. NOT SURE WHY THIS
+!  IS NECESSARY - PERHAPS SOMETHING WRONG WITH THE LOGIC OF
+!  nf_fwrite routines.
+!-----------------------------------------------------------------------
+!
+      SetFillVal=.FALSE.
 !
 !-----------------------------------------------------------------------
 !  Write out initial conditions.
@@ -135,7 +146,8 @@
      &                   OCEAN(ng) % zeta(:,:,Tindex),                  &
      &                   SetFillVal = .FALSE.)
 # else
-     &                   OCEAN(ng) % zeta(:,:,Tindex))
+     &                   OCEAN(ng) % zeta(:,:,Tindex),                  &
+     &                   SetFillVal)
 # endif
       IF (status.ne.nf90_noerr) THEN
         IF (Master) THEN
@@ -156,7 +168,8 @@
 # ifdef MASKING
      &                   GRID(ng) % umask_full,                         &
 # endif
-     &                   OCEAN(ng) % ubar(:,:,Tindex))
+     &                   OCEAN(ng) % ubar(:,:,Tindex),                  &
+     &                   SetFillVal)
       IF (status.ne.nf90_noerr) THEN
         IF (Master) THEN
           WRITE (stdout,10) TRIM(Vname(1,idUbar)), INI(ng)%Rindex
@@ -176,7 +189,8 @@
 # ifdef MASKING
      &                   GRID(ng) % vmask_full,                         &
 # endif
-     &                   OCEAN(ng) % vbar(:,:,Tindex))
+     &                   OCEAN(ng) % vbar(:,:,Tindex),                  &
+     &                   SetFillVal)
       IF (status.ne.nf90_noerr) THEN
         IF (Master) THEN
           WRITE (stdout,10) TRIM(Vname(1,idVbar)), INI(ng)%Rindex
@@ -198,7 +212,8 @@
 #  ifdef MASKING
      &                   GRID(ng) % umask_full,                         &
 #  endif
-     &                   OCEAN(ng) % u(:,:,:,Tindex))
+     &                   OCEAN(ng) % u(:,:,:,Tindex),                   &
+     &                   SetFillVal)
       IF (status.ne.nf90_noerr) THEN
         IF (Master) THEN
           WRITE (stdout,10) TRIM(Vname(1,idUvel)), INI(ng)%Rindex
@@ -218,7 +233,8 @@
 #  ifdef MASKING
      &                   GRID(ng) % vmask_full,                         &
 #  endif
-     &                   OCEAN(ng) % v(:,:,:,Tindex))
+     &                   OCEAN(ng) % v(:,:,:,Tindex),                   &
+     &                   SetFillVal)
       IF (status.ne.nf90_noerr) THEN
         IF (Master) THEN
           WRITE (stdout,10) TRIM(Vname(1,idVvel)), INI(ng)%Rindex
@@ -239,7 +255,8 @@
 #  ifdef MASKING
      &                     GRID(ng) % rmask,                            &
 #  endif
-     &                     OCEAN(ng) % t(:,:,:,Tindex,itrc))
+     &                     OCEAN(ng) % t(:,:,:,Tindex,itrc),            &
+     &                     SetFillVal)
         IF (status.ne.nf90_noerr) THEN
           IF (Master) THEN
             WRITE (stdout,10) TRIM(Vname(1,idTvar(itrc))), INI(ng)%Rindex
@@ -921,7 +938,7 @@
           IF (status.ne.nf90_noerr) THEN
             IF (Master) THEN
               WRITE (stdout,10) TRIM(Vname(1,idSbry(isTvar(itrc)))),    &
-     &                          HSS(ng)%Rindex
+     &                          INI(ng)%Rindex
             END IF
             exit_flag=3
             ioerror=status

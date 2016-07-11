@@ -102,6 +102,10 @@
      &                          OCEAN(ng) % e_t,                        &
      &                          OCEAN(ng) % e_u,                        &
      &                          OCEAN(ng) % e_v,                        &
+#  if defined WEAK_CONSTRAINT && defined TIME_CONV
+     &                          OCEAN(ng) % e_ubar,                     &
+     &                          OCEAN(ng) % e_vbar,                     &
+#  endif
 # else
      &                          OCEAN(ng) % e_ubar,                     &
      &                          OCEAN(ng) % e_vbar,                     &
@@ -131,6 +135,10 @@
      &                          OCEAN(ng) % ad_t,                       &
      &                          OCEAN(ng) % ad_u,                       &
      &                          OCEAN(ng) % ad_v,                       &
+#  if defined WEAK_CONSTRAINT && defined TIME_CONV
+     &                          OCEAN(ng) % ad_ubar,                    &
+     &                          OCEAN(ng) % ad_vbar,                    &
+#  endif
 # else
      &                          OCEAN(ng) % ad_ubar,                    &
      &                          OCEAN(ng) % ad_vbar,                    &
@@ -163,6 +171,9 @@
 # endif
 # ifdef SOLVE3D
      &                                t_std, u_std, v_std,              &
+#  if defined WEAK_CONSTRAINT && defined TIME_CONV
+     &                                ubar_std, vbar_std,               &
+#  endif
 # else
      &                                ubar_std, vbar_std,               &
 # endif
@@ -185,6 +196,9 @@
 # endif
 # ifdef SOLVE3D
      &                                ad_t, ad_u, ad_v,                 &
+#  if defined WEAK_CONSTRAINT && defined TIME_CONV
+     &                                ad_ubar, ad_vbar,                 &
+#  endif
 # else
      &                                ad_ubar, ad_vbar,                 &
 # endif
@@ -233,6 +247,10 @@
       real(r8), intent(in) :: t_std(LBi:,LBj:,:,:,:)
       real(r8), intent(in) :: u_std(LBi:,LBj:,:,:)
       real(r8), intent(in) :: v_std(LBi:,LBj:,:,:)
+#   if defined WEAK_CONSTRAINT && defined TIME_CONV
+      real(r8), intent(in) :: ubar_std(LBi:,LBj:,:)
+      real(r8), intent(in) :: vbar_std(LBi:,LBj:,:)
+#   endif
 #  else
       real(r8), intent(in) :: ubar_std(LBi:,LBj:,:)
       real(r8), intent(in) :: vbar_std(LBi:,LBj:,:)
@@ -262,6 +280,10 @@
       real(r8), intent(inout) :: ad_t(LBi:,LBj:,:,:,:)
       real(r8), intent(inout) :: ad_u(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: ad_v(LBi:,LBj:,:,:)
+#   if defined WEAK_CONSTRAINT && defined TIME_CONV
+      real(r8), intent(inout) :: ad_ubar(LBi:,LBj:,:)
+      real(r8), intent(inout) :: ad_vbar(LBi:,LBj:,:)
+#   endif
 #  else
       real(r8), intent(inout) :: ad_ubar(LBi:,LBj:,:)
       real(r8), intent(inout) :: ad_vbar(LBi:,LBj:,:)
@@ -294,6 +316,10 @@
       real(r8), intent(in) :: t_std(LBi:UBi,LBj:UBj,N(ng),NSA,NT(ng))
       real(r8), intent(in) :: u_std(LBi:UBi,LBj:UBj,N(ng),NSA)
       real(r8), intent(in) :: v_std(LBi:UBi,LBj:UBj,N(ng),NSA)
+#   if defined WEAK_CONSTRAINT && defined TIME_CONV
+      real(r8), intent(in) :: ubar_std(LBi:UBi,LBj:UBj,NSA)
+      real(r8), intent(in) :: vbar_std(LBi:UBi,LBj:UBj,NSA)
+#   endif
 #  else
       real(r8), intent(in) :: ubar_std(LBi:UBi,LBj:UBj,NSA)
       real(r8), intent(in) :: vbar_std(LBi:UBi,LBj:UBj,NSA)
@@ -325,6 +351,10 @@
       real(r8), intent(inout) :: ad_t(LBi:UBi,LBj:UBj,N(ng),3,NT(ng))
       real(r8), intent(inout) :: ad_u(LBi:UBi,LBj:UBj,N(ng),2)
       real(r8), intent(inout) :: ad_v(LBi:UBi,LBj:UBj,N(ng),2)
+#   if defined WEAK_CONSTRAINT && defined TIME_CONV
+      real(r8), intent(inout) :: ad_ubar(LBi:UBi,LBj:UBj,3)
+      real(r8), intent(inout) :: ad_vbar(LBi:UBi,LBj:UBj,3)
+#   endif
 #  else
       real(r8), intent(inout) :: ad_ubar(LBi:UBi,LBj:UBj,3)
       real(r8), intent(inout) :: ad_vbar(LBi:UBi,LBj:UBj,3)
@@ -370,7 +400,7 @@
           ad_zeta(i,j,Linp)=ad_zeta(i,j,Linp)*zeta_std(i,j,rec)
         END DO
       END DO
-# ifndef SOLVE3D
+# if !defined SOLVE3D || (defined WEAK_CONSTRAINT && defined TIME_CONV)
 !
 !  2D U-momentum.
 !

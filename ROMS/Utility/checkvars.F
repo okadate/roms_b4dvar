@@ -104,7 +104,7 @@
 !  Higher values are used to process only boundary condition or
 !  surface forcing in the variational data assimilation algorithms.
 !
-      IF (model.lt.8) THEN
+      IF (model.lt.8.or.model.eq.14) THEN
 #ifdef ANA_INITIAL
         IF (nrrec(ng).ne.0) THEN
           get_var(idFsur)=.TRUE.
@@ -235,7 +235,7 @@
       END IF
 #ifdef ADJUST_BOUNDARY
 !
-!  Determine 4DVar surface forcing variables to adjust.
+!  Determine 4DVar boundary variables to adjust.
 !
       IF ((model.eq.iADM).or.(model.eq.iTLM).or.(model.eq.iNLM).or.     &
      &    (model.eq.iRPM).or.(model.eq.8).or.(model.eq.10).or.          &
@@ -296,6 +296,25 @@
             get_var(idPvar(itrc))=.TRUE.
           END IF
         END DO
+#endif
+#ifdef BNORM
+!
+!  Determine variables for Hessian singular vectors with background
+!  normalization.
+!  (HGA: This is not needed because already accounted above when
+!        model < 8).
+!
+      IF (model.eq.6) THEN
+        get_var(idFsur)=.TRUE.
+        get_var(idUbar)=.TRUE.
+        get_var(idVbar)=.TRUE.
+# ifdef SOLVE3D
+        get_var(idUvel)=.TRUE.
+        get_var(idVvel)=.TRUE.
+        DO itrc=1,NAT
+          get_var(idTvar(itrc))=.TRUE.
+        END DO
+# endif
       END IF
 #endif
 !
