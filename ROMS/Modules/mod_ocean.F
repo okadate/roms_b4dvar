@@ -612,7 +612,6 @@
       allocate ( OCEAN(ng) % f_ubarG(LBi:UBi,LBj:UBj,2) )
       allocate ( OCEAN(ng) % f_vbarG(LBi:UBi,LBj:UBj,2) )
       allocate ( OCEAN(ng) % f_zetaG(LBi:UBi,LBj:UBj,2) )
-#  endif
 #  ifdef ADJUST_PARAM
       allocate ( OCEAN(ng) % f_pG(2,Nparam(ng)) )
 #  endif
