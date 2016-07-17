@@ -90,9 +90,9 @@
 !  modify AttFac.
 !
                   Att=(AttSW(ng)+                                       &
-     &                 AttChl(ng)*Bio1(i,k,iChlo)+                      &
+     &                 AttChl(ng)*Bio1(i,kk,iChlo)+                     &
      &                 AttFac)*                                         &
-     &                 (z_w(i,j,k)-z_w(i,j,k-1))
+     &                 (z_w(i,j,kk)-z_w(i,j,kk-1))
                   ExpAtt=EXP(-Att)
                   Itop=PAR
                   PAR=Itop*(1.0_r8-ExpAtt)/Att  ! average at cell center
