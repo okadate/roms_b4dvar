@@ -154,9 +154,10 @@
 #   else
         IF (inner.eq.0.and.outer.eq.0) THEN
 #   endif
-        DO iobs=Mstr,Mend
-          ObsScale(iobs)=IniVal
-        END DO
+          DO iobs=Mstr,Mend
+            ObsScale(iobs)=IniVal
+          END DO
+        END IF
 #  else
         DO iobs=Mstr,Mend
           ObsScale(iobs)=IniVal
