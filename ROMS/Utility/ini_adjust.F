@@ -292,6 +292,9 @@
             DO i=IstrT,IendT
               t(i,j,k,Lout,itrc)=t(i,j,k,Lout,itrc)+                    &
      &                           tl_t(i,j,k,Linp,itrc)
+#    ifdef POSITIVE_T
+              t(i,j,k,Lout,itrc)=MAX(t(i,j,k,Lout,itrc),0.0_r8)
+#    endif
 #    ifdef MASKING
               t(i,j,k,Lout,itrc)=t(i,j,k,Lout,itrc)*rmask(i,j)
 #    endif
