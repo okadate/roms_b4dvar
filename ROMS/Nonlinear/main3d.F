@@ -763,6 +763,7 @@
               END DO
 !$OMP BARRIER
             END DO
+            IF (exit_flag.ne.NoError) RETURN
 
 # ifndef TS_FIXED
 !

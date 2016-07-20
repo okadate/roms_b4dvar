@@ -886,11 +886,15 @@
 !
 !  Check for positive Hessian of J.
 !
-        IF (cg_delta(innLoop,outLoop).le.0.0_r8.and.Master) THEN
-          PRINT *, ' CG_DELTA not positive.'
-          PRINT *, ' CG_DELTA = ', cg_delta(innLoop,outLoop)
-          PRINT *, '  outer = ', outLoop, ', inner = ', innLoop
-# ifndef IGNORE_NEGATIVE_CG_DELTA
+        IF (cg_delta(innLoop,outLoop).le.0.0_r8) THEN
+          IF (Master) THEN
+            PRINT *, ' CG_DELTA not positive.'
+            PRINT *, ' CG_DELTA = ', cg_delta(innLoop,outLoop)
+            PRINT *, '  outer = ', outLoop, ', inner = ', innLoop
+          END IF
+# ifdef IGNORE_NEGATIVE_CG_DELTA
+          cg_delta(innLoop,outLoop)=0.0_r8
+# else
           exit_flag=8
           RETURN
 # endif
@@ -1215,9 +1219,11 @@
 !  Check for exploding or negative Ritz values.
 !
           DO i=1,innLoop
-            IF (cg_Ritz(i,outLoop).lt.0.0_r8.and.Master) THEN
-              PRINT *, ' Negative Ritz value found.'
-              PRINT *, '  cg_Ritz = ', cg_Ritz(i,outLoop)
+            IF (cg_Ritz(i,outLoop).lt.0.0_r8) THEN
+              IF (Master) THEN
+                PRINT *, ' Negative Ritz value found.'
+                PRINT *, '  cg_Ritz = ', cg_Ritz(i,outLoop)
+              END IF
               exit_flag=8
               RETURN
             END IF
