@@ -765,31 +765,43 @@
 # ifdef OXYGEN
           cff1=R_SODf(ng)/mol2g_O2    !SOD flux
 # endif
+# ifdef NPFLUX_BY_DO
+          cff2=R_NH4f_max(ng)/14.0_r8
+#  ifdef PHOSPHORUS
+          cff3=R_PO4f_max(ng)/31.0_r8
+#  endif
+# else
           cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
-# ifdef PHOSPHORUS
+#  ifdef PHOSPHORUS
           cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
+#  endif
 # endif
 !
 !-----------------------------------------------------------------------
 !  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)
 !-----------------------------------------------------------------------
 !
+          fac1=dtdays
+          fac2=1.0_r8
+          fac3=1.0_r8
           DO i=Istr,Iend
-# ifdef TDEPENDANCE
-            fac1=dtdays*(1.05_r8**(Bio(i,1,itemp)-20.0_r8))
-# else
-            fac1=dtdays
-# endif
             cff=fac1*Hz_inv(i,1)
-            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2
+# ifdef TDEPENDANCE
+            fac2=t_SODf(ng)**(Bio(i,1,itemp)-20.0_r8)
+# endif
+# ifdef NPFLUX_BY_DO
+            fac3=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
+            fac3=fac3/(Bio(i,1,iOxyg)+fac3)
+# endif
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac3
 # ifdef PHOSPHORUS
-            Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3
+            Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3*fac3
 # endif
 # ifdef OXYGEN
-            cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1),0.0_r8)
+            cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
 #  ifdef H2S
-            cff5=MIN(MIN(Bio(i,1,iOxyg),cff*cff1),0.0_r8)
+            cff5=MIN(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
             Bio(i,1,iH2S_)=Bio(i,1,iH2S_)+cff5*rOxH2S
 #  endif
 # endif
