@@ -271,6 +271,9 @@
                 fac3=fac1/(fac2+eps)
 !               ========================================================
 #ifdef OXYGEN
+!
+!  Update oxygen
+!
 !>              tl_Bio(i,k,iOxyg)=tl_Bio(i,k,iOxyg)+                    &
 !>   &                            tl_N_Flux_NewProd*rOxNO3+             &
 !>   &                            tl_N_Flux_RegProd*rOxNH4
@@ -278,6 +281,9 @@
                 ad_N_Flux_RegProd=ad_N_Flux_RegProd+adfac*rOxNH4
                 ad_N_Flux_NewProd=ad_N_Flux_NewProd+adfac*rOxNO3
 #endif
+!
+!  Update chlorophyll
+!
 !>              tl_Bio(i,k,iChlo)=tl_Bio(i,k,iChlo)+                    &
 !>   &                            tl_Bio(i,k,iChlo)*fac3+               &
 !>   &                            Bio(i,k,iChlo)*tl_fac3
@@ -317,6 +323,8 @@
 !>   &                            tl_N_Flux_NewProd+tl_N_Flux_RegProd
                 ad_N_Flux_RegProd=ad_N_Flux_RegProd+ad_Bio(i,k,iPhyt)
                 ad_N_Flux_NewProd=ad_N_Flux_NewProd+ad_Bio(i,k,iPhyt)
+!
+!  Nitrate and ammonium uptake by Phytoplankton.
 !
 !               ========================================================
                 fac1=dtdays*t_PPmax*Bio1(i,k,iPhyt)
@@ -538,13 +546,6 @@
 !  Check value for Vp is 2.9124317 at 19.25 degC.
 !
 !               ========================================================
-# ifdef VP_TEMP1022
-                Vp=Vp0(ng)*0.59_r8*(1.022_r8**Bio(i,k,itemp))
-# elif defined VP_TEMP1033
-                Vp=Vp0(ng)*0.59_r8*(1.033_r8**Bio(i,k,itemp))
-# else
-                Vp=Vp0(ng)*0.59_r8*(1.066_r8**Bio(i,k,itemp))
-# endif
                 fac1=PAR1*PhyIS(ng)
                 Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
                 t_PPmax=Epp*fac1

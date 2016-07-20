@@ -149,7 +149,6 @@
                 cff1=(PAR1-I_thNH4(ng))/MAX(fac4,eps)
                 cff2=1.0_r8-MAX(0.0_r8,cff1)
                 cff3=fac1*cff2
-                N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
 !               ========================================================
 #ifdef OXYGEN
 !>              tl_Bio(i,k,iOxyg)=tl_Bio(i,k,iOxyg)-                    &
@@ -235,10 +234,10 @@
 !>              tl_fac=dtdays*tl_NitriR
                 ad_NitriR=ad_NitriR+dtdays*ad_fac
                 ad_fac=0.0_r8
+!=======================================================================
 !
-!  Nitrate and ammonium uptake by Phytoplankton.
+!  Compute Chlorophyll-a phytoplankton ratio, [mg Chla / (mg C)].
 !
-!               ========================================================
                 cff=PhyCN(ng)*12.0_r8
                 cff1=Bio1(i,k,iChlo)/(Bio1(i,k,iPhyt)*cff+eps)
                 Chl2C=MIN(cff1,Chl2C_m(ng))
@@ -259,6 +258,8 @@
                 Epp=Vp/fac
                 t_PPmax=Epp*fac1
 !
+!  Nutrient-limitation terms
+!
                 cff1=Bio1(i,k,iNH4_)*K_NH4(ng)
                 cff2=Bio1(i,k,iNO3_)*K_NO3(ng)
                 inhNH4=1.0_r8/(1.0_r8+cff1)
@@ -270,7 +271,11 @@
                 L_PO4=cff3/(1.0_r8+cff3)
                 LMIN=MIN(LTOT,L_PO4)
 #endif
+!=======================================================================
 !
+!  Nitrate and ammonium uptake by Phytoplankton.
+!
+!               ========================================================
                 fac1=dtdays*t_PPmax*Bio1(i,k,iPhyt)
                 fac4=fac1*K_NO3(ng)*inhNH4
                 cff4=fac4/(1.0_r8+cff2)
