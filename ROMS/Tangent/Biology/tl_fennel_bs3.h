@@ -81,31 +81,21 @@
                 cff=PhyCN(ng)*12.0_r8
                 Chl2C=MIN(Bio(i,k,iChlo)/(Bio(i,k,iPhyt)*cff+eps),      &
      &                    Chl2C_m(ng))
-#ifdef GROWTH1
-!
-!  Temperature-limited and light-limited growth rate (okada)
-!
-                cff=(Bio(i,k,itemp)-t_opt(ng))**2.0_r8
-                IF (Bio(i,k,itemp).le.t_opt(ng)) THEN
-                  fac1=EXP(-beta1(ng)*cff)
-                ELSE
-                  fac1=EXP(-beta2(ng)*cff)
-                END IF
-                Att=Att/2.0_r8
-                cff=Itop/I_opt(ng)
-                fac2=EXP(1.0_r8)/Att*(EXP(-cff*Exp(-Att))-EXP(-cff))
-                t_PPmax=g_max(ng)*fac1*fac2
-#else
 !
 !  Temperature-limited and light-limited growth rate (Eppley, R.W.,
 !  1972, Fishery Bulletin, 70: 1063-1085; here 0.59=ln(2)*0.851).
 !  Check value for Vp is 2.9124317 at 19.25 degC.
 !
+# ifdef VP_TEMP1022
+                Vp=Vp0(ng)*0.59_r8*(1.022_r8**Bio(i,k,itemp))
+# elif defined VP_TEMP1033
+                Vp=Vp0(ng)*0.59_r8*(1.033_r8**Bio(i,k,itemp))
+# else
                 Vp=Vp0(ng)*0.59_r8*(1.066_r8**Bio(i,k,itemp))
+# endif
                 fac1=PAR*PhyIS(ng)
                 Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
                 t_PPmax=Epp*fac1
-#endif
 #ifdef PHOSPHORUS
 !
 !  Nutrient-limitation terms (Laurent et al. 2012).

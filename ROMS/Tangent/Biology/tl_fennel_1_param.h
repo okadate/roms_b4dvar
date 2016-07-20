@@ -74,10 +74,19 @@
 !  1972, Fishery Bulletin, 70: 1063-1085; here 0.59=ln(2)*0.851).
 !  Check value for Vp is 2.9124317 at 19.25 degC.
 !
+# ifdef VP_TEMP1022
+                Vp=Vp0(ng)*0.59_r8*(1.022_r8**Bio(i,k,itemp))
+                tl_Vp=tl_Vp0*0.59_r8*(1.022_r8**Bio(i,k,itemp))+        &
+     &                Vp*tl_Bio(i,k,itemp)
+# elif defined VP_TEMP1033
+                Vp=Vp0(ng)*0.59_r8*(1.033_r8**Bio(i,k,itemp))
+                tl_Vp=tl_Vp0*0.59_r8*(1.033_r8**Bio(i,k,itemp))+        &
+     &                Vp*tl_Bio(i,k,itemp)
+# else
                 Vp=Vp0(ng)*0.59_r8*(1.066_r8**Bio(i,k,itemp))
                 tl_Vp=tl_Vp0*0.59_r8*(1.066_r8**Bio(i,k,itemp))+        &
      &                Vp*tl_Bio(i,k,itemp)
-
+# endif
                 fac1=PAR*PhyIS(ng)
                 tl_fac1=tl_PAR*PhyIS(ng)+PAR*tl_PhyIS
 

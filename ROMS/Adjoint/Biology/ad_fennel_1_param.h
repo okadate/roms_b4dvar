@@ -243,7 +243,17 @@
                 cff1=Bio1(i,k,iChlo)/(Bio1(i,k,iPhyt)*cff+eps)
                 Chl2C=MIN(cff1,Chl2C_m(ng))
 !
+!  Temperature-limited and light-limited growth rate (Eppley, R.W.,
+!  1972, Fishery Bulletin, 70: 1063-1085; here 0.59=ln(2)*0.851).
+!  Check value for Vp is 2.9124317 at 19.25 degC.
+!
+# ifdef VP_TEMP1022
+                Vp=Vp0(ng)*0.59_r8*(1.022_r8**Bio(i,k,itemp))
+# elif defined VP_TEMP1033
+                Vp=Vp0(ng)*0.59_r8*(1.033_r8**Bio(i,k,itemp))
+# else
                 Vp=Vp0(ng)*0.59_r8*(1.066_r8**Bio(i,k,itemp))
+# endif
                 fac1=PAR1*PhyIS(ng)
                 fac=SQRT(Vp*Vp+fac1*fac1)
                 Epp=Vp/fac
@@ -654,11 +664,25 @@
                 ad_PhyIS=ad_PhyIS+PAR1*ad_fac1
                 ad_fac1=0.0_r8
 
+# ifdef VP_TEMP1022
+!>              tl_Vp=tl_Vp0*0.59_r8*(1.022_r8**Bio(i,k,itemp))+        &
+!>   &                Vp*tl_Bio(i,k,itemp)
+                ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+Vp*ad_Vp
+                ad_Vp0=ad_Vp0+ad_Vp*0.59_r8*(1.022_r8**Bio(i,k,itemp))
+                ad_Vp=0.0_r8
+# elif defined VP_TEMP1033
+!>              tl_Vp=tl_Vp0*0.59_r8*(1.033_r8**Bio(i,k,itemp))+        &
+!>   &                Vp*tl_Bio(i,k,itemp)
+                ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+Vp*ad_Vp
+                ad_Vp0=ad_Vp0+ad_Vp*0.59_r8*(1.033_r8**Bio(i,k,itemp))
+                ad_Vp=0.0_r8
+# else
 !>              tl_Vp=tl_Vp0*0.59_r8*(1.066_r8**Bio(i,k,itemp))+        &
 !>   &                Vp*tl_Bio(i,k,itemp)
                 ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+Vp*ad_Vp
                 ad_Vp0=ad_Vp0+ad_Vp*0.59_r8*(1.066_r8**Bio(i,k,itemp))
                 ad_Vp=0.0_r8
+# endif
 !
 !  Compute Chlorophyll-a phytoplankton ratio, [mg Chla / (mg C)].
 !
