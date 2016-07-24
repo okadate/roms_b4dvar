@@ -296,6 +296,7 @@
             get_var(idPvar(itrc))=.TRUE.
           END IF
         END DO
+      END IF
 #endif
 #ifdef BNORM
 !
