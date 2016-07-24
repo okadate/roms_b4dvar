@@ -892,7 +892,7 @@
             PRINT *, ' CG_DELTA = ', cg_delta(innLoop,outLoop)
             PRINT *, '  outer = ', outLoop, ', inner = ', innLoop
           END IF
-# ifdef IGNORE_NEGATIVE_CG_DELTA
+# ifdef POSITIVE_CG_DELTA
           cg_delta(innLoop,outLoop)=0.0_r8
 # else
           exit_flag=8
