@@ -1224,8 +1224,12 @@
                 PRINT *, ' Negative Ritz value found.'
                 PRINT *, '  cg_Ritz = ', cg_Ritz(i,outLoop)
               END IF
+# ifdef POSITIVE_CG_RITZ
+              cg_Ritz(i,outLoop)=0.0_r8
+# else
               exit_flag=8
               RETURN
+# endif
             END IF
           END DO
 !
