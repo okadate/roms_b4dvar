@@ -529,46 +529,44 @@
       Vp0(ng)=p(nstp,iVp0)
       I_thNH4(ng)=p(nstp,iI_thNH4)
       D_p5NH4(ng)=p(nstp,iD_p5NH4)
-
-      K_Nitri(ng)=p(nstp,iK_Nitri)
-      NitriR(ng)=p(nstp,iNitriR)
-      K_Denit(ng)=p(nstp,iK_Denit)
-      DenitR(ng)=p(nstp,iDenitR)
       K_NO3(ng)=p(nstp,iK_NO3)
-
       K_NH4(ng)=p(nstp,iK_NH4)
-      K_PO4(ng)=p(nstp,iK_PO4)
       K_Phy(ng)=p(nstp,iK_Phy)
       Chl2C_m(ng)=p(nstp,iChl2C_m)
-      PhyPN(ng)=p(nstp,iPhyPN)
       PhyCN(ng)=p(nstp,iPhyCN)
-
       PhyIP(ng)=p(nstp,iPhyIP)
       PhyIS(ng)=p(nstp,iPhyIS)
       PhyMR(ng)=p(nstp,iPhyMR)
       ZooAE_N(ng)=p(nstp,iZooAE_N)
       ZooBM(ng)=p(nstp,iZooBM)
-
-      ZooPN(ng)=p(nstp,iZooPN)
       ZooCN(ng)=p(nstp,iZooCN)
       ZooER(ng)=p(nstp,iZooER)
       ZooGR(ng)=p(nstp,iZooGR)
       ZooMR(ng)=p(nstp,iZooMR)
-      K_DO(ng)=p(nstp,iK_DO)
-
       LDeRRN(ng)=p(nstp,iLDeRRN)
-      LDeRRP(ng)=p(nstp,iLDeRRP)
       CoagR(ng)=p(nstp,iCoagR)
       SDeRRN(ng)=p(nstp,iSDeRRN)
-      SDeRRP(ng)=p(nstp,iSDeRRP)
-
       wPhy(ng)=p(nstp,iwPhy)
       wSDet(ng)=p(nstp,iwSDet)
       wLDet(ng)=p(nstp,iwLDet)
+
+      K_Nitri(ng)=p(nstp,iK_Nitri)
+      NitriR(ng)=p(nstp,iNitriR)
+      K_Denit(ng)=p(nstp,iK_Denit)
+      DenitR(ng)=p(nstp,iDenitR)
+      K_PO4(ng)=p(nstp,iK_PO4)
+      PhyPN(ng)=p(nstp,iPhyPN)
+      ZooPN(ng)=p(nstp,iZooPN)
+      K_DO(ng)=p(nstp,iK_DO)
+      LDeRRP(ng)=p(nstp,iLDeRRP)
+      SDeRRP(ng)=p(nstp,iSDeRRP)
       R_SODf(ng)=p(nstp,iR_SODf)
       R_NH4f(ng)=p(nstp,iR_NH4f)
-
       R_PO4f(ng)=p(nstp,iR_PO4f)
+      R_NH4f_max(ng)=p(nstp,iR_NH4f_m)
+      R_PO4f_max(ng)=p(nstp,iR_PO4f_m)
+      K_DO_npflux(ng)=p(nstp,iK_DO_npf)
+      t_SODf(ng)=p(nstp,it_SODf)
 # endif
 #endif
 #ifdef CHECKER

@@ -351,49 +351,76 @@
           cff1=R_SODf(ng)/mol2g_O2    !SOD flux
           tl_cff1=tl_R_SODf/mol2g_O2
 # endif
+# ifdef NPFLUX_BY_DO
+          cff2=R_NH4f_max(ng)/14.0_r8
+          tl_cff2=tl_R_NH4f_max/14.0_r8
+#  ifdef PHOSPHORUS
+          cff3=R_PO4f_max(ng)/31.0_r8
+          tl_cff3=tl_R_PO4f_max/31.0_r8
+#  endif
+# else
           cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
           tl_cff2=tl_R_NH4f/14.0_r8
-# ifdef PHOSPHORUS
+#  ifdef PHOSPHORUS
           cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
           tl_cff3=tl_R_PO4f/31.0_r8
+#  endif
 # endif
 !
 !-----------------------------------------------------------------------
 !  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)
 !-----------------------------------------------------------------------
 !
+          fac1=dtdays
+          fac2=1.0_r8
+          fac4=1.0_r8
+          tl_fac2=0.0_r8
+          tl_fac4=0.0_r8
           DO i=Istr,Iend
-# ifdef TDEPENDANCE
-            fac2=1.05_r8**(Bio(i,1,itemp)-20.0_r8)
-            tl_fac2=fac2*tl_Bio(i,k,itemp)*LOG(1.05_r8)
-
-            fac1=dtdays*fac2
-            tl_fac1=dtdays*tl_fac2
-# else
-            fac1=dtdays
-            tl_fac1=0.0_r8
-# endif
             cff=fac1*Hz_inv(i,1)
-            tl_cff=tl_fac1*Hz_inv(i,1)+fac1*tl_Hz_inv(i,1)
+# ifdef TDEPENDANCE
+            fac2=t_SODf(ng)**(Bio(i,1,itemp)-20.0_r8)
+!>          tl_fac2=fac2*tl_Bio(i,1,itemp)*LOG(t_SODf(ng))
+            tlfac=tl_Bio(i,1,itemp)*LOG(t_SODf(ng))+                    &
+     &            (Bio(i,1,itemp)-20.0_r8)*tl_t_SODf/t_SODf(ng)
+            tl_fac2=fac2*tlfac
+# endif
+# ifdef NPFLUX_BY_DO
+            fac3=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
+            tl_fac3=tl_K_DO_npflux/mol2g_O2*1000.0_r8
 
-!>          Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2
-            tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff*cff2+cff*tl_cff2
+            fac4=fac3/(Bio(i,1,iOxyg)+fac3)
+!>          tl_fac4=(1.0_r8-fac4*tl_Bio(i,1,iOxyg))/                    &
+!>   &              (Bio(i,1,iOxyg)+fac3)
+            tl_fac4=(tl_fac3-fac4*(tl_Bio(i,1,iOxyg)+tl_fac3))/         &
+     &              (Bio(i,1,iOxyg)+fac3)
+# endif
+!>          Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac4
+!>          tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+cff*cff2*tl_fac4
+            tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+                        &
+     &                        cff*(tl_cff2*fac4+cff2*tl_fac4)
 # ifdef PHOSPHORUS
-!>          Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3
-            tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff*cff3+cff*tl_cff3
+!>          Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3*fac4
+!>          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+cff*cff3*tl_fac4
+            tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+                        &
+     &                        cff*(tl_cff3*fac4+cff3*tl_fac4)
 # endif
 # ifdef OXYGEN
-            fac3=MAX(Bio(i,1,iOxyg),0.0_r8)
-            tl_fac3=(0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))*               &
-     &              tl_Bio(i,1,iOxyg)
+!>          cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
+            cff4=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
+            tlfac=SIGN(0.5_r8,cff*cff1*fac2-Bio(i,1,iOxyg))
+!>          tl_cff4=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
+!>   &              (0.5_r8-tlfac)*cff*cff1*tl_fac2
+            tl_cff4=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
+     &              (0.5_r8-tlfac)*cff*(tl_cff1*fac2+cff1*tl_fac2)
 
-            cff4=MIN(fac3,cff*cff1)
-            tlfac=SIGN(0.5_r8,cff*cff1-fac3)
-            tl_cff4=(0.5_r8+tlfac)*tl_fac3+                             &
-     &              (0.5_r8-tlfac)*(tl_cff*cff1+cff*tl_cff1)
+            cff5=MAX(cff4,0.0_r8)
+            tlfac=SIGN(0.5_r8,cff4)
+            tl_cff5=(0.5_r8+tlfac)*tl_cff4
 
 !>          Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
-            tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff4
+!>          Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff5
+            tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff5
 # endif
           END DO
 #endif

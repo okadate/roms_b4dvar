@@ -5,85 +5,128 @@
 # ifdef OXYGEN
           cff1=R_SODf(ng)/mol2g_O2    !SOD flux
 # endif
+# ifdef NPFLUX_BY_DO
+          cff2=R_NH4f_max(ng)/14.0_r8
+#  ifdef PHOSPHORUS
+          cff3=R_PO4f_max(ng)/31.0_r8
+#  endif
+# else
           cff2=R_NH4f(ng)/14.0_r8     !NH4 elution flux from sediment
-# ifdef PHOSPHORUS
+#  ifdef PHOSPHORUS
           cff3=R_PO4f(ng)/31.0_r8     !PO4 elution flux from sediment
+#  endif
 # endif
 !
 !-----------------------------------------------------------------------
 !  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)
 !-----------------------------------------------------------------------
 !
+!           ============================================================
+          fac1=dtdays
+          fac2=1.0_r8
+          fac4=1.0_r8
           DO i=Istr,Iend
-!           ============================================================
-# ifdef TDEPENDANCE
-            fac2=1.05_r8**(Bio(i,1,itemp)-20.0_r8)
-            fac1=dtdays*fac2
-# else
-            fac1=dtdays
-# endif
             cff=fac1*Hz_inv(i,1)
+# ifdef TDEPENDANCE
+            fac2=t_SODf(ng)**(Bio(i,1,itemp)-20.0_r8)
+# endif
+# ifdef NPFLUX_BY_DO
+            fac3=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
+            fac4=fac3/(Bio(i,1,iOxyg)+fac3)
+# endif
 # ifdef OXYGEN
-            fac3=MAX(Bio(i,1,iOxyg),0.0_r8)
-            cff4=MIN(fac3,cff*cff1)
+!>          cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
+            cff4=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
+            cff5=MAX(cff4,0.0_r8)
+# endif
 !           ============================================================
-!>          tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff4
-            ad_cff4=ad_cff4-ad_Bio(i,1,iOxyg)
+# ifdef OXYGEN
+!>          tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff5
+            ad_cff5=ad_cff5-ad_Bio(i,1,iOxyg)
 
-!>          tlfac=SIGN(0.5_r8,cff*cff1-fac3)
-!>          tl_cff4=(0.5_r8+tlfac)*tl_fac3+                             &
-!>   &              (0.5_r8-tlfac)*(tl_cff*cff1+cff*tl_cff1)
-            adfac=SIGN(0.5_r8,cff*cff1-fac3)
-            ad_cff1=ad_cff1+(0.5_r8-adfac)*cff*ad_cff4
-            ad_cff=ad_cff+(0.5_r8-adfac)*ad_cff4*cff1
-            ad_fac3=ad_fac3+(0.5_r8+adfac)*ad_cff4
+!>          tlfac=SIGN(0.5_r8,cff4)
+!>          tl_cff5=(0.5_r8+tlfac)*tl_cff4
+            adfac=SIGN(0.5_r8,cff4)
+            ad_cff4=ad_cff4+(0.5_r8+adfac)*ad_cff5
+            ad_cff5=0.0_r8
+
+!>          tlfac=SIGN(0.5_r8,cff*cff1*fac2-Bio(i,1,iOxyg))
+!>          tl_cff4=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
+!>   &              (0.5_r8-tlfac)*cff*cff1*tl_fac2
+!#          tl_cff4=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
+!#   &              (0.5_r8-tlfac)*cff*(tl_cff1*fac2+cff1*tl_fac2)
+            adfac=SIGN(0.5_r8,cff*cff1*fac2-Bio(i,1,iOxyg))
+            ad_fac2=ad_fac2+(0.5_r8-adfac)*cff*cff1*ad_cff4
+            ad_cff1=ad_cff1+(0.5_r8-adfac)*cff*ad_cff4*fac2
+            ad_Bio(i,1,iOxyg)=ad_Bio(i,1,iOxyg)+(0.5_r8+adfac)*ad_cff4
             ad_cff4=0.0_r8
-
-!>          tl_fac3=(0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))*               &
-!>   &              tl_Bio(i,1,iOxyg)
-            ad_Bio(i,1,iOxyg)=ad_Bio(i,1,iOxyg)+                        &
-     &                        (0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))*     &
-     &                        ad_fac3
-            ad_fac3=0.0_r8
 # endif
 # ifdef PHOSPHORUS
-!>          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff*cff3+cff*tl_cff3
-            ad_cff3=ad_cff3+ad_Bio(i,1,iPO4_)*cff
-            ad_cff=ad_cff+ad_Bio(i,1,iPO4_)*cff3
+!>          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+cff*cff3*tl_fac4
+!#          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+                        &
+!#   &                        cff*(tl_cff3*fac4+cff3*tl_fac4)
+            ad_fac4=ad_fac4+cff*cff3*ad_Bio(i,1,iPO4_)
+            ad_cff3=ad_cff3+cff*ad_Bio(i,1,iPO4_)*fac4
 # endif
-!>          tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff*cff2+cff*tl_cff2
-            ad_cff2=ad_cff2+ad_Bio(i,1,iNH4_)*cff
-            ad_cff=ad_cff+ad_Bio(i,1,iNH4_)*cff2
+!>          tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+cff*cff2*tl_fac4
+!#          tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+                        &
+!#   &                        cff*(tl_cff2*fac4+cff2*tl_fac4)
+            ad_fac4=ad_fac4+cff*cff2*ad_Bio(i,1,iNH4_)
+            ad_cff2=ad_cff2+cff*ad_Bio(i,1,iNH4_)*fac4
+# ifdef NPFLUX_BY_DO
+!#          tl_fac3=tl_K_DO_npflux/mol2g_O2*1000.0_r8
+            ad_K_DO_npflux=ad_K_DO_npflux+ad_fac3/mol2g_O2*1000.0_r8
+            ad_fac3=0.0_r8
 
-!>          tl_cff=tl_fac1*Hz_inv(i,1)+fac1*tl_Hz_inv(i,1)
-            ad_Hz_inv(i,1)=ad_Hz_inv(i,1)+ad_cff*fac1
-            ad_fac1=ad_fac1+ad_cff*Hz_inv(i,1)
-            ad_cff=0.0_r8
+!>          tl_fac4=(1.0_r8-fac4*tl_Bio(i,1,iOxyg))/                    &
+!>   &              (Bio(i,1,iOxyg)+fac3)
+!#          tl_fac4=(tl_fac3-fac4*(tl_Bio(i,1,iOxyg)+tl_fac3)/          &
+!#   &              (Bio(i,1,iOxyg)+fac3)
+            adfac=Bio(i,1,iOxyg)+fac3
+            ad_fac3=ad_fac3-fac4*ad_fac4/adfac
+            ad_Bio(i,1,iOxyg)=ad_Bio(i,1,iOxyg)-fac4*ad_fac4/adfac
+            ad_fac3=ad_fac3+ad_fac4/adfac
+            ad_fac4=0.0_r8
+# endif
 # ifdef TDEPENDANCE
-!>          tl_fac1=dtdays*tl_fac2
-            ad_fac2=ad_fac2+dtdays*ad_fac1
-            ad_fac1=0.0_r8
-
-!>          tl_fac2=fac2*tl_Bio(i,k,itemp)*LOG(1.05_r8)
-            ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+                        &
-     &                        fac2*ad_fac2*LOG(1.05_r8)
+!>          tl_fac2=fac2*tl_Bio(i,1,itemp)*LOG(t_SODf(ng))
+!#          tlfac=tl_Bio(i,1,itemp)*LOG(t_SODf(ng))+                    &
+!#   &            (Bio(i,1,itemp)-20.0_r8)*tl_t_SODf/t_SODf(ng)
+!#          tl_fac2=fac2*tlfac
+            ad_t_SODf=ad_t_SODf+                                        &
+     &                fac2*(Bio(i,1,itemp)-20.0_r8)/t_SODf(ng)*ad_fac2
+            ad_Bio(i,1,itemp)=ad_Bio(i,1,itemp)+                        &
+     &                        fac2*ad_fac2*LOG(t_SODf(ng))
             ad_fac2=0.0_r8
-# else
-!>          tl_fac1=0.0_r8
-            ad_fac1=0.0_r8
 # endif
           END DO
-!>        tl_cff1=tl_R_SODf/mol2g_O2
-          ad_R_SODf=ad_R_SODf+ad_cff1/mol2g_O2
-          ad_cff1=0.0_r8
+          ad_fac4=0.0_r8
+          ad_fac2=0.0_r8
 
-!>        tl_cff2=tl_R_NH4f/14.0_r8
-          ad_R_NH4f=ad_R_NH4f+ad_cff2/14.0_r8
+# ifdef NPFLUX_BY_DO
+#  ifdef PHOSPHORUS
+!#        tl_cff3=tl_R_PO4f_max/31.0_r8
+          ad_R_PO4f_max=ad_R_PO4f_max+ad_cff3/31.0_r8
+          ad_cff3=0.0_r8
+#  endif
+!#        tl_cff2=tl_R_NH4f_max/14.0_r8
+          ad_R_NH4f_max=ad_R_NH4f_max+ad_cff2/14.0_r8
           ad_cff2=0.0_r8
-
-!>        tl_cff3=tl_R_PO4f/31.0_r8
+# else
+#  ifdef PHOSPHORUS
+!#        tl_cff3=tl_R_PO4f/31.0_r8
           ad_R_PO4f=ad_R_PO4f+ad_cff3/31.0_r8
           ad_cff3=0.0_r8
+#  endif
+!#        tl_cff2=tl_R_NH4f/14.0_r8
+          ad_R_NH4f=ad_R_NH4f+ad_cff2/14.0_r8
+          ad_cff2=0.0_r8
+# endif
+# ifdef OXYGEN
+!#        tl_cff1=tl_R_SODf/mol2g_O2
+          ad_R_SODf=ad_R_SODf+ad_cff1/mol2g_O2
+          ad_cff1=0.0_r8
+# endif
 #endif
 !
 !-----------------------------------------------------------------------

@@ -376,47 +376,6 @@
 #endif
 #ifdef ADJUST_PARAM
       integer :: it
-
-      real(r8) :: ad_AttSW
-      real(r8) :: ad_AttChl
-      real(r8) :: ad_Vp0
-      real(r8) :: ad_I_thNH4
-      real(r8) :: ad_D_p5NH4
-      real(r8) :: ad_K_NO3
-      real(r8) :: ad_K_NH4
-      real(r8) :: ad_K_Phy
-      real(r8) :: ad_Chl2C_m
-      real(r8) :: ad_PhyCN
-      real(r8) :: ad_PhyIP
-      real(r8) :: ad_PhyIS
-      real(r8) :: ad_PhyMR
-      real(r8) :: ad_ZooAE_N
-      real(r8) :: ad_ZooBM
-      real(r8) :: ad_ZooCN
-      real(r8) :: ad_ZooER
-      real(r8) :: ad_ZooGR
-      real(r8) :: ad_ZooMR
-      real(r8) :: ad_LDeRRN
-      real(r8) :: ad_CoagR
-      real(r8) :: ad_SDeRRN
-      real(r8) :: ad_wPhy
-      real(r8) :: ad_wSDet
-      real(r8) :: ad_wLDet
-      
-      real(r8) :: ad_K_Nitri
-      real(r8) :: ad_NitriR
-      real(r8) :: ad_K_Denit
-      real(r8) :: ad_DenitR
-      real(r8) :: ad_K_PO4
-      real(r8) :: ad_PhyPN
-      real(r8) :: ad_ZooPN
-      real(r8) :: ad_K_DO
-      real(r8) :: ad_LDeRRP
-      real(r8) :: ad_SDeRRP
-      real(r8) :: ad_R_SODf
-      real(r8) :: ad_R_NH4f
-      real(r8) :: ad_R_PO4f
-
       integer :: NSUB
       real(r8), dimension(Nparam(ng)) :: ad_my_p
       real(r8), dimension(Nparam(ng)) :: buffer
@@ -424,6 +383,7 @@
       character (len=3), dimension(Nparam(ng)) :: op_handle
 # endif
 #endif
+
 #define BLOWINGUP_CHECKER
 #ifdef BLOWINGUP_CHECKER
       integer :: ii
@@ -488,6 +448,10 @@
       ad_R_SODf=0.0_r8
       ad_R_NH4f=0.0_r8
       ad_R_PO4f=0.0_r8
+      ad_R_NH4f_max=0.0_r8
+      ad_R_PO4f_max=0.0_r8
+      ad_K_DO_npflux=0.0_r8
+      ad_t_SODf=0.0_r8
 !
       DO it=1,Nparam(ng)
         ad_my_p(it)=0.0_r8

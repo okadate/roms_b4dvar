@@ -398,47 +398,7 @@
 
       real(r8), parameter :: rOxH2S = 2.0_r8     !?
 #endif
-#ifdef ADJUST_PARAM
-      real(r8) :: tl_AttSW
-      real(r8) :: tl_AttChl
-      real(r8) :: tl_Vp0
-      real(r8) :: tl_I_thNH4
-      real(r8) :: tl_D_p5NH4
-      real(r8) :: tl_K_NO3
-      real(r8) :: tl_K_NH4
-      real(r8) :: tl_K_Phy
-      real(r8) :: tl_Chl2C_m
-      real(r8) :: tl_PhyCN
-      real(r8) :: tl_PhyIP
-      real(r8) :: tl_PhyIS
-      real(r8) :: tl_PhyMR
-      real(r8) :: tl_ZooAE_N
-      real(r8) :: tl_ZooBM
-      real(r8) :: tl_ZooCN
-      real(r8) :: tl_ZooER
-      real(r8) :: tl_ZooGR
-      real(r8) :: tl_ZooMR
-      real(r8) :: tl_LDeRRN
-      real(r8) :: tl_CoagR
-      real(r8) :: tl_SDeRRN
-      real(r8) :: tl_wPhy
-      real(r8) :: tl_wSDet
-      real(r8) :: tl_wLDet
-      
-      real(r8) :: tl_K_Nitri
-      real(r8) :: tl_NitriR
-      real(r8) :: tl_K_Denit
-      real(r8) :: tl_DenitR
-      real(r8) :: tl_K_PO4
-      real(r8) :: tl_PhyPN
-      real(r8) :: tl_ZooPN
-      real(r8) :: tl_K_DO
-      real(r8) :: tl_LDeRRP
-      real(r8) :: tl_SDeRRP
-      real(r8) :: tl_R_SODf
-      real(r8) :: tl_R_NH4f
-      real(r8) :: tl_R_PO4f
-#endif
+
 #define BLOWINGUP_CHECKER
 #ifdef BLOWINGUP_CHECKER
       integer :: ii

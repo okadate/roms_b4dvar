@@ -247,16 +247,142 @@
       real(r8), allocatable :: ZooMR(:)              ! 1/day
       real(r8), allocatable :: pCO2air(:)            ! ppmv
 #ifdef TANGENT
+      real(r8) :: tl_K_PO4
+      real(r8) :: tl_PhyPN
+      real(r8) :: tl_ZooPN
+      real(r8) :: tl_LDeRRP
+      real(r8) :: tl_SDeRRP
+      real(r8) :: tl_H2SOR
+      real(r8) :: tl_K_DO 
+      real(r8) :: tl_K_Nitri
+      real(r8) :: tl_NitriR_t
+      real(r8) :: tl_g_max
+      real(r8) :: tl_t_opt
+      real(r8) :: tl_I_opt
+      real(r8) :: tl_beta1
+      real(r8) :: tl_beta2
+      real(r8) :: tl_DenitR
+      real(r8) :: tl_K_Denit
+      real(r8) :: tl_DenitR_t
+      real(r8) :: tl_PhyMR_t
+      real(r8) :: tl_ZooGR_t
+      real(r8) :: tl_RR_t
+      real(r8) :: tl_R_SODf
+      real(r8) :: tl_R_NH4f
+      real(r8) :: tl_R_PO4f
+      real(r8) :: tl_R_NH4f_max
+      real(r8) :: tl_R_PO4f_max
+      real(r8) :: tl_K_DO_npflux
+      real(r8) :: tl_t_SODf
+
+      real(r8) :: tl_AttSW              ! 1/m
+      real(r8) :: tl_AttChl             ! 1/(mg_Chl m2)
+      real(r8) :: tl_Chl2C_m            ! mg_Chl/mg_C
+      real(r8) :: tl_ChlMin             ! mg_Chl/m3
+      real(r8) :: tl_CoagR              ! 1/day
+      real(r8) :: tl_D_p5NH4            ! Watts/m2
+      real(r8) :: tl_I_thNH4            ! Watts/m2
+      real(r8) :: tl_K_NH4              ! m3/mmol_N
+      real(r8) :: tl_K_NO3              ! m3/mmol_N
+      real(r8) :: tl_K_Phy              ! (mmol_N/m3)^2
+      real(r8) :: tl_LDeRRN             ! 1/day
+      real(r8) :: tl_LDeRRC             ! 1/day
+      real(r8) :: tl_NitriR             ! 1/day
+      real(r8) :: tl_PARfrac            ! nondimensional
+      real(r8) :: tl_PhyCN              ! mol_C/mol_N
+      real(r8) :: tl_PhyIP              ! 1/mmol_N
+      real(r8) :: tl_PhyIS              ! 1/(Watts m-2 day)
+      real(r8) :: tl_PhyMin             ! mmol_N/m3
+      real(r8) :: tl_PhyMR              ! 1/day
+      real(r8) :: tl_SDeAR              ! 1/day
+      real(r8) :: tl_SDeBR              ! 1/day
+      real(r8) :: tl_SDeRRN             ! 1/day
+      real(r8) :: tl_SDeRRC             ! 1/day
+      real(r8) :: tl_Vp0                ! nondimensional
+      real(r8) :: tl_wLDet              ! m/day
+      real(r8) :: tl_wPhy               ! m/day
+      real(r8) :: tl_wSDet              ! m/day
+      real(r8) :: tl_ZooAE_N            ! nondimensional
+      real(r8) :: tl_ZooBM              ! 1/day
+      real(r8) :: tl_ZooCN              ! mol_C/mol_N
+      real(r8) :: tl_ZooER              ! 1/day
+      real(r8) :: tl_ZooGR              ! 1/day
+      real(r8) :: tl_ZooMin             ! mmol_N/m3
+      real(r8) :: tl_ZooMR              ! 1/day
+      real(r8) :: tl_pCO2air            ! ppmv
 !      real(r8), allocatable :: tl_wSDet(:)
 !      real(r8), allocatable :: tl_wPhy(:)
 !      real(r8), allocatable :: tl_wLDet(:)
-      real(r8), allocatable :: tl_PARfrac(:)
+!      real(r8), allocatable :: tl_PARfrac(:)
 #endif
 #ifdef ADJOINT
+      real(r8) :: ad_K_PO4
+      real(r8) :: ad_PhyPN
+      real(r8) :: ad_ZooPN
+      real(r8) :: ad_LDeRRP
+      real(r8) :: ad_SDeRRP
+      real(r8) :: ad_H2SOR
+      real(r8) :: ad_K_DO 
+      real(r8) :: ad_K_Nitri
+      real(r8) :: ad_NitriR_t
+      real(r8) :: ad_g_max
+      real(r8) :: ad_t_opt
+      real(r8) :: ad_I_opt
+      real(r8) :: ad_beta1
+      real(r8) :: ad_beta2
+      real(r8) :: ad_DenitR
+      real(r8) :: ad_K_Denit
+      real(r8) :: ad_DenitR_t
+      real(r8) :: ad_PhyMR_t
+      real(r8) :: ad_ZooGR_t
+      real(r8) :: ad_RR_t
+      real(r8) :: ad_R_SODf
+      real(r8) :: ad_R_NH4f
+      real(r8) :: ad_R_PO4f
+      real(r8) :: ad_R_NH4f_max
+      real(r8) :: ad_R_PO4f_max
+      real(r8) :: ad_K_DO_npflux
+      real(r8) :: ad_t_SODf
+
+      real(r8) :: ad_AttSW              ! 1/m
+      real(r8) :: ad_AttChl             ! 1/(mg_Chl m2)
+      real(r8) :: ad_Chl2C_m            ! mg_Chl/mg_C
+      real(r8) :: ad_ChlMin             ! mg_Chl/m3
+      real(r8) :: ad_CoagR              ! 1/day
+      real(r8) :: ad_D_p5NH4            ! Watts/m2
+      real(r8) :: ad_I_thNH4            ! Watts/m2
+      real(r8) :: ad_K_NH4              ! m3/mmol_N
+      real(r8) :: ad_K_NO3              ! m3/mmol_N
+      real(r8) :: ad_K_Phy              ! (mmol_N/m3)^2
+      real(r8) :: ad_LDeRRN             ! 1/day
+      real(r8) :: ad_LDeRRC             ! 1/day
+      real(r8) :: ad_NitriR             ! 1/day
+      real(r8) :: ad_PARfrac            ! nondimensional
+      real(r8) :: ad_PhyCN              ! mol_C/mol_N
+      real(r8) :: ad_PhyIP              ! 1/mmol_N
+      real(r8) :: ad_PhyIS              ! 1/(Watts m-2 day)
+      real(r8) :: ad_PhyMin             ! mmol_N/m3
+      real(r8) :: ad_PhyMR              ! 1/day
+      real(r8) :: ad_SDeAR              ! 1/day
+      real(r8) :: ad_SDeBR              ! 1/day
+      real(r8) :: ad_SDeRRN             ! 1/day
+      real(r8) :: ad_SDeRRC             ! 1/day
+      real(r8) :: ad_Vp0                ! nondimensional
+      real(r8) :: ad_wLDet              ! m/day
+      real(r8) :: ad_wPhy               ! m/day
+      real(r8) :: ad_wSDet              ! m/day
+      real(r8) :: ad_ZooAE_N            ! nondimensional
+      real(r8) :: ad_ZooBM              ! 1/day
+      real(r8) :: ad_ZooCN              ! mol_C/mol_N
+      real(r8) :: ad_ZooER              ! 1/day
+      real(r8) :: ad_ZooGR              ! 1/day
+      real(r8) :: ad_ZooMin             ! mmol_N/m3
+      real(r8) :: ad_ZooMR              ! 1/day
+      real(r8) :: ad_pCO2air            ! ppmv
 !      real(r8), allocatable :: ad_wSDet(:)
 !      real(r8), allocatable :: ad_wPhy(:)
 !      real(r8), allocatable :: ad_wLDet(:)
-      real(r8), allocatable :: ad_PARfrac(:)
+!      real(r8), allocatable :: ad_PARfrac(:)
 #endif
 
 #ifdef ADJUST_PARAM
@@ -614,9 +740,9 @@
 !      IF (.not.allocated(tl_wSDet)) THEN
 !        allocate ( tl_wSDet(Ngrids) )
 !      END IF
-      IF (.not.allocated(tl_PARfrac)) THEN
-        allocate ( tl_PARfrac(Ngrids) )
-      END IF
+!      IF (.not.allocated(tl_PARfrac)) THEN
+!        allocate ( tl_PARfrac(Ngrids) )
+!      END IF
 #endif
 #ifdef ADJOINT
 !      IF (.not.allocated(ad_wLDet)) THEN
@@ -628,9 +754,9 @@
 !      IF (.not.allocated(ad_wSDet)) THEN
 !        allocate ( ad_wSDet(Ngrids) )
 !      END IF
-      IF (.not.allocated(ad_PARfrac)) THEN
-        allocate ( ad_PARfrac(Ngrids) )
-      END IF
+!      IF (.not.allocated(ad_PARfrac)) THEN
+!        allocate ( ad_PARfrac(Ngrids) )
+!      END IF
 #endif
 !
 !  Allocate biological tracer vector.
