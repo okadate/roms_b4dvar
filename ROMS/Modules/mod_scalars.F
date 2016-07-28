@@ -2292,7 +2292,7 @@
 !
       DO ng=1,Ngrids
         DO i=1,Mparam
-          Lparam(i,ng)=.FALSE.
+          Lparam(i,ng)=.TRUE.
           Ldef_p(i,ng)=.FALSE.
           pfactor(i,ng)=0.0_r8
           pmax(i,ng)=0.0_r8
