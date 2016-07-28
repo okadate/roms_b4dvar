@@ -664,6 +664,9 @@
           END DO
         END DO
       END DO
+#  ifdef CHECKER
+      if (Master) print*, 'state_dotprod s_t', s1_t(29,30,1,15), s2_t(29,30,1,15)
+#  endif
 
 # ifdef ADJUST_BOUNDARY
 !
@@ -767,7 +770,7 @@
         END IF
       END DO
 #  ifdef CHECKER
-      if (Master) print*, 'state_dotprod', s1_p(1), s2_p(1)
+      if (Master) print*, 'state_dotprod s_p', s1_p(1), s2_p(1)
 #  endif
 # endif
 
@@ -809,7 +812,7 @@
       END IF
 !$OMP END CRITICAL (DOT_PROD)
 #  ifdef CHECKER
-      if (Master) print*, 'state_dotprod', DotProd(0)
+      if (Master) print*, 'state_dotprod DotProd(0)', DotProd(0)
 #  endif
 
       RETURN

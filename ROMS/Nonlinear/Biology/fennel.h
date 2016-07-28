@@ -579,7 +579,8 @@
         write(stdout,101) 'NL 09:16', p(nstp,9:16)
         write(stdout,101) 'NL 17:24', p(nstp,17:24)
         write(stdout,101) 'NL 25:32', p(nstp,25:32)
-        write(stdout,101) 'NL 33:  ', p(nstp,33:)
+        write(stdout,101) 'NL 33:40', p(nstp,33:40)
+        write(stdout,101) 'NL 41:  ', p(nstp,41:)
         write(stdout,*) ('-',i=1,78)
 # endif
       end if

@@ -1031,7 +1031,8 @@
         write(stdout,101) 'ad 09:16', ad_p(nstp,9:16)
         write(stdout,101) 'ad 17:24', ad_p(nstp,17:24)
         write(stdout,101) 'ad 25:32', ad_p(nstp,25:32)
-        write(stdout,101) 'ad 33:  ', ad_p(nstp,33:)
+        write(stdout,101) 'ad 33:40', ad_p(nstp,33:40)
+        write(stdout,101) 'ad 41:  ', ad_p(nstp,41:)
         write(stdout,*) ('-',i=1,78)
 # endif
       end if
