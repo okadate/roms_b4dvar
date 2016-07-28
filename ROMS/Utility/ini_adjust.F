@@ -308,10 +308,13 @@
       DO itrc=1,Nparam(ng)
         IF (Lparam(itrc,ng)) THEN
           p(Lout,itrc)=p(Lout,itrc)+tl_p(Linp,itrc)
-#    ifndef EXP_PARAM
-          p(Lout,itrc)=MAX(p(Lout,itrc),pmin(itrc,ng))
-          p(Lout,itrc)=MIN(p(Lout,itrc),pmax(itrc,ng))
+#    ifdef POSITIVE_PARAM
+          p(Lout,itrc)=MAX(p(Lout,itrc),0.0_r8)
 #    endif
+!#    ifndef EXP_PARAM
+!          p(Lout,itrc)=MAX(p(Lout,itrc),pmin(itrc,ng))
+!          p(Lout,itrc)=MIN(p(Lout,itrc),pmax(itrc,ng))
+!#    endif
         END IF
       END DO
 #   endif
