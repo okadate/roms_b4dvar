@@ -193,6 +193,18 @@
       IF (.not.Lrestart(iR_PO4f)) THEN
         OCEAN(ng)%p(Tindex,iR_PO4f)=R_PO4f(ng)
       END IF
+      IF (.not.Lrestart(iR_NH4f_m)) THEN
+        OCEAN(ng)%p(Tindex,iR_NH4f_m)=R_NH4f_max(ng)
+      END IF
+      IF (.not.Lrestart(iR_PO4f_m)) THEN
+        OCEAN(ng)%p(Tindex,iR_PO4f_m)=R_PO4f_max(ng)
+      END IF
+      IF (.not.Lrestart(iK_DO_npf)) THEN
+        OCEAN(ng)%p(Tindex,iK_DO_npf)=K_DO_npflux(ng)
+      END IF
+      IF (.not.Lrestart(it_SODf)) THEN
+        OCEAN(ng)%p(Tindex,it_SODf)=t_SODf(ng)
+      END IF
 # endif
       DO it=1,Nparam(ng)
         IF (Lparam(it,ng)) THEN

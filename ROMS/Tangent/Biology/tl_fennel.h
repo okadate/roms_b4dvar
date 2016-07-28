@@ -542,6 +542,10 @@
       tl_R_NH4f=tl_p(nstp,iR_NH4f)
 
       tl_R_PO4f=tl_p(nstp,iR_PO4f)
+      tl_R_NH4f_max=tl_p(nstp,iR_NH4f_m)
+      tl_R_PO4f_max=tl_p(nstp,iR_PO4f_m)
+      tl_K_DO_npflux=tl_p(nstp,iK_DO_npf)
+      tl_t_SODf=tl_p(nstp,it_SODf)
 # endif
 #endif
 #ifdef CHECKER

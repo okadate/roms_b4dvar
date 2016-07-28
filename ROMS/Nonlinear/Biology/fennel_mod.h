@@ -428,7 +428,7 @@
       integer :: iR_NH4f_m = 39
       integer :: iR_PO4f_m = 40
       integer :: iK_DO_npf = 41
-      integer :: it_SODf = 42
+      integer :: it_SODf  = 42
 #endif
 
       CONTAINS

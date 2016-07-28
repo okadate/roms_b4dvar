@@ -940,6 +940,10 @@
       ad_my_p(iR_NH4f)=ad_my_p(iR_NH4f)+ad_R_NH4f
 
       ad_my_p(iR_PO4f)=ad_my_p(iR_PO4f)+ad_R_PO4f
+      ad_my_p(iR_NH4f_m)=ad_my_p(iR_NH4f_m)+ad_R_NH4f_max
+      ad_my_p(iR_PO4f_m)=ad_my_p(iR_PO4f_m)+ad_R_PO4f_max
+      ad_my_p(iK_DO_npf)=ad_my_p(iK_DO_npf)+ad_K_DO_npflux
+      ad_my_p(it_SODf)=ad_my_p(it_SODf)+ad_t_SODf
 # endif
       ad_AttSW=0.0_r8
       ad_AttChl=0.0_r8
@@ -980,6 +984,10 @@
       ad_R_SODf=0.0_r8
       ad_R_NH4f=0.0_r8
       ad_R_PO4f=0.0_r8
+      ad_R_NH4f_max=0.0_r8
+      ad_R_PO4f_max=0.0_r8
+      ad_K_DO_npflux=0.0_r8
+      ad_t_SODf=0.0_r8
 !
 !-----------------------------------------------------------------------
 !  Compute global adjoint parameters.
