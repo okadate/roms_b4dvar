@@ -1225,7 +1225,12 @@
                 PRINT *, '  cg_Ritz = ', cg_Ritz(i,outLoop)
               END IF
 # ifdef POSITIVE_CG_RITZ
-              cg_Ritz(i,outLoop)=0.0_r8
+              IF (i.ne.1) THEN
+                cg_Ritz(i,outLoop)=cg_Ritz(i-1,outLoop)
+              ELSE
+                exit_flag=8
+                RETURN
+              END IF
 # else
               exit_flag=8
               RETURN
