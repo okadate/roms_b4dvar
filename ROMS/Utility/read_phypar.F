@@ -2987,7 +2987,7 @@
         END DO
 # endif
 #endif
-#if defined IS4DVAR
+#if defined IS4DVAR && !defined CHECKER
 !
 !  If strong constraint, write only final adjoint solution since only
 !  we are estimating initial conditions.
