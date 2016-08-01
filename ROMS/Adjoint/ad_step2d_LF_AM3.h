@@ -4624,7 +4624,7 @@
               ad_zeta(i,j,kstp)=ad_zeta(i,j,kstp)+ad_zeta_new(i,j)
               ad_cff=ad_cff+adfac
               ad_rzeta(i,j,kstp)=ad_rzeta(i,j,kstp)+adfac*cff2
-              ad_rzeta(i,j,ptsk)=-adfac*cff3
+              ad_rzeta(i,j,ptsk)=ad_rzeta(i,j,ptsk)-adfac*cff3
               ad_zeta_new(i,j)=0.0_r8
 !>            tl_cff=cff1*((tl_DUon(i,j)-tl_DUon(i+1,j))+               &
 !>   &                     (tl_DVom(i,j)-tl_DVom(i,j+1)))
