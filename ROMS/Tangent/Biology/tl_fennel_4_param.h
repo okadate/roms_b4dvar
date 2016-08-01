@@ -380,7 +380,6 @@
             cff=fac1*Hz_inv(i,1)
 # ifdef TDEPENDANCE
             fac2=t_SODf(ng)**(Bio(i,1,itemp)-20.0_r8)
-!>          tl_fac2=fac2*tl_Bio(i,1,itemp)*LOG(t_SODf(ng))
             tlfac=tl_Bio(i,1,itemp)*LOG(t_SODf(ng))+                    &
      &            (Bio(i,1,itemp)-20.0_r8)*tl_t_SODf/t_SODf(ng)
             tl_fac2=fac2*tlfac
@@ -390,27 +389,21 @@
             tl_fac3=tl_K_DO_npflux/mol2g_O2*1000.0_r8
 
             fac4=fac3/(Bio(i,1,iOxyg)+fac3)
-!>          tl_fac4=(1.0_r8-fac4*tl_Bio(i,1,iOxyg))/                    &
-!>   &              (Bio(i,1,iOxyg)+fac3)
             tl_fac4=(tl_fac3-fac4*(tl_Bio(i,1,iOxyg)+tl_fac3))/         &
      &              (Bio(i,1,iOxyg)+fac3)
 # endif
 !>          Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac4
-!>          tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+cff*cff2*tl_fac4
             tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+                        &
      &                        cff*(tl_cff2*fac4+cff2*tl_fac4)
 # ifdef PHOSPHORUS
 !>          Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3*fac4
-!>          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+cff*cff3*tl_fac4
             tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+                        &
      &                        cff*(tl_cff3*fac4+cff3*tl_fac4)
 # endif
 # ifdef OXYGEN
-!>          cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
+!!          cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
             cff4=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
             tlfac=SIGN(0.5_r8,cff*cff1*fac2-Bio(i,1,iOxyg))
-!>          tl_cff4=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
-!>   &              (0.5_r8-tlfac)*cff*cff1*tl_fac2
             tl_cff4=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
      &              (0.5_r8-tlfac)*cff*(tl_cff1*fac2+cff1*tl_fac2)
 

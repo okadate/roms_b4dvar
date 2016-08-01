@@ -27,14 +27,14 @@
 !  other attenuation contributions like suspended sediment or CDOM
 !  modify AttFac.
 !
-                fac1=AttSW(ng)+AttChl(ng)*Bio1(i,k,iChlo)+AttFac
-                tl_fac1=tl_AttSW+tl_AttChl*Bio1(i,k,iChlo)+             &
-     &                           AttChl(ng)*tl_Bio(i,k,iChlo)
-
 !!              Att=(AttSW(ng)+                                         &
 !!   &               AttChl(ng)*Bio1(i,k,iChlo)+                        &
 !!   &               AttFac)*                                           &
 !!   &               (z_w(i,j,k)-z_w(i,j,k-1))
+                fac1=AttSW(ng)+AttChl(ng)*Bio1(i,k,iChlo)+AttFac
+                tl_fac1=tl_AttSW+tl_AttChl*Bio1(i,k,iChlo)+             &
+     &                           AttChl(ng)*tl_Bio(i,k,iChlo)
+
                 Att=fac1*(z_w(i,j,k)-z_w(i,j,k-1))
                 tl_Att=tl_fac1*(z_w(i,j,k)-z_w(i,j,k-1))+               &
      &                 fac1*(tl_z_w(i,j,k)-tl_z_w(i,j,k-1))
@@ -45,15 +45,17 @@
                 Itop=PAR
                 tl_Itop=tl_PAR
 
+!!              PAR=Itop*(1.0_r8-ExpAtt)/Att    ! average at cell center
                 fac2=Itop*(1.0_r8-ExpAtt)
                 tl_fac2=tl_Itop*(1.0_r8-ExpAtt)-Itop*tl_ExpAtt
 
-!!              PAR=Itop*(1.0_r8-ExpAtt)/Att    ! average at cell center
                 PAR=fac2/Att
                 tl_PAR=(tl_fac2-PAR*tl_Att)/Att
 !
 !  Compute Chlorophyll-a phytoplankton ratio, [mg Chla / (mg C)].
 !
+!!              Chl2C=MIN(Bio(i,k,iChlo)/(Bio(i,k,iPhyt)*cff+eps),      &
+!!   &                    Chl2C_m(ng))
                 cff=PhyCN(ng)*12.0_r8
                 tl_cff=tl_PhyCN*12.0_r8
 
@@ -63,8 +65,6 @@
                 cff1=Bio1(i,k,iChlo)/(fac1+eps)
                 tl_cff1=(tl_Bio(i,k,iChlo)-cff1*tl_fac1)/(fac1+eps)
 
-!!              Chl2C=MIN(Bio(i,k,iChlo)/(Bio(i,k,iPhyt)*cff+eps),      &
-!!   &                    Chl2C_m(ng))
                 Chl2C=MIN(cff1,Chl2C_m(ng))
                 tlfac=SIGN(0.5_r8,Chl2C_m(ng)-cff1)
                 tl_Chl2C=(0.5_r8+tlfac)*tl_cff1+                        &
@@ -90,10 +90,10 @@
                 fac1=PAR*PhyIS(ng)
                 tl_fac1=tl_PAR*PhyIS(ng)+PAR*tl_PhyIS
 
+!!              Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
                 fac=SQRT(Vp*Vp+fac1*fac1)
                 tl_fac=(Vp*tl_Vp+fac1*tl_fac1)/fac
 
-!!              Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
                 Epp=Vp/fac
                 tl_Epp=(tl_Vp-Epp*tl_fac)/fac
 
@@ -122,10 +122,10 @@
                 L_NH4=cff1/(1.0_r8+cff1)
                 tl_L_NH4=tl_cff1*(1.0_r8-L_NH4)/(1.0_r8+cff1)
 
+!!              L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 fac2=cff2/(1.0_r8+cff2)
                 tl_fac2=tl_cff2*(1.0_r8-fac2)/(1.0_r8+cff2)
 
-!!              L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 L_NO3=fac2*inhNH4
                 tl_L_NO3=tl_fac2*inhNH4+fac2*tl_inhNH4
 
@@ -150,31 +150,31 @@
                 tl_fac1=dtdays*(tl_t_PPmax*Bio1(i,k,iPhyt)+             &
      &                          t_PPmax*tl_Bio(i,k,iPhyt))
 
+!!              cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)
                 fac4=fac1*K_NO3(ng)*inhNH4
                 tl_fac4=tl_fac1*K_NO3(ng)*inhNH4+                       &
      &                  fac1*tl_K_NO3*inhNH4+                           &
      &                  fac1*K_NO3(ng)*tl_inhNH4
 
-!!              cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)
                 cff4=fac4/(1.0_r8+cff2)
                 tl_cff4=(tl_fac4-cff4*tl_cff2)/(1.0_r8+cff2)
 
+!!              cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)
                 fac5=fac1*K_NH4(ng)
                 tl_fac5=tl_fac1*K_NH4(ng)+fac1*tl_K_NH4
 
-!!              cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)
                 cff5=fac5/(1.0_r8+cff1)
                 tl_cff5=(tl_fac5-cff5*tl_cff1)/(1.0_r8+cff1)
 
 !>              Bio1(i,k,iNO3_)=Bio(i,k,iNO3_)
 !>              Bio1(i,k,iNH4_)=Bio(i,k,iNH4_)
 #ifdef PHOSPHORUS
+!!              cff6=fac1*PhyPN(ng)*K_PO4(ng)/(1.0_r8+cff3)
                 fac6=fac1*PhyPN(ng)*K_PO4(ng)
                 tl_fac6=tl_fac1*PhyPN(ng)*K_PO4(ng)+                    &
      &                  fac1*tl_PhyPN*K_PO4(ng)+                        &
      &                  fac1*PhyPN(ng)*tl_K_PO4
 
-!!              cff6=fac1*PhyPN(ng)*K_PO4(ng)/(1.0_r8+cff3)
                 cff6=fac6/(1.0_r8+cff3)
                 tl_cff6=(tl_fac6-cff6*tl_cff3)/(1.0_r8+cff3)
 
@@ -350,11 +350,11 @@
                 fac1=fac
                 tl_fac1=tl_fac
 #endif
+!!              cff1=(PAR-I_thNH4(ng))/                                 &
+!!   &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
                 fac4=D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng)
                 tl_fac4=tl_D_p5NH4+tl_PAR-2.0_r8*tl_I_thNH4
 
-!!              cff1=(PAR-I_thNH4(ng))/                                 &
-!!   &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
                 cff1=(PAR-I_thNH4(ng))/MAX(fac4,eps)
                 tl_cff1=(tl_PAR-tl_I_thNH4-cff1*tl_fac4)/MAX(fac4,eps)
 

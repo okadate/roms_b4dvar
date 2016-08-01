@@ -222,7 +222,8 @@
 # ifdef EXP_PARAM
           OCEAN(ng)%e_p(:,it)=pfactor(it,ng)
 # else
-          OCEAN(ng)%e_p(:,it)=(pmax(it,ng)-pmin(it,ng))*pfactor(it,ng)
+!         OCEAN(ng)%e_p(:,it)=(pmax(it,ng)-pmin(it,ng))*pfactor(it,ng)
+          OCEAN(ng)%e_p(:,it)=OCEAN(ng)%p(Tindex,it)*pfactor(it,ng)
 # endif
         END IF
       END DO

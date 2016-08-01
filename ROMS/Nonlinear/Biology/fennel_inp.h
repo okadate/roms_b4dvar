@@ -132,7 +132,12 @@
               Npts=load_r(Nval, Rval, Ngrids, K_DO_npflux)
             CASE ('t_SODf')
               Npts=load_r(Nval, Rval, Ngrids, t_SODf)
-
+#ifdef ADJUST_PARAM
+            CASE ('Lparam')
+              Npts=load_l(Nval, Cval, Nparam*Ngrids, Lparam)
+            CASE ('pfactor')
+              Npts=load_r(Nval, Rval, Nparam*Ngrids, pfactor)
+#endif
             CASE ('AttSW')
               Npts=load_r(Nval, Rval, Ngrids, AttSW)
             CASE ('AttChl')

@@ -51,11 +51,12 @@
 !>            tlfac=(0.5_r8+SIGN(0.5_r8,Bio(i,k,iOxyg)))
 !>            tl_cff1=(tlfac*tl_Bio(i,k,iOxyg)-cff1*tl_K_Denit)/        &
 !>   &                K_Denit(ng)
-              adfac=(0.5_r8+SIGN(0.5_r8,Bio(i,k,iOxyg)))/K_Denit(ng)
-              ad_Bio(i,k,iOxyg)=ad_Bio(i,k,iOxyg)+adfac*ad_cff1
-              ad_K_Denit=ad_K_Denit-cff1*ad_cff1
+              adfac=(0.5_r8+SIGN(0.5_r8,Bio(i,k,iOxyg)))
+              ad_Bio(i,k,iOxyg)=ad_Bio(i,k,iOxyg)+                      &
+     &                          adfac*ad_cff1/K_Denit(ng)
+              ad_K_Denit=ad_K_Denit-cff1*ad_cff1/K_Denit(ng)
               ad_cff1=0.0_r8
-              
+
 !>            tl_fac1=dtdays*tl_DenitR
               ad_DenitR=ad_DenitR+dtdays*ad_fac1
               ad_fac1=0.0_r8
@@ -95,14 +96,16 @@
 !  other attenuation contributions like suspended sediment or CDOM
 !  modify AttFac.
 !
-                  Att=(AttSW(ng)+                                       &
-     &                 AttChl(ng)*Bio1(i,kk,iChlo)+                     &
-     &                 AttFac)*                                         &
-     &                 (z_w(i,j,kk)-z_w(i,j,kk-1))
+!!                Att=(AttSW(ng)+                                       &
+!!   &                 AttChl(ng)*Bio1(i,k,iChlo)+                      &
+!!   &                 AttFac)*                                         &
+!!   &                 (z_w(i,j,k)-z_w(i,j,k-1))
+                  fac1=AttSW(ng)+AttChl(ng)*Bio1(i,kk,iChlo)+AttFac
+                  Att=fac1*(z_w(i,j,kk)-z_w(i,j,kk-1))
                   ExpAtt=EXP(-Att)
                   Itop=PAR
-                  PAR=Itop*(1.0_r8-ExpAtt)/Att  ! average at cell center
-                  PAR1=PAR
+                  fac2=Itop*(1.0_r8-ExpAtt)
+                  PAR1=fac2/Att
 !
 !  Light attenuation at the bottom of the grid cell. It is the starting
 !  PAR value for the next (deeper) vertical grid cell.
@@ -239,7 +242,8 @@
 !  Compute Chlorophyll-a phytoplankton ratio, [mg Chla / (mg C)].
 !
                 cff=PhyCN(ng)*12.0_r8
-                cff1=Bio1(i,k,iChlo)/(Bio1(i,k,iPhyt)*cff+eps)
+                fac1=Bio1(i,k,iPhyt)*cff
+                cff1=Bio1(i,k,iChlo)/(fac1+eps)
                 Chl2C=MIN(cff1,Chl2C_m(ng))
 !
 !  Temperature-limited and light-limited growth rate (Eppley, R.W.,
@@ -264,7 +268,8 @@
                 cff2=Bio1(i,k,iNO3_)*K_NO3(ng)
                 inhNH4=1.0_r8/(1.0_r8+cff1)
                 L_NH4=cff1/(1.0_r8+cff1)
-                L_NO3=cff2*inhNH4/(1.0_r8+cff2)
+                fac2=cff2/(1.0_r8+cff2)
+                L_NO3=fac2*inhNH4
                 LTOT=L_NO3+L_NH4
 #ifdef PHOSPHORUS
                 cff3=Bio1(i,k,iPO4_)*K_PO4(ng)
@@ -302,10 +307,10 @@
 #endif
 #ifdef PHOSPHORUS
                 fac=dtdays*t_PPmax*t_PPmax*LMIN*LMIN
-                fac1=fac*Chl2C_m(ng)
 #else
-                fac1=dtdays*t_PPmax*t_PPmax*LTOT*LTOT*Chl2C_m(ng)
+                fac=dtdays*t_PPmax*t_PPmax*LTOT*LTOT
 #endif
+                fac1=fac*Chl2C_m(ng)
                 fac2=PhyIS(ng)*MAX(Chl2C,eps)*PAR1
                 fac3=fac1/(fac2+eps)
 !               ========================================================
@@ -351,15 +356,15 @@
 !>              tl_fac=dtdays*2.0_r8*(t_PPmax*tl_t_PPmax*LMIN*LMIN+     &
 !>   &                                t_PPmax*t_PPmax*LMIN*tl_LMIN)
                 adfac=dtdays*2.0_r8*t_PPmax*LMIN*ad_fac
-                ad_LMIN=ad_LMIN+t_PPmax*ad_fac
-                ad_t_PPmax=ad_t_PPmax+LMIN*ad_fac
+                ad_LMIN=ad_LMIN+t_PPmax*adfac
+                ad_t_PPmax=ad_t_PPmax+LMIN*adfac
                 ad_fac=0.0_r8
 #else
 !>              tl_fac=dtdays*2.0_r8*(t_PPmax*tl_t_PPmax*LTOT*LTOT+     &
 !>   &                                t_PPmax*t_PPmax*LTOT*tl_LTOT)
                 adfac=dtdays*2.0_r8*t_PPmax*LTOT*ad_fac
-                ad_LTOT=ad_LTOT+t_PPmax*ad_fac
-                ad_t_PPmax=ad_t_PPmax+LTOT*ad_fac
+                ad_LTOT=ad_LTOT+t_PPmax*adfac
+                ad_t_PPmax=ad_t_PPmax+LTOT*adfac
                 ad_fac=0.0_r8
 #endif
 !
@@ -399,8 +404,6 @@
 !>                tl_Bio(i,k,iNO3_)=tl_Bio(i,k,iNO3_)-tl_N_Flux_NewProd
                   ad_N_Flux_NewProd=ad_N_Flux_NewProd-ad_Bio(i,k,iNO3_)
 
-!!                tl_N_Flux_RegProd=(tl_P_Flux*fac3+P_Flux*tl_fac3)/    &
-!!   &                              PhyPN(ng)
 !>                tl_N_Flux_RegProd=tl_fac*fac3+fac*tl_fac3
                   ad_fac3=ad_fac3+fac*ad_N_Flux_RegProd
                   ad_fac=ad_fac+fac3*ad_N_Flux_RegProd
@@ -412,8 +415,6 @@
                   ad_L_NH4=ad_L_NH4+adfac
                   ad_fac3=0.0_r8
 
-!!                tl_N_Flux_NewProd=(tl_P_Flux*fac2+P_Flux*tl_fac2)/    &
-!!   &                              PhyPN(ng)
 !>                tl_N_Flux_NewProd=tl_fac*fac2+fac*tl_fac2
                   ad_fac2=ad_fac2+fac*ad_N_Flux_NewProd
                   ad_fac=ad_fac+fac2*ad_N_Flux_NewProd
@@ -449,8 +450,6 @@
 !>                tl_Bio(i,k,iPO4_)=tl_Bio(i,k,iPO4_)-tl_P_Flux
                   ad_P_Flux=ad_P_Flux-ad_Bio(i,k,iPO4_)
 
-!!                tl_P_Flux=(tl_N_Flux_NewProd+tl_N_Flux_RegProd)*      &
-!!   &                      PhyPN(ng)
 !>                tl_P_Flux=(tl_N_Flux_NewProd+tl_N_Flux_RegProd)*      &
 !>   &                      PhyPN(ng)+                                  &
 !>   &                      (N_Flux_NewProd+N_Flux_RegProd)*tl_PhyPN
@@ -488,8 +487,6 @@
                   ad_Bio(i,k,iNO3_)=adfac
                 END IF
 
-!!              tl_cff6=(tl_fac1*PhyPN(ng)*K_PO4(ng)-cff6*tl_cff3)/     &
-!!   &                  (1.0_r8+cff3)
 !>              tl_cff6=(tl_fac6-cff6*tl_cff3)/(1.0_r8+cff3)
                 adfac=ad_cff6/(1.0_r8+cff3)
                 ad_cff3=ad_cff3-cff6*adfac
@@ -545,8 +542,6 @@
                 ad_fac1=ad_fac1+K_NH4(ng)*ad_fac5
                 ad_fac5=0.0_r8
 
-!!              tl_cff4=(K_NO3(ng)*(tl_fac1*inhNH4+fac1*tl_inhNH4)-     &
-!!   &                   cff4*tl_cff2)/(1.0_r8+cff2)
 !>              tl_cff4=(tl_fac4-cff4*tl_cff2)/(1.0_r8+cff2)
                 adfac=ad_cff4/(1.0_r8+cff2)
                 ad_cff2=ad_cff2-cff4*adfac
@@ -595,7 +590,6 @@
                 ad_cff3=ad_cff3+ad_L_PO4*(1.0_r8-L_PO4)/(1.0_r8+cff3)
                 ad_L_PO4=0.0_r8
 
-!!              tl_cff3=tl_Bio(i,k,iPO4_)*K_PO4(ng)
 !>              tl_cff3=tl_Bio(i,k,iPO4_)*K_PO4(ng)+                    &
 !>   &                  Bio1(i,k,iPO4_)*tl_K_PO4
                 ad_Bio(i,k,iPO4_)=ad_Bio(i,k,iPO4_)+ad_cff3*K_PO4(ng)
@@ -624,14 +618,12 @@
                 ad_cff1=ad_cff1-inhNH4*inhNH4*ad_inhNH4
                 ad_inhNH4=0.0_r8
 
-!!              tl_cff2=tl_Bio(i,k,iNO3_)*K_NO3(ng)
 !>              tl_cff2=tl_Bio(i,k,iNO3_)*K_NO3(ng)+                    &
 !>   &                  Bio1(i,k,iNO3_)*tl_K_NO3
                 ad_Bio(i,k,iNO3_)=ad_Bio(i,k,iNO3_)+ad_cff2*K_NO3(ng)
                 ad_K_NO3=ad_K_NO3+Bio1(i,k,iNO3_)*ad_cff2
                 ad_cff2=0.0_r8
 
-!!              tl_cff1=tl_Bio(i,k,iNH4_)*K_NH4(ng)
 !>              tl_cff1=tl_Bio(i,k,iNH4_)*K_NH4(ng)+                    &
 !>   &                  Bio1(i,k,iNH4_)*tl_K_NH4
                 ad_Bio(i,k,iNH4_)=ad_Bio(i,k,iNH4_)+ad_cff1*K_NH4(ng)
@@ -723,31 +715,30 @@
 !  Compute average light attenuation for each grid cell. To include
 !  other attenuation contributions like suspended sediment or CDOM
 !  modify AttFac.
-!
 !               ========================================================
                 fac1=AttSW(ng)+AttChl(ng)*Bio1(i,k,iChlo)+AttFac
                 fac2=Itop*(1.0_r8-ExpAtt)
 !               ========================================================
-
+!
 !>              tl_PAR=(tl_fac2-PAR*tl_Att)/Att
                 adfac=ad_PAR/Att
                 ad_Att=ad_Att-PAR1*adfac
                 ad_fac2=ad_fac2+adfac
                 ad_PAR=0.0_r8
-
+!
 !>              tl_fac2=tl_Itop*(1.0_r8-ExpAtt)-Itop*tl_ExpAtt
                 ad_ExpAtt=ad_ExpAtt-Itop*ad_fac2
                 ad_Itop=ad_Itop+(1.0_r8-ExpAtt)*ad_fac2
                 ad_fac2=0.0_r8
-
+!
 !>              tl_Itop=tl_PAR
                 ad_PAR=ad_PAR+ad_Itop
                 ad_Itop=0.0_r8
-
+!
 !>              tl_ExpAtt=-ExpAtt*tl_Att
                 ad_Att=ad_Att-ExpAtt*ad_ExpAtt
                 ad_ExpAtt=0.0_r8
-
+!
 !>              tl_Att=tl_fac1*(z_w(i,j,k)-z_w(i,j,k-1))+               &
 !>   &                 fac1*(tl_z_w(i,j,k)-tl_z_w(i,j,k-1))
                 adfac1=fac1*ad_Att
@@ -755,7 +746,7 @@
                 ad_z_w(i,j,k  )=ad_z_w(i,j,k  )+adfac1
                 ad_fac1=ad_fac1+(z_w(i,j,k)-z_w(i,j,k-1))*ad_Att
                 ad_Att=0.0_r8
-
+!
 !>              tl_fac1=tl_AttSW+tl_AttChl*Bio1(i,k,iChlo)+             &
 !>   &                           AttChl(ng)*tl_Bio(i,k,iChlo)
                 ad_Bio(i,k,iChlo)=ad_Bio(i,k,iChlo)+AttChl(ng)*ad_fac1

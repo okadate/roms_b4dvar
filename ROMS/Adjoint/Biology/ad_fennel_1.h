@@ -291,8 +291,9 @@
                 ad_Bio(i,k,iChlo)=ad_Bio(i,k,iChlo)*(1.0_r8+fac1)
 
 !>              tl_fac3=(tl_fac1-tl_fac2*fac3)/(fac2+eps)
-                ad_fac2=ad_fac2-ad_fac3*fac3/(fac2+eps)
-                ad_fac1=ad_fac1+ad_fac3/(fac2+eps)
+                adfac=ad_fac3/(fac2+eps)
+                ad_fac2=ad_fac2-fac3*adfac
+                ad_fac1=ad_fac1+adfac
                 ad_fac3=0.0_r8
 
 !>              tl_fac2=PhyIS(ng)*(tl_Chl2C*PAR+MAX(Chl2C,eps)*tl_PAR)
@@ -301,7 +302,6 @@
                 ad_Chl2C=ad_Chl2C+PAR1*adfac
                 ad_fac2=0.0_r8
 #if defined PHOSPHORUS
-
 !>              tl_fac1=dtdays*2.0_r8*(t_PPmax*tl_t_PPmax*LMIN*LMIN+    &
 !>   &                                 t_PPmax*t_PPmax*LMIN*tl_LMIN)*   &
 !>   &                                Chl2C_m(ng)
