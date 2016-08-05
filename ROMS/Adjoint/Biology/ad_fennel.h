@@ -331,6 +331,7 @@
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio1
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio2
+      real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio3
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio_old
 
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: ad_Bio
@@ -404,8 +405,6 @@
 !  Set time-stepping according to the number of iterations.
 !
       dtdays=dt(ng)*sec2day/REAL(BioIter(ng),r8)
-
-#ifdef ADJUST_PARAM
 !
 !  Initialize adjoint private parameters.
 !
@@ -452,7 +451,8 @@
       ad_R_PO4f_max=0.0_r8
       ad_K_DO_npflux=0.0_r8
       ad_t_SODf=0.0_r8
-!
+
+#ifdef ADJUST_PARAM
       DO it=1,Nparam(ng)
         ad_my_p(it)=0.0_r8
         buffer(it)=0.0_r8
@@ -609,6 +609,7 @@
               Bio(i,k,ibio)=0.0_r8
               Bio1(i,k,ibio)=0.0_r8
               Bio2(i,k,ibio)=0.0_r8
+              Bio3(i,k,ibio)=0.0_r8
               Bio_old(i,k,ibio)=0.0_r8
               ad_Bio(i,k,ibio)=0.0_r8
               ad_Bio_old(i,k,ibio)=0.0_r8
@@ -630,7 +631,7 @@
           END DO
         END DO
 !
-#include <ad_fennel_bs0.h>
+#include <fennel_bs0.h>
 !
 !-----------------------------------------------------------------------
 !  Update global tracer variables: Add increment due to BGC processes
@@ -656,7 +657,9 @@
               
 !>            tl_t(i,j,k,nnew,ibio)=tl_t(i,j,k,nnew,ibio)+              &
 !>   &                              tl_cff*Hz(i,j,k)+cff*tl_Hz(i,j,k)
+#ifndef UV_FIXED_TL
               ad_Hz(i,j,k)=ad_Hz(i,j,k)+cff*ad_t(i,j,k,nnew,ibio)
+#endif
               ad_cff=ad_cff+Hz(i,j,k)*ad_t(i,j,k,nnew,ibio)
 
 !>            tl_cff=tl_Bio(i,k,ibio)-tl_Bio_old(i,k,ibio)
@@ -674,84 +677,17 @@
 !
         ITER_LOOP1: DO Iter=BioIter(ng),1,-1
 !
-#if defined BIO_SED_CONSTANT
-!-----------------------------------------------------------------------
-!  Elution and oxygen consumption from/by sediment. (Okada, 2014/02/13)
-!-----------------------------------------------------------------------
-#endif
-!-----------------------------------------------------------------------
-!  Vertical sinking terms.
-!-----------------------------------------------------------------------
-#ifdef BIO_SEDIMENT
-!  Particulate flux reaching the seafloor is remineralized and returned
-!  to the dissolved nitrate pool. Without this conversion, particulate
-!  material falls out of the system. This is a temporary fix to restore
-!  total nitrogen conservation. It will be replaced later by a
-!  parameterization that includes the time delay of remineralization
-!  and dissolved oxygen.
-#endif
-!
-#ifdef ADJUST_PARAM
+!#ifdef ADJUST_PARAM
 # include <ad_fennel_4_param.h>
-#else
-# include <ad_fennel_4.h>
-#endif
-!
-#ifdef OXYGEN
-!-----------------------------------------------------------------------
-!  Surface O2 gas exchange.
-!-----------------------------------------------------------------------
-#endif
-#if defined H2S && defined OXYGEN
-!-----------------------------------------------------------------------
-!  H2S Oxidation. okada
-!-----------------------------------------------------------------------
-#endif
-!-----------------------------------------------------------------------
-!  Detritus recycling to NH4, remineralization.
-!-----------------------------------------------------------------------
-!-----------------------------------------------------------------------
-!  Coagulation of phytoplankton and small detritus to large detritus.
-!-----------------------------------------------------------------------
-!-----------------------------------------------------------------------
-!  Zooplankton basal metabolism to NH4  (rate: ZooBM), zooplankton
-!  mortality to small detritus (rate: ZooMR), zooplankton ingestion
-!  related excretion (rate: ZooER).
-!-----------------------------------------------------------------------
-!
-#ifdef ADJUST_PARAM
 # include <ad_fennel_3_param.h>
-#else
-# include <ad_fennel_3.h>
-#endif
-!
-!-----------------------------------------------------------------------
-!  Phytoplankton grazing by zooplankton (rate: ZooGR), phytoplankton
-!  assimilated to zooplankton (fraction: ZooAE_N) and egested to small
-!  detritus, and phytoplankton mortality (rate: PhyMR) to small
-!  detritus. [Landry 1993 L&O 38:468-472]
-!-----------------------------------------------------------------------
-!
-#ifdef ADJUST_PARAM
 # include <ad_fennel_2_param.h>
-#else
-# include <ad_fennel_2.h>
-#endif
-!
-#if defined OXYGEN && defined DENITRIFICATION
-!-----------------------------------------------------------------------
-!  Denitrification in anoxic water                      Okada 2014/02/13
-!-----------------------------------------------------------------------
-#endif
-!-----------------------------------------------------------------------
-!  Light-limited computations.
-!-----------------------------------------------------------------------
-!
-#ifdef ADJUST_PARAM
 # include <ad_fennel_1_param.h>
-#else
-# include <ad_fennel_1.h>
-#endif
+!#else
+!# include <ad_fennel_4.h>
+!# include <ad_fennel_3.h>
+!# include <ad_fennel_2.h>
+!# include <ad_fennel_1.h>
+!#endif
 !
         END DO ITER_LOOP1
 !
@@ -772,15 +708,19 @@
 !>          tlfac=0.5_r8+SIGN(0.5_r8,t(i,j,k,nstp,isalt))
 !>          tl_Bio(i,k,isalt)=tlfac*tl_t(i,j,k,nstp,isalt)
             adfac=0.5_r8+SIGN(0.5_r8,t(i,j,k,nstp,isalt))
+#ifndef UV_FIXED_TL
             ad_t(i,j,k,nstp,isalt)=ad_t(i,j,k,nstp,isalt)+              &
      &                             adfac*ad_Bio(i,k,isalt)
+#endif
             ad_Bio(i,k,isalt)=0.0_r8
 
 !>          tlfac=0.5_r8+SIGN(0.5_r8,35.0_r8-t(i,j,k,nstp,itemp))
 !>          tl_Bio(i,k,itemp)=tlfac*tl_t(i,j,k,nstp,itemp)
             adfac=0.5_r8+SIGN(0.5_r8,35.0_r8-t(i,j,k,nstp,itemp))
+#ifndef UV_FIXED_TL
             ad_t(i,j,k,nstp,itemp)=ad_t(i,j,k,nstp,itemp)+              &
      &                             adfac*ad_Bio(i,k,itemp)
+#endif
             ad_Bio(i,k,itemp)=0.0_r8
           END DO
         END DO
@@ -821,9 +761,11 @@
 !>   &                      (tl_Hz(i,j,k-1)+tl_Hz(i,j,k)+               &
 !>   &                       tl_Hz(i,j,k+1))
             adfac=Hz_inv3(i,k)*Hz_inv3(i,k)*ad_Hz_inv3(i,k)
+#ifndef UV_FIXED_TL
             ad_Hz(i,j,k-1)=ad_Hz(i,j,k-1)-adfac
             ad_Hz(i,j,k  )=ad_Hz(i,j,k  )-adfac
             ad_Hz(i,j,k+1)=ad_Hz(i,j,k+1)-adfac
+#endif
             ad_Hz_inv3(i,k)=0.0_r8
           END DO
         END DO
@@ -832,16 +774,20 @@
 !>          tl_Hz_inv2(i,k)=-Hz_inv2(i,k)*Hz_inv2(i,k)*                 &
 !>   &                      (tl_Hz(i,j,k)+tl_Hz(i,j,k+1))
             adfac=Hz_inv2(i,k)*Hz_inv2(i,k)*ad_Hz_inv2(i,k)
+#ifndef UV_FIXED_TL
             ad_Hz(i,j,k  )=ad_Hz(i,j,k  )-adfac
             ad_Hz(i,j,k+1)=ad_Hz(i,j,k+1)-adfac
+#endif
             ad_Hz_inv2(i,k)=0.0_r8
           END DO
         END DO
         DO k=1,N(ng)
           DO i=Istr,Iend
 !>          tl_Hz_inv(i,k)=-Hz_inv(i,k)*Hz_inv(i,k)*tl_Hz(i,j,k)
+#ifndef UV_FIXED_TL
             ad_Hz(i,j,k)=ad_Hz(i,j,k)-                                  &
      &                   Hz_inv(i,k)*Hz_inv(i,k)*ad_Hz_inv(i,k)
+#endif
             ad_Hz_inv(i,k)=0.0_r8
           END DO
         END DO

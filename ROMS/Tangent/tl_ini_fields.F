@@ -202,6 +202,7 @@
 
 # include "set_bounds.h"
 
+# ifndef UV_FIXED_TL
 # ifdef SOLVE3D
 !
 !-----------------------------------------------------------------------
@@ -691,6 +692,7 @@
      &                    tl_ubar(:,:,krhs), tl_vbar(:,:,krhs))
 #  endif
 # endif
+# endif /* UV_FIXED_TL */
 
 # ifdef SOLVE3D
 !

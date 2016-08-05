@@ -311,11 +311,15 @@
 # elif defined GLS_MIXING_NOT_YET
               CALL ad_gls_corstep (ng, tile)
 # endif
+# ifndef UV_FIXED_TL
               CALL ad_omega (ng, tile)
+# endif
               CALL set_massflux (ng, tile)     ! BASIC STATE mass fluxes
             END DO
 !$OMP BARRIER
           END DO
+
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Time-step adjoint 3D equations.
@@ -344,6 +348,7 @@
             END DO
 !$OMP BARRIER
           END DO
+# endif
 # ifdef OKADA2015
 !
 !-----------------------------------------------------------------------
@@ -368,7 +373,9 @@
               iif(ng)=my_iif
               IF (iif(ng).lt.(nfast(ng)+1)) THEN
                 DO tile=first_tile(ng),last_tile(ng),+1
+#  ifndef UV_FIXED_TL
                   CALL ad_step2d (ng, tile)
+#  endif
                 END DO
 !$OMP BARRIER
               END IF
@@ -400,7 +407,9 @@
             DO ng=1,Ngrids
               IF (my_iif.le.(nfast(ng)+1)) THEN
                 DO tile=last_tile(ng),first_tile(ng),-1
+#  ifndef UV_FIXED_TL
                   CALL ad_step2d (ng, tile)
+#  endif
                 END DO
 !$OMP BARRIER
               END IF
@@ -502,6 +511,8 @@
           END DO
 !$OMP BARRIER
         END DO
+
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Set adjoint free-surface to it time-averaged value.
@@ -516,6 +527,8 @@
           END DO
 !$OMP BARRIER
         END DO
+# endif
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Compute adjoint vertical mixing coefficients for momentum and
@@ -537,6 +550,7 @@
           END DO
 !$OMP BARRIER
         END DO
+# endif
 
 # ifdef SO_SEMI
 !
@@ -638,10 +652,12 @@
 !
         DO ng=1,Ngrids
           DO tile=first_tile(ng),last_tile(ng),+1         ! irreversible
-# ifndef TS_FIXED
+# ifndef UV_FIXED_TL
+#  ifndef TS_FIXED
             CALL ad_rho_eos (ng, tile)
-# endif
+#  endif
             CALL ad_set_massflux (ng, tile)
+# endif
             CALL ad_diag (ng, tile)
 # ifdef AD_AVERAGES
             CALL ad_set_avg (ng, tile)
@@ -739,6 +755,7 @@
               CALL ad_ini_fields (ng, tile, iADM)
             END DO
 !$OMP BARRIER
+#  ifndef UV_FIXED_TL
 !
 !  Adjoint of initialize free-surface and compute initial level
 !  thicknesses and depths.
@@ -748,6 +765,7 @@
               CALL ad_ini_zeta (ng, tile, iADM)
             END DO
 !$OMP BARRIER
+#  endif
           END IF
         END DO
 # endif

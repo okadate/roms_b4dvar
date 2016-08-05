@@ -1,5 +1,5 @@
 !
-!  Compute appropriate basic state arrays II.
+!  Compute appropriate basic state arrays I.
 !
 !  Extract biological variables from tracer arrays, place them into
 !  scratch arrays, and restrict their values to be positive definite.
@@ -122,8 +122,11 @@
                 fac1=dtdays*t_PPmax*Bio(i,k,iPhyt)
                 cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)
                 cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)
+                Bio1(i,k,iNO3_)=Bio(i,k,iNO3_)
+                Bio1(i,k,iNH4_)=Bio(i,k,iNH4_)
 #ifdef PHOSPHORUS
                 cff6=fac1*PhyPN(ng)*K_PO4(ng)/(1.0_r8+cff3)
+                Bio1(i,k,iPO4_)=Bio(i,k,iPO4_)
                 IF (LMIN.eq.L_PO4) THEN
                   Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff6)
                   P_Flux=Bio(i,k,iPO4_)*cff6
@@ -145,9 +148,11 @@
                 N_Flux_NewProd=Bio(i,k,iNO3_)*cff4
                 N_Flux_RegProd=Bio(i,k,iNH4_)*cff5
 #endif
+                Bio1(i,k,iPhyt)=Bio(i,k,iPhyt)
                 Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
      &                         N_Flux_NewProd+N_Flux_RegProd
 !
+                Bio1(i,k,iChlo)=Bio(i,k,iChlo)
                 Bio(i,k,iChlo)=Bio(i,k,iChlo)+                          &
 #ifdef PHOSPHORUS
      &                         (dtdays*t_PPmax*t_PPmax*LMIN*LMIN*       &
@@ -157,6 +162,7 @@
      &                          Chl2C_m(ng)*Bio(i,k,iChlo))/            &
      &                         (PhyIS(ng)*MAX(Chl2C,eps)*PAR+eps)
 #ifdef OXYGEN
+                Bio1(i,k,iOxyg)=Bio(i,k,iOxyg)
                 Bio(i,k,iOxyg)=Bio(i,k,iOxyg)+                          &
      &                         N_Flux_NewProd*rOxNO3+                   &
      &                         N_Flux_RegProd*rOxNH4
@@ -191,10 +197,13 @@
      &               (D_p5NH4(ng)+PAR-2.0_r8*I_thNH4(ng))
                 cff2=1.0_r8-MAX(0.0_r8,cff1)
                 cff3=fac1*cff2
+                Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
+                Bio2(i,k,iNO3_)=Bio(i,k,iNO3_)
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
 #ifdef OXYGEN
+                Bio2(i,k,iOxyg)=Bio(i,k,iOxyg)
                 Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
 #endif
 !
@@ -221,10 +230,13 @@
 #else
                 cff3=fac1
 #endif
+                Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
+                Bio2(i,k,iNO3_)=Bio(i,k,iNO3_)
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
 #ifdef OXYGEN
+                Bio2(i,k,iOxyg)=Bio(i,k,iOxyg)
                 Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
 #endif
               END DO
@@ -247,10 +259,13 @@
 # else
               cff3=cff2*fac1
 # endif
+              Bio3(i,k,iNO3_)=Bio(i,k,iNO3_)
               Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff3)
             END DO
           END DO
 #endif
+!=======================================================================
+          IF (Iteradj.ne.Iter) THEN
 !
 !-----------------------------------------------------------------------
 !  Phytoplankton grazing by zooplankton (rate: ZooGR), phytoplankton
@@ -275,8 +290,6 @@
               cff1=fac1*Bio(i,k,iZoop)*Bio(i,k,iPhyt)/                  &
      &             (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
               cff3=1.0_r8/(1.0_r8+cff1)
-              Bio1(i,k,iPhyt)=Bio(i,k,iPhyt)
-              Bio1(i,k,iChlo)=Bio(i,k,iChlo)
               Bio(i,k,iPhyt)=cff3*Bio(i,k,iPhyt)
               Bio(i,k,iChlo)=cff3*Bio(i,k,iChlo)
 !
@@ -285,31 +298,23 @@
 !
               N_Flux_Assim=Bio(i,k,iPhyt)*cff1*ZooAE_N(ng)
               N_Flux_Egest=Bio(i,k,iPhyt)*cff1*(1.0_r8-ZooAE_N(ng))
-              Bio1(i,k,iZoop)=Bio(i,k,iZoop)
-              Bio1(i,k,iSDeN)=Bio(i,k,iSDeN)
               Bio(i,k,iZoop)=Bio(i,k,iZoop)+N_Flux_Assim
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+N_Flux_Egest
 !
 ! Phytoplankton mortality (limited by a phytoplankton minimum).
 !
               N_Flux_Pmortal=cff2*MAX(Bio(i,k,iPhyt)-PhyMin(ng),0.0_r8)
-              Bio2(i,k,iPhyt)=Bio(i,k,iPhyt)
-              Bio2(i,k,iSDeN)=Bio(i,k,iSDeN)
-              Bio2(i,k,iChlo)=Bio(i,k,iChlo)
               Bio(i,k,iPhyt)=Bio(i,k,iPhyt)-N_Flux_Pmortal
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+N_Flux_Pmortal
               Bio(i,k,iChlo)=Bio(i,k,iChlo)-                            &
      &                       cff2*MAX(Bio(i,k,iChlo)-ChlMin(ng),0.0_r8)
 #ifdef PHOSPHORUS
-              Bio1(i,k,iSDeP)=Bio(i,k,iSDeP)
               Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+                            &
      &                       PhyPN(ng)*(N_Flux_Egest+N_Flux_Pmortal)+   &
      &                       (PhyPN(ng)-ZooPN(ng))*N_Flux_Assim
 #endif
             END DO
           END DO
-!=======================================================================
-          IF (Iteradj.ne.Iter) THEN
 !
 !-----------------------------------------------------------------------
 !  Zooplankton basal metabolism to NH4  (rate: ZooBM), zooplankton
@@ -822,5 +827,5 @@
 !>      END DO ITER_LOOP
         END DO
 !
-!  End of compute basic state arrays II.
+!  End of compute basic state arrays I.
 !

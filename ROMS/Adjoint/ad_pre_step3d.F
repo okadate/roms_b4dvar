@@ -482,6 +482,8 @@
      &                      ad_t)
       END DO
 # endif
+
+# ifndef UV_FIXED_TL
 !
 !=======================================================================
 !  3D adjoint momentum equation in the ETA-direction.
@@ -891,6 +893,7 @@
           END DO
         END DO
       END DO J_LOOP2
+# endif
 
 # ifndef TS_FIXED
 !
@@ -932,7 +935,9 @@
 !>
               ad_t(i,j,k,nstp,itrc)=ad_t(i,j,k,nstp,itrc)+              &
      &                              Hz(i,j,k)*ad_cff1
+#  ifndef UV_FIXED_TL
               ad_Hz(i,j,k)=ad_Hz(i,j,k)+t(i,j,k,nstp,itrc)*ad_cff1
+#  endif
               ad_cff1=0.0_r8
             END DO
           END DO
@@ -1029,8 +1034,10 @@
 !>            tl_cff=-cff*cff*(tl_z_r(i,j,k+1)-tl_z_r(i,j,k))
 !>
               adfac=-cff*cff*ad_cff
+#  ifndef UV_FIXED_TL
               ad_z_r(i,j,k  )=ad_z_r(i,j,k  )-adfac
               ad_z_r(i,j,k+1)=ad_z_r(i,j,k+1)+adfac
+#  endif
               ad_cff=0.0_r8
             END DO
           END DO
@@ -1328,7 +1335,9 @@
 !>            tl_FC(i,k+1)=tl_W(i,j,k+1)*FC(i,k+1)+                     &
 !>   &                     W(i,j,k+1)*tl_FC(i,k+1)
 !>
+#   ifndef UV_FIXED_TL
               ad_W(i,j,k+1)=ad_W(i,j,k+1)+FC(i,k+1)*ad_FC(i,k+1)
+#   endif
               ad_FC(i,k+1)=W(i,j,k+1)*ad_FC(i,k+1)
 !>            tl_FC(i,k)=tl_FC(i,k)-CF(i,k+1)*tl_FC(i,k+1)
 !>
@@ -1382,6 +1391,7 @@
      &                                Hz(i,j,k+1)*adfac1
               ad_t(i,j,k+1,nstp,itrc)=ad_t(i,j,k+1,nstp,itrc)+          &
      &                                Hz(i,j,k  )*adfac1
+#   ifndef UV_FIXED_TL
               ad_Hz(i,j,k  )=ad_Hz(i,j,k  )+                            &
      &                       t(i,j,k+1,nstp,itrc)*adfac1-               &
      &                       FC(i,k  )*adfac2-                          &
@@ -1390,6 +1400,7 @@
      &                       t(i,j,k  ,nstp,itrc)*adfac1-               &
      &                       FC(i,k-1)*adfac-                           &
      &                       FC(i,k  )*adfac2
+#   endif
               ad_FC(i,k-1)=ad_FC(i,k-1)-Hz(i,j,k+1)*adfac
               ad_FC(i,k)=0.0_r8
             END DO
@@ -1443,8 +1454,10 @@
 !>          tl_FC(i,0)=tl_W(i,j,0)*t(i,j,1,nstp,itrc)+                  &
 !>   &                 W(i,j,0)*tl_t(i,j,1,nstp,itrc)
 !>
+#    ifndef UV_FIXED_TL
             ad_W(i,j,0)=ad_W(i,j,0)+                                    &
      &                  t(i,j,1,nstp,itrc)*ad_FC(i,0)
+#    endif
             ad_t(i,j,1,nstp,itrc)=ad_t(i,j,1,nstp,itrc)+                &
      &                            W(i,j,0)*ad_FC(i,0)
             ad_FC(i,0)=0.0_r8
@@ -1474,10 +1487,12 @@
               ad_CF(i,k+1)=ad_CF(i,k+1)-adfac2
               ad_t(i,j,k  ,nstp,itrc)=ad_t(i,j,k  ,nstp,itrc)+adfac1
               ad_t(i,j,k+1,nstp,itrc)=ad_t(i,j,k+1,nstp,itrc)+adfac1
+#   ifndef UV_FIXED_TL
               ad_W(i,j,k)=ad_W(i,j,k)+                                  &
      &                    (t(i,j,k  ,nstp,itrc)+                        &
      &                     t(i,j,k+1,nstp,itrc)-                        &
      &                     cff1*(CF(i,k+1)-CF(i,k)))*adfac
+#   endif
               ad_FC(i,k)=0.0_r8
             END DO
           END DO
@@ -1543,8 +1558,10 @@
 !>          tl_FC(i,0)=tl_W(i,j,0)*t(i,j,1,nstp,itrc)                   &
 !>   &                 W(i,j,0)*tl_t(i,j,1,nstp,itrc)
 !>
+#    ifndef UV_FIXED_TL
             ad_W(i,j,0)=ad_W(i,j,0)+                                    &
      &                  t(i,j,1,nstp,itrc)*ad_FC(i,0)
+#    endif
             ad_t(i,j,1,nstp,itrc)=ad_t(i,j,1,nstp,itrc)+                &
      &                            W(i,j,0)*ad_FC(i,0)
             ad_FC(i,0)=0.0_r8
@@ -1566,9 +1583,11 @@
 !>
               adfac=0.5_r8*ad_FC(i,k)
               adfac1=adfac*W(i,j,k)
+#   ifndef UV_FIXED_TL
               ad_W(i,j,k)=ad_W(i,j,k)+                                  &
      &                    (t(i,j,k  ,nstp,itrc)+                        &
      &                     t(i,j,k+1,nstp,itrc))*adfac
+#   endif
               ad_t(i,j,k  ,nstp,itrc)=ad_t(i,j,k  ,nstp,itrc)+adfac1
               ad_t(i,j,k+1,nstp,itrc)=ad_t(i,j,k+1,nstp,itrc)+adfac1
               ad_FC(i,k)=0.0_r8
@@ -1589,8 +1608,10 @@
 !>
             ad_t(i,j,1,nstp,itrc)=ad_t(i,j,1,nstp,itrc)+                &
      &                            W(i,j,0)*ad_FC(i,0)
+#    ifndef UV_FIXED_TL
             ad_W(i,j,0)=ad_W(i,j,0)+                                    &
      &                  t(i,j,1,nstp,itrc)+ad_FC(i,0)
+#    endif
             ad_FC(i,0)=0.0_r8
 #   else
 !>          tl_FC(i,0)=0.0_r8
@@ -1617,9 +1638,11 @@
 !>            tl_cff1=(0.5_r8+SIGN(0.5_r8, W(i,j,k)))*tl_W(i,j,k)
 !>            tl_cff2=(0.5_r8+SIGN(0.5_r8,-W(i,j,k)))*tl_W(i,j,k)
 !>
+#   ifndef UV_FIXED_TL
               ad_W(i,j,k)=ad_W(i,j,k)+                                  &
      &                    (0.5_r8+SIGN(0.5_r8,-W(i,j,k)))*ad_cff2+      &
      &                    (0.5_r8+SIGN(0.5_r8, W(i,j,k)))*ad_cff1
+#   endif
               ad_cff2=0.0_r8
               ad_cff1=0.0_r8
             END DO
@@ -1646,11 +1669,13 @@
 !>   &                        cff3*tl_t(i,j,N(ng)-2,nstp,itrc))
 !>
             adfac=W(i,j,N(ng)-1)*ad_FC(i,N(ng)-1)
+#   ifndef UV_FIXED_TL
             ad_W(i,j,N(ng)-1)=ad_W(i,j,N(ng)-1)+                        &
      &                        (cff1*t(i,j,N(ng)  ,nstp,itrc)+           &
      &                         cff2*t(i,j,N(ng)-1,nstp,itrc)-           &
      &                         cff3*t(i,j,N(ng)-2,nstp,itrc))*          &
      &                        ad_FC(i,N(ng)-1)
+#   endif
             ad_t(i,j,N(ng)-2,nstp,itrc)=ad_t(i,j,N(ng)-2,nstp,itrc)-    &
      &                                  cff3*adfac
             ad_t(i,j,N(ng)-1,nstp,itrc)=ad_t(i,j,N(ng)-1,nstp,itrc)+    &
@@ -1668,10 +1693,12 @@
 !>   &                  cff3*tl_t(i,j,3,nstp,itrc))
 !>
             adfac=W(i,j,1)*ad_FC(i,1)
+#   ifndef UV_FIXED_TL
             ad_W(i,j,1)=ad_W(i,j,1)+                                    &
      &                  (cff1*t(i,j,1,nstp,itrc)+                       &
      &                   cff2*t(i,j,2,nstp,itrc)-                       &
      &                   cff3*t(i,j,3,nstp,itrc))*ad_FC(i,1)
+#   endif
             ad_t(i,j,1,nstp,itrc)=ad_t(i,j,1,nstp,itrc)+cff1*adfac
             ad_t(i,j,2,nstp,itrc)=ad_t(i,j,2,nstp,itrc)+cff2*adfac
             ad_t(i,j,3,nstp,itrc)=ad_t(i,j,3,nstp,itrc)-cff3*adfac
@@ -1686,9 +1713,11 @@
 !>
             adfac=2.0_r8*ad_FC(i,0)
             adfac1=adfac*W(i,j,0)
+#    ifndef UV_FIXED_TL
             ad_W(i,j,0)=ad_W(i,j,0)+                                    &
      &                  (cff2*t(i,j,1,nstp,itrc)-                       &
      &                   cff3*t(i,j,2,nstp,itrc))*adfac
+#    endif
             ad_t(i,j,1,nstp,itrc)=ad_t(i,j,1,nstp,itrc)+cff2*adfac1
             ad_t(i,j,2,nstp,itrc)=ad_t(i,j,2,nstp,itrc)-cff3*adfac1
             ad_FC(i,0)=0.0_r8
@@ -1714,11 +1743,13 @@
               adfac=W(i,j,k)*ad_FC(i,k)
               adfac1=adfac*cff2
               adfac2=adfac*cff3
+#   ifndef UV_FIXED_TL
               ad_W(i,j,k)=ad_W(i,j,k)+                                  &
      &                    (cff2*(t(i,j,k  ,nstp,itrc)+                  &
      &                           t(i,j,k+1,nstp,itrc))-                 &
      &                     cff3*(t(i,j,k-1,nstp,itrc)+                  &
      &                           t(i,j,k+2,nstp,itrc)))*ad_FC(i,k)
+#   endif
               ad_t(i,j,k-1,nstp,itrc)=ad_t(i,j,k-1,nstp,itrc)-adfac2
               ad_t(i,j,k  ,nstp,itrc)=ad_t(i,j,k  ,nstp,itrc)+adfac1
               ad_t(i,j,k+1,nstp,itrc)=ad_t(i,j,k+1,nstp,itrc)+adfac1
@@ -1757,6 +1788,7 @@
 !>
             adfac=-DC(i,k)*DC(i,k)*ad_DC(i,k)
             adfac1=adfac*cff*pm(i,j)*pn(i,j)
+#   ifndef UV_FIXED_TL
             ad_Hz(i,j,k)=ad_Hz(i,j,k)+adfac
             ad_Huon(i  ,j,k)=ad_Huon(i  ,j,k)+adfac1
             ad_Huon(i+1,j,k)=ad_Huon(i+1,j,k)-adfac1
@@ -1764,6 +1796,7 @@
             ad_Hvom(i,j+1,k)=ad_Hvom(i,j+1,k)-adfac1
             ad_W(i,j,k-1)=ad_W(i,j,k-1)+adfac1
             ad_W(i,j,k  )=ad_W(i,j,k  )-adfac1
+#   endif
             ad_DC(i,k)=0.0_r8
           END DO
         END DO
@@ -1797,8 +1830,10 @@
               adfac=cff*ad_t(i,j,k,3,iage)
               ad_t(i,j,k,nnew,inert(itrc))=ad_t(i,j,k,nnew,inert(itrc))+&
      &                                     Hz(i,j,k)*adfac
+#   ifndef UV_FIXED_TL
               ad_Hz(i,j,k)=ad_Hz(i,j,k)+                                &
      &                     t(i,j,k,nnew,inert(itrc))*adfac
+#   endif
             END DO
           END DO
         END DO
@@ -1836,9 +1871,11 @@
 !>
               adfac1=Hz(i,j,k)*ad_t(i,j,k,3,itrc)
               adfac2=cff*pm(i,j)*pn(i,j)*ad_t(i,j,k,3,itrc)
+#  ifndef UV_FIXED_TL
               ad_Hz(i,j,k)=ad_Hz(i,j,k)+                                &
      &                     (cff1*t(i,j,k,nstp,itrc)+                    &
      &                      cff2*t(i,j,k,nnew,itrc))*ad_t(i,j,k,3,itrc)
+#  endif
               ad_t(i,j,k,nstp,itrc)=ad_t(i,j,k,nstp,itrc)+cff1*adfac1
               ad_t(i,j,k,nnew,itrc)=ad_t(i,j,k,nnew,itrc)+cff2*adfac1
               ad_FE(i,j  )=ad_FE(i,j  )+adfac2
@@ -1863,17 +1900,21 @@
 !>                tl_FX(Isrc,Jsrc)=tl_Huon(Isrc,Jsrc,k)*                &
 !>   &                             SOURCES(ng)%Tsrc(is,k,itrc)
 !>
+#  ifndef UV_FIXED_TL
                   ad_Huon(Isrc,Jsrc,k)=ad_Huon(Isrc,Jsrc,k)+            &
      &                                 SOURCES(ng)%Tsrc(is,k,itrc)*     &
      &                                 ad_FX(Isrc,Jsrc)
+#  endif
                   ad_FX(Isrc,Jsrc)=0.0_r8
                 ELSE
 !>                tl_FE(Isrc,Jsrc)=tl_Hvom(Isrc,Jsrc,k)*                &
 !>   &                             SOURCES(ng)%Tsrc(is,k,itrc)
 !>
+#  ifndef UV_FIXED_TL
                   ad_Hvom(Isrc,Jsrc,k)=ad_Hvom(Isrc,Jsrc,k)+            &
      &                                 SOURCES(ng)%Tsrc(is,k,itrc)*     &
      &                                 ad_FE(Isrc,Jsrc)
+#  endif
                   ad_FE(Isrc,Jsrc)=0.0_r8
                 END IF
               END IF
@@ -1896,9 +1937,11 @@
 !>
               adfac=0.5_r8*ad_FE(i,j)
               adfac1=adfac*Hvom(i,j,k)
+#   ifndef UV_FIXED_TL
               ad_Hvom(i,j,k)=ad_Hvom(i,j,k)+                            &
      &                       adfac*(t(i,j  ,k,nstp,itrc)+               &
      &                              t(i,j-1,k,nstp,itrc))
+#   endif
               ad_t(i,j-1,k,nstp,itrc)=ad_t(i,j-1,k,nstp,itrc)+adfac1
               ad_t(i,j  ,k,nstp,itrc)=ad_t(i,j  ,k,nstp,itrc)+adfac1
               ad_FE(i,j)=0.0_r8
@@ -1916,9 +1959,11 @@
 !>
               adfac=0.5_r8*ad_FX(i,j)
               adfac1=adfac*Huon(i,j,k)
+#   ifndef UV_FIXED_TL
               ad_Huon(i,j,k)=ad_Huon(i,j,k)+                            &
      &                       adfac*(t(i-1,j,k,nstp,itrc)+               &
      &                              t(i  ,j,k,nstp,itrc))
+#   endif
               ad_t(i-1,j,k,nstp,itrc)=ad_t(i-1,j,k,nstp,itrc)+adfac1
               ad_t(i  ,j,k,nstp,itrc)=ad_t(i  ,j,k,nstp,itrc)+adfac1
               ad_FX(i,j)=0.0_r8
@@ -1948,11 +1993,13 @@
 !>            tl_cff1=(0.5_r8+SIGN(0.5_r8, Hvom(i,j,k)))*tl_Hvom(i,j,k)
 !>            tl_cff2=(0.5_r8+SIGN(0.5_r8,-Hvom(i,j,k)))*tl_Hvom(i,j,k)
 !>
+#   ifndef UV_FIXED_TL
               ad_Hvom(i,j,k)=ad_Hvom(i,j,k)+                            &
      &                       (0.5_r8+SIGN(0.5_r8,-Hvom(i,j,k)))*        &
      &                       ad_cff2+                                   &
      &                       (0.5_r8+SIGN(0.5_r8, Hvom(i,j,k)))*        &
      &                       ad_cff1
+#   endif
               ad_cff2=0.0_r8
               ad_cff1=0.0_r8
             END DO
@@ -1976,11 +2023,13 @@
 !>            tl_cff1=(0.5_r8+SIGN(0.5_r8, Huon(i,j,k)))*tl_Huon(i,j,k)
 !>            tl_cff2=(0.5_r8+SIGN(0.5_r8,-Huon(i,j,k)))*tl_Huon(i,j,k)
 !>
+#   ifndef UV_FIXED_TL
               ad_Huon(i,j,k)=ad_Huon(i,j,k)+                            &
      &                       (0.5_r8+SIGN(0.5_r8,-Huon(i,j,k)))*        &
      &                       ad_cff2+                                   &
      &                       (0.5_r8+SIGN(0.5_r8, Huon(i,j,k)))*        &
      &                       ad_cff1
+#   endif
               ad_cff2=0.0_r8
               ad_cff1=0.0_r8
             END DO
@@ -2063,6 +2112,7 @@
               adfac=0.5_r8*ad_FE(i,j)
               adfac1=adfac*Hvom(i,j,k)
               adfac2=cff1*ad_FE(i,j)
+#    ifndef UV_FIXED_TL
               ad_Hvom(i,j,k)=ad_Hvom(i,j,k)+                            &
      &                       (t(i,j-1,k,nstp,itrc)+                     &
      &                        t(i,j  ,k,nstp,itrc))*adfac-              &
@@ -2071,6 +2121,7 @@
      &                        curv(i,j  )*                              &
      &                        (0.5_r8+SIGN(0.5_r8,-Hvom(i,j,k))))*      &
      &                       adfac2
+#    endif
               ad_t(i,j-1,k,nstp,itrc)=ad_t(i,j-1,k,nstp,itrc)+adfac1
               ad_t(i,j  ,k,nstp,itrc)=ad_t(i,j  ,k,nstp,itrc)+adfac1
               ad_curv(i,j-1)=ad_curv(i,j-1)-                            &
@@ -2094,11 +2145,13 @@
               adfac=0.5_r8*ad_FE(i,j)
               adfac1=adfac*Hvom(i,j,k)
               adfac2=adfac1*cff2
+#    ifndef UV_FIXED_TL
               ad_Hvom(i,j,k)=ad_Hvom(i,j,k)+                            &
      &                       adfac*(t(i,j-1,k,nstp,itrc)+               &
      &                              t(i,j  ,k,nstp,itrc)-               &
      &                              cff2*(grad(i,j  )-                  &
      &                                    grad(i,j-1)))
+#    endif
               ad_t(i,j-1,k,nstp,itrc)=ad_t(i,j-1,k,nstp,itrc)+adfac1
               ad_t(i,j  ,k,nstp,itrc)=ad_t(i,j  ,k,nstp,itrc)+adfac1
               ad_grad(i,j-1)=ad_grad(i,j-1)+adfac2
@@ -2254,6 +2307,7 @@
               adfac=0.5_r8*ad_FX(i,j)
               adfac1=adfac*Huon(i,j,k)
               adfac2=cff1*ad_FX(i,j)
+#    ifndef UV_FIXED_TL
               ad_Huon(i,j,k)=ad_Huon(i,j,k)+                            &
      &                       (t(i-1,j,k,nstp,itrc)+                     &
      &                        t(i  ,j,k,nstp,itrc))*adfac-              &
@@ -2262,6 +2316,7 @@
      &                        curv(i  ,j)*                              &
      &                        (0.5_r8+SIGN(0.5_r8,-Huon(i,j,k))))*      &
      &                       adfac2
+#    endif
               ad_t(i-1,j,k,nstp,itrc)=ad_t(i-1,j,k,nstp,itrc)+adfac1
               ad_t(i  ,j,k,nstp,itrc)=ad_t(i  ,j,k,nstp,itrc)+adfac1
               ad_curv(i-1,j)=ad_curv(i-1,j)-                            &
@@ -2285,11 +2340,13 @@
               adfac=0.5_r8*ad_FX(i,j)
               adfac1=adfac*Huon(i,j,k)
               adfac2=adfac1*cff2
+#    ifndef UV_FIXED_TL
               ad_Huon(i,j,k)=ad_Huon(i,j,k)+                            &
      &                       adfac*(t(i-1,j,k,nstp,itrc)+               &
      &                              t(i  ,j,k,nstp,itrc)-               &
      &                              cff2*(grad(i  ,j)-                  &
      &                                    grad(i-1,j)))
+#    endif
               ad_t(i-1,j,k,nstp,itrc)=ad_t(i-1,j,k,nstp,itrc)+adfac1
               ad_t(i  ,j,k,nstp,itrc)=ad_t(i  ,j,k,nstp,itrc)+adfac1
               ad_grad(i-1,j)=ad_grad(i-1,j)+adfac2
@@ -2416,8 +2473,10 @@
           DO i=Istr,Iend
 !>          tl_FX(i,j)=tl_z_w(i,j,N(ng))-tl_z_w(i,j,k)
 !>
+#   ifndef UV_FIXED_TL
             ad_z_w(i,j,k    )=ad_z_w(i,j,k    )-ad_FX(i,j)
             ad_z_w(i,j,N(ng))=ad_z_w(i,j,N(ng))+ad_FX(i,j)
+#   endif
             ad_FX(i,j)=0.0_r8
           END DO
         END DO
