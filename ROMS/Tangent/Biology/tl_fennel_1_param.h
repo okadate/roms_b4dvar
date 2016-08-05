@@ -1,4 +1,4 @@
-#include "tl_fennel_bs1.h"
+#include "fennel_bs1.h"
 !
 !-----------------------------------------------------------------------
 !  Light-limited computations.

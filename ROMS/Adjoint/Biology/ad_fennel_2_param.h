@@ -1,4 +1,4 @@
-#include "ad_fennel_bs2.h"
+#include "fennel_bs2.h"
 !
 !-----------------------------------------------------------------------
 !  Zooplankton basal metabolism to NH4  (rate: ZooBM), zooplankton

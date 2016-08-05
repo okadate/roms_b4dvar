@@ -1,4 +1,4 @@
-#include "tl_fennel_bs3.h"
+#include "fennel_bs3.h"
 !
 !-----------------------------------------------------------------------
 !  Coagulation of phytoplankton and small detritus to large detritus.

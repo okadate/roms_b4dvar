@@ -1,4 +1,4 @@
-#include "tl_fennel_bs2.h"
+#include "fennel_bs2.h"
 !
 !-----------------------------------------------------------------------
 !  Phytoplankton grazing by zooplankton (rate: ZooGR), phytoplankton
