@@ -19,7 +19,7 @@
               cff3=cff2*fac1
 # endif
 !             ==========================================================
-
+!!            Bio3(i,k,iNO3_)=Bio(i,k,iNO3_)
 !>            tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio(i,k,iNO3_)*      &
 !>   &                           tl_cff3)/(1.0_r8+cff3)
               adfac=ad_Bio(i,k,iNO3_)/(1.0_r8+cff3)
@@ -98,10 +98,6 @@
 !  other attenuation contributions like suspended sediment or CDOM
 !  modify AttFac.
 !
-!!                Att=(AttSW(ng)+                                       &
-!!   &                 AttChl(ng)*Bio1(i,k,iChlo)+                      &
-!!   &                 AttFac)*                                         &
-!!   &                 (z_w(i,j,k)-z_w(i,j,k-1))
                   fac1=AttSW(ng)+AttChl(ng)*Bio1(i,kk,iChlo)+AttFac
                   Att=fac1*(z_w(i,j,kk)-z_w(i,j,kk-1))
                   ExpAtt=EXP(-Att)
@@ -156,11 +152,13 @@
                 cff3=fac1*cff2
 !               ========================================================
 #ifdef OXYGEN
+!>              Bio2(i,k,iOxyg)=Bio(i,k,iOxyg)
 !>              tl_Bio(i,k,iOxyg)=tl_Bio(i,k,iOxyg)-                    &
 !>   &                            2.0_r8*tl_N_Flux_Nitrifi
                 ad_N_Flux_Nitrifi=ad_N_Flux_Nitrifi-                    &
      &                            2.0_r8*ad_Bio(i,k,iOxyg)
 #endif
+!>              Bio2(i,k,iNO3_)=Bio(i,k,iNO3_)
 !>              tl_Bio(i,k,iNO3_)=tl_Bio(i,k,iNO3_)+tl_N_Flux_Nitrifi
                 ad_N_Flux_Nitrifi=ad_N_Flux_Nitrifi+ad_Bio(i,k,iNO3_)
 
@@ -171,6 +169,7 @@
      &                            ad_N_Flux_Nitrifi*cff3
                 ad_N_Flux_Nitrifi=0.0_r8
 
+!>              Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
 !>              tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio(i,k,iNH4_)*    &
 !>   &                             tl_cff3)/(1.0_r8+cff3)
                 adfac=ad_Bio(i,k,iNH4_)/(1.0_r8+cff3)
@@ -266,7 +265,7 @@
                 Epp=Vp/fac
                 t_PPmax=Epp*fac1
 !
-!  Nutrient-limitation terms
+!  Nutrient-limitation terms -------------------------------------------
 !
                 cff1=Bio1(i,k,iNH4_)*K_NH4(ng)
                 cff2=Bio1(i,k,iNO3_)*K_NO3(ng)
@@ -280,35 +279,62 @@
                 L_PO4=cff3/(1.0_r8+cff3)
                 LMIN=MIN(LTOT,L_PO4)
 #endif
-!=======================================================================
 !
 !  Nitrate and ammonium uptake by Phytoplankton.
 !
-!               ========================================================
                 fac1=dtdays*t_PPmax*Bio1(i,k,iPhyt)
                 fac4=fac1*K_NO3(ng)*inhNH4
                 cff4=fac4/(1.0_r8+cff2)
                 fac5=fac1*K_NH4(ng)
                 cff5=fac5/(1.0_r8+cff1)
+!!              Bio1(i,k,iNO3_)=Bio(i,k,iNO3_)
+!!              Bio1(i,k,iNH4_)=Bio(i,k,iNH4_)
 #ifdef PHOSPHORUS
                 fac6=fac1*PhyPN(ng)*K_PO4(ng)
                 cff6=fac6/(1.0_r8+cff3)
+!!              Bio1(i,k,iPO4_)=Bio(i,k,iPO4_)
                 IF (LMIN.eq.L_PO4) THEN
+!
+!  Phosphorus-limitation for N_flux
+!
+!>                Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff6)
                   P_Flux=Bio(i,k,iPO4_)*cff6
                   fac2=L_NO3/MAX(LTOT,eps)
                   fac=P_Flux/PhyPN(ng)
                   N_Flux_NewProd=fac*fac2
                   fac3=L_NH4/MAX(LTOT,eps)
                   N_Flux_RegProd=fac*fac3
+!>                Bio(i,k,iNO3_)=Bio(i,k,iNO3_)-N_Flux_NewProd
+!>                Bio(i,k,iNH4_)=Bio(i,k,iNH4_)-N_Flux_RegProd
                 ELSE
+!
+!  Nitrogen-limitation for N_flux
+!
+!>                Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
+!>                Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
                   N_Flux_NewProd=Bio2(i,k,iNO3_)*cff4
                   N_Flux_RegProd=Bio2(i,k,iNH4_)*cff5
                   P_Flux=(N_Flux_NewProd+N_Flux_RegProd)*PhyPN(ng)
+!>                Bio(i,k,iPO4_)=Bio(i,k,iPO4_)-P_Flux
                 END IF
 #else
+!
+!  Nitrogen-limitation for N_flux
+!
+!>              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
+!>              Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
                 N_Flux_NewProd=Bio2(i,k,iNO3_)*cff4
                 N_Flux_RegProd=Bio2(i,k,iNH4_)*cff5
 #endif
+!
+!  Update phytoplankton ------------------------------------------------
+!
+!>              Bio1(i,k,iPhyt)=Bio(i,k,iPhyt)
+!>              Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
+!>   &                         N_Flux_NewProd+N_Flux_RegProd
+!
+!  Update chlorophyll
+!
 #ifdef PHOSPHORUS
                 fac=dtdays*t_PPmax*t_PPmax*LMIN*LMIN
 #else
@@ -317,6 +343,17 @@
                 fac1=fac*Chl2C_m(ng)
                 fac2=PhyIS(ng)*MAX(Chl2C,eps)*PAR1
                 fac3=fac1/(fac2+eps)
+!>              Bio1(i,k,iChlo)=Bio(i,k,iChlo)
+!>              Bio(i,k,iChlo)=Bio(i,k,iChlo)+Bio(i,k,iChlo)*fac3
+#ifdef OXYGEN
+!
+!  Update oxygen
+!
+!>              Bio1(i,k,iOxyg)=Bio(i,k,iOxyg)
+!>              Bio(i,k,iOxyg)=Bio(i,k,iOxyg)+                          &
+!>   &                         N_Flux_NewProd*rOxNO3+                   &
+!>   &                         N_Flux_RegProd*rOxNH4
+#endif
 !               ========================================================
 #ifdef OXYGEN
 !
@@ -334,8 +371,8 @@
 !
 !>              tl_Bio(i,k,iChlo)=tl_Bio(i,k,iChlo)+                    &
 !>   &                            tl_Bio(i,k,iChlo)*fac3+               &
-!>   &                            Bio(i,k,iChlo)*tl_fac3
-                ad_fac3=ad_fac3+Bio(i,k,iChlo)*ad_Bio(i,k,iChlo)
+!>   &                            Bio1(i,k,iChlo)*tl_fac3
+                ad_fac3=ad_fac3+Bio1(i,k,iChlo)*ad_Bio(i,k,iChlo)
                 ad_Bio(i,k,iChlo)=ad_Bio(i,k,iChlo)*(1.0_r8+fac1)
 
 !>              tl_fac3=(tl_fac1-tl_fac2*fac3)/(fac2+eps)
@@ -374,6 +411,7 @@
 !
 !  Update phytoplankton
 !
+!>              Bio1(i,k,iPhyt)=Bio(i,k,iPhyt)
 !>              tl_Bio(i,k,iPhyt)=tl_Bio(i,k,iPhyt)+                    &
 !>   &                            tl_N_Flux_NewProd+tl_N_Flux_RegProd
                 ad_N_Flux_RegProd=ad_N_Flux_RegProd+ad_Bio(i,k,iPhyt)
@@ -382,6 +420,12 @@
 !  Nitrate and ammonium uptake by Phytoplankton.
 !
 !               ========================================================
+                cff1=Bio1(i,k,iNH4_)*K_NH4(ng)
+                cff2=Bio1(i,k,iNO3_)*K_NO3(ng)
+                fac2=cff2/(1.0_r8+cff2)
+#ifdef PHOSPHORUS
+                cff3=Bio1(i,k,iPO4_)*K_PO4(ng)
+#endif
                 fac1=dtdays*t_PPmax*Bio1(i,k,iPhyt)
                 fac4=fac1*K_NO3(ng)*inhNH4
                 cff4=fac4/(1.0_r8+cff2)
@@ -390,6 +434,11 @@
 #ifdef PHOSPHORUS
                 fac6=fac1*PhyPN(ng)*K_PO4(ng)
                 cff6=fac6/(1.0_r8+cff3)
+                IF (LMIN.eq.L_PO4) THEN
+                  fac2=L_NO3/MAX(LTOT,eps)
+                  fac=P_Flux/PhyPN(ng)
+                  fac3=L_NH4/MAX(LTOT,eps)
+                END IF
 #endif
 !               ========================================================
 #ifdef PHOSPHORUS
@@ -397,11 +446,6 @@
 !
 !  Phosphorus-limitation for N_flux
 !
-!                 ======================================================
-                  fac2=L_NO3/MAX(LTOT,eps)
-                  fac=P_Flux/PhyPN(ng)
-                  fac3=L_NH4/MAX(LTOT,eps)
-!                 ======================================================
 !>                tl_Bio(i,k,iNH4_)=tl_Bio(i,k,iNH4_)-tl_N_Flux_RegProd
                   ad_N_Flux_RegProd=ad_N_Flux_RegProd-ad_Bio(i,k,iNH4_)
 
@@ -534,7 +578,6 @@
                 ad_cff4=ad_cff4-Bio2(i,k,iNO3_)*adfac
                 ad_Bio(i,k,iNO3_)=adfac
 #endif
-!!              tl_cff5=(tl_fac1*K_NH4(ng)-cff5*tl_cff1)/(1.0_r8+cff1)
 !>              tl_cff5=(tl_fac5-cff5*tl_cff1)/(1.0_r8+cff1)
                 adfac=ad_cff5/(1.0_r8+cff1)
                 ad_cff1=ad_cff1-cff5*adfac
@@ -566,23 +609,18 @@
                 ad_Bio(i,k,iPhyt)=ad_Bio(i,k,iPhyt)+t_PPmax*adfac
                 ad_t_PPmax=ad_t_PPmax+Bio1(i,k,iPhyt)*adfac
                 ad_fac1=0.0_r8
-#ifdef PHOSPHORUS
 !
-!  Nutrient-limitation terms (Laurent et al. 2012).
+!  Nutrient-limitation terms
 !
-#else
-!
-!  Nutrient-limitation terms (Parker 1993 Ecol Mod., 66, 113-120).
-!
-#endif
 !               ========================================================
                 cff1=Bio1(i,k,iNH4_)*K_NH4(ng)
                 cff2=Bio1(i,k,iNO3_)*K_NO3(ng)
                 fac2=cff2/(1.0_r8+cff2)
 #ifdef PHOSPHORUS
                 cff3=Bio1(i,k,iPO4_)*K_PO4(ng)
+#endif
 !               ========================================================
-
+#ifdef PHOSPHORUS
 !>              tlfac=SIGN(0.5_r8,L_PO4-LTOT)
 !>              tl_LMIN=(0.5_r8+tlfac)*tl_LTOT+(0.5_r8-tlfac)*tl_L_PO4
                 adfac=SIGN(0.5_r8,L_PO4-LTOT)
@@ -713,8 +751,8 @@
                 ad_Bio(i,k,iChlo)=ad_Bio(i,k,iChlo)+adfac
                 ad_cff1=0.0_r8
 
-!>              tl_fac1=tl_Bio(i,k,iPhyt)*cff+Bio(i,k,iPhyt)*tl_cff
-                ad_cff=ad_cff+Bio(i,k,iPhyt)*ad_fac1
+!>              tl_fac1=tl_Bio(i,k,iPhyt)*cff+Bio1(i,k,iPhyt)*tl_cff
+                ad_cff=ad_cff+Bio1(i,k,iPhyt)*ad_fac1
                 ad_Bio(i,k,iPhyt)=ad_Bio(i,k,iPhyt)+cff*ad_fac1
                 ad_fac1=0.0_r8
 
@@ -752,8 +790,10 @@
 !>              tl_Att=tl_fac1*(z_w(i,j,k)-z_w(i,j,k-1))+               &
 !>   &                 fac1*(tl_z_w(i,j,k)-tl_z_w(i,j,k-1))
                 adfac1=fac1*ad_Att
+#ifndef UV_FIXED_TL
                 ad_z_w(i,j,k-1)=ad_z_w(i,j,k-1)-adfac1
                 ad_z_w(i,j,k  )=ad_z_w(i,j,k  )+adfac1
+#endif
                 ad_fac1=ad_fac1+(z_w(i,j,k)-z_w(i,j,k-1))*ad_Att
                 ad_Att=0.0_r8
 !
@@ -783,7 +823,15 @@
 #else
                 cff3=fac1
 #endif
+!>              Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
+!>              Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
+!>              Bio2(i,k,iNO3_)=Bio(i,k,iNO3_)
+!>              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)+N_Flux_Nitrifi
+#ifdef OXYGEN
+!>              Bio2(i,k,iOxyg)=Bio(i,k,iOxyg)
+!>              Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-2.0_r8*N_Flux_Nitrifi
+#endif
 !               ========================================================
 #ifdef OXYGEN
 !>              Bio2(i,k,iOxyg)=Bio(i,k,iOxyg)

@@ -42,9 +42,12 @@
                 Itop=PAR
                 tl_Itop=tl_PAR
 
-                PAR=Itop*(1.0_r8-ExpAtt)/Att    ! average at cell center
-                tl_PAR=(-tl_Att*PAR+tl_Itop*(1.0_r8-ExpAtt)-            &
-     &                  Itop*tl_ExpAtt)/Att
+!!              PAR=Itop*(1.0_r8-ExpAtt)/Att    ! average at cell center
+                fac2=Itop*(1.0_r8-ExpAtt)
+                tl_fac2=tl_Itop*(1.0_r8-ExpAtt)-Itop*tl_ExpAtt
+
+                PAR=fac2/Att
+                tl_PAR=(tl_fac2-PAR*tl_Att)/Att
 !
 !  Compute Chlorophyll-a phytoplankton ratio, [mg Chla / (mg C)].
 !
@@ -54,7 +57,8 @@
      &                  (Bio1(i,k,iPhyt)*cff+eps)
 
                 Chl2C=MIN(cff1,Chl2C_m(ng))
-                tl_Chl2C=(0.5_r8+SIGN(0.5_r8,Chl2C_m(ng)-cff1))*tl_cff1
+                tlfac=SIGN(0.5_r8,Chl2C_m(ng)-cff1)
+                tl_Chl2C=(0.5_r8+tlfac)*tl_cff1
 !
 !  Temperature-limited and light-limited growth rate (Eppley, R.W.,
 !  1972, Fishery Bulletin, 70: 1063-1085; here 0.59=ln(2)*0.851).
@@ -72,9 +76,11 @@
                 fac1=PAR*PhyIS(ng)
                 tl_fac1=tl_PAR*PhyIS(ng)
 
-                Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
-                tl_Epp=(tl_Vp-Epp*(Vp*tl_Vp+fac1*tl_fac1))/             &
-     &                 SQRT(Vp*Vp+fac1*fac1)
+!!              Epp=Vp/SQRT(Vp*Vp+fac1*fac1)
+                fac=SQRT(Vp*Vp+fac1*fac1)
+                tl_fac=(Vp*tl_Vp+fac1*tl_fac1)/fac
+                Epp=Vp/fac
+                tl_Epp=(tl_Vp-Epp*tl_fac)/fac
 
                 t_PPmax=Epp*fac1
                 tl_t_PPmax=tl_Epp*fac1+Epp*tl_fac1
@@ -88,18 +94,22 @@
 !
 #endif
                 cff1=Bio1(i,k,iNH4_)*K_NH4(ng)
-                cff2=Bio1(i,k,iNO3_)*K_NO3(ng)
                 tl_cff1=tl_Bio(i,k,iNH4_)*K_NH4(ng)
+
+                cff2=Bio1(i,k,iNO3_)*K_NO3(ng)
                 tl_cff2=tl_Bio(i,k,iNO3_)*K_NO3(ng)
 
                 inhNH4=1.0_r8/(1.0_r8+cff1)
                 tl_inhNH4=-inhNH4*inhNH4*tl_cff1
 
                 L_NH4=cff1/(1.0_r8+cff1)
-                L_NO3=cff2*inhNH4/(1.0_r8+cff2)
                 tl_L_NH4=tl_cff1*(1.0_r8-L_NH4)/(1.0_r8+cff1)
-                tl_L_NO3=(tl_cff2*(inhNH4-L_NO3)+cff2*tl_inhNH4)/       &
-     &                   (1.0_r8+cff2)
+
+!!              L_NO3=cff2*inhNH4/(1.0_r8+cff2)
+                fac2=cff2/(1.0_r8+cff2)
+                tl_fac2=tl_cff2*(1.0_r8-fac2)/(1.0_r8+cff2)
+                L_NO3=fac2*inhNH4
+                tl_L_NO3=tl_fac2*inhNH4+fac2*tl_inhNH4
 
                 LTOT=L_NO3+L_NH4
                 tl_LTOT=tl_L_NO3+tl_L_NH4
@@ -136,15 +146,17 @@
      &                  (1.0_r8+cff3)
 
 !>              Bio1(i,k,iPO4_)=Bio(i,k,iPO4_)
-
                 IF (LMIN.eq.L_PO4) THEN
+!
+!  Phosphorus-limitation for N_flux
+!
 !>                Bio(i,k,iPO4_)=Bio(i,k,iPO4_)/(1.0_r8+cff6)
-                  tl_Bio(i,k,iPO4_)=(tl_Bio(i,k,iPO4_)-Bio(i,k,iPO4_)*  &
+                  tl_Bio(i,k,iPO4_)=(tl_Bio(i,k,iPO4_)-Bio1(i,k,iPO4_)* &
      &                               tl_cff6)/(1.0_r8+cff6)
 
-                  P_Flux=Bio(i,k,iPO4_)*cff6
+                  P_Flux=Bio2(i,k,iPO4_)*cff6
                   tl_P_Flux=tl_Bio(i,k,iPO4_)*cff6+                     &
-     &                      Bio(i,k,iPO4_)*tl_cff6
+     &                      Bio2(i,k,iPO4_)*tl_cff6
 
                   fac2=L_NO3/MAX(LTOT,eps)
                   tl_fac2=(tl_L_NO3-fac2*tl_LTOT)/MAX(LTOT,eps)
@@ -166,12 +178,15 @@
 !>                Bio(i,k,iNH4_)=Bio(i,k,iNH4_)-N_Flux_RegProd
                   tl_Bio(i,k,iNH4_)=tl_Bio(i,k,iNH4_)-tl_N_Flux_RegProd
                 ELSE
+!
+!  Nitrogen-limitation for N_flux
+!
 !>                Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
-                  tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio2(i,k,iNO3_)* &
+                  tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio1(i,k,iNO3_)* &
      &                               tl_cff4)/(1.0_r8+cff4)
 
 !>                Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
-                  tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)* &
+                  tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio1(i,k,iNH4_)* &
      &                               tl_cff5)/(1.0_r8+cff5)
 
                   N_Flux_NewProd=Bio2(i,k,iNO3_)*cff4
@@ -190,12 +205,15 @@
                   tl_Bio(i,k,iPO4_)=tl_Bio(i,k,iPO4_)-tl_P_Flux
                 END IF
 #else
+!
+!  Nitrogen-limitation for N_flux
+!
 !>              Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
-                tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio2(i,k,iNO3_)*   &
+                tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio1(i,k,iNO3_)*   &
      &                             tl_cff4)/(1.0_r8+cff4)
 
 !>              Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
-                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)*   &
+                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio1(i,k,iNH4_)*   &
      &                             tl_cff5)/(1.0_r8+cff5)
 
                 N_Flux_NewProd=Bio2(i,k,iNO3_)*cff4
@@ -206,11 +224,16 @@
                 tl_N_Flux_RegProd=tl_Bio(i,k,iNH4_)*cff5+               &
      &                            Bio2(i,k,iNH4_)*tl_cff5
 #endif
+!
+!  Update phytoplankton
+!
 !>              Bio1(i,k,iPhyt)=Bio(i,k,iPhyt)
 !>              Bio(i,k,iPhyt)=Bio(i,k,iPhyt)+                          &
 !>   &                         N_Flux_NewProd+N_Flux_RegProd
                 tl_Bio(i,k,iPhyt)=tl_Bio(i,k,iPhyt)+                    &
      &                            tl_N_Flux_NewProd+tl_N_Flux_RegProd
+!
+!  Update chlorophyll
 !
 #if defined PHOSPHORUS
                 fac1=dtdays*t_PPmax*t_PPmax*LMIN*LMIN*Chl2C_m(ng)
@@ -233,7 +256,7 @@
 !>              Bio(i,k,iChlo)=Bio(i,k,iChlo)+Bio(i,k,iChlo)*fac3
                 tl_Bio(i,k,iChlo)=tl_Bio(i,k,iChlo)+                    &
      &                            tl_Bio(i,k,iChlo)*fac3+               &
-     &                            Bio(i,k,iChlo)*tl_fac3
+     &                            Bio1(i,k,iChlo)*tl_fac3
 #ifdef OXYGEN
 !>              Bio1(i,k,iOxyg)=Bio(i,k,iOxyg)
 !>              Bio(i,k,iOxyg)=Bio(i,k,iOxyg)+                          &
@@ -292,7 +315,7 @@
 
 !>              Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
 !>              Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
-                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio(i,k,iNH4_)*    &
+                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)*   &
      &                             tl_cff3)/(1.0_r8+cff3)
 
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
@@ -346,7 +369,7 @@
 #endif
 !>              Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
 !>              Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff3)
-                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio(i,k,iNH4_)*    &
+                tl_Bio(i,k,iNH4_)=(tl_Bio(i,k,iNH4_)-Bio2(i,k,iNH4_)*   &
      &                             tl_cff3)/(1.0_r8+cff3)
 
                 N_Flux_Nitrifi=Bio(i,k,iNH4_)*cff3
@@ -392,8 +415,9 @@
               cff3=cff2*fac1
               tl_cff3=tl_cff2*fac1+cff2*tl_fac1
 # endif
+!!            Bio3(i,k,iNO3_)=Bio(i,k,iNO3_)
 !>            Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff3)
-              tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio(i,k,iNO3_)*      &
+              tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio3(i,k,iNO3_)*     &
      &                           tl_cff3)/(1.0_r8+cff3)
             END DO
           END DO

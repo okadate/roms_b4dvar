@@ -11,11 +11,11 @@
           fac3=dtdays*ZooER(ng)
           DO k=1,N(ng)
             DO i=Istr,Iend
-              fac1=fac3*Bio(i,k,iPhyt)*Bio(i,k,iPhyt)/                  &
-     &             (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
+              fac1=fac3*Bio2(i,k,iPhyt)*Bio2(i,k,iPhyt)/                &
+     &             (K_Phy(ng)+Bio2(i,k,iPhyt)*Bio2(i,k,iPhyt))
               tl_fac1=fac3*(1.0_r8-fac1)*2.0_r8*                        &
-     &                Bio(i,k,iPhyt)*tl_Bio(i,k,iPhyt)/                 &
-     &                (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
+     &                Bio2(i,k,iPhyt)*tl_Bio(i,k,iPhyt)/                &
+     &                (K_Phy(ng)+Bio2(i,k,iPhyt)*Bio2(i,k,iPhyt))
 
               cff2=fac2*Bio(i,k,iZoop)
               tl_cff2=fac2*tl_Bio(i,k,iZoop)
@@ -23,8 +23,9 @@
               cff3=fac1*ZooAE_N(ng)
               tl_cff3=tl_fac1*ZooAE_N(ng)
 
+!>            Bio1(i,k,iZoop)=Bio(i,k,iZoop)
 !>            Bio(i,k,iZoop)=Bio(i,k,iZoop)/(1.0_r8+cff2+cff3)
-              tl_Bio(i,k,iZoop)=(tl_Bio(i,k,iZoop)-Bio(i,k,iZoop)*      &
+              tl_Bio(i,k,iZoop)=(tl_Bio(i,k,iZoop)-Bio2(i,k,iZoop)*     &
      &                          (tl_cff2+tl_cff3))/(1.0_r8+cff2+cff3)
 !
 !  Zooplankton mortality and excretion.

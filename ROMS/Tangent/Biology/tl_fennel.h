@@ -436,14 +436,6 @@
 !  Convert parameters.
 !
 # ifdef EXP_PARAM
-!>    wPhy(ng)=wPhy(ng)*EXP(p(nstp,iwPhy))
-!>    wSDet(ng)=wSDet(ng)*EXP(p(nstp,iwSDet))
-!>    wLDet(ng)=wLDet(ng)*EXP(p(nstp,iwLDet))
-!>    Chl2C_m(ng)=Chl2C_m(ng)*EXP(p(nstp,iChl2C_m)))
-!>    Vp0(ng)=Vp0(ng)*EXP(p(nstp,iVp0))
-!>    R_SODf(ng)=R_SODf(ng)*EXP(p(nstp,iR_SODf))
-!>    R_NH4f(ng)=R_NH4f(ng)*EXP(p(nstp,iR_NH4f))
-!>    R_PO4f(ng)=R_PO4f(ng)*EXP(p(nstp,iR_PO4f))
       tl_wPhy=wPhy(ng)*tl_p(nstp,iwPhy)
       tl_wSDet=wSDet(ng)*tl_p(nstp,iwSDet)
       tl_wLDet=wLDet(ng)*tl_p(nstp,iwLDet)
@@ -453,50 +445,6 @@
       tl_R_NH4f=R_NH4f(ng)*tl_p(nstp,iR_NH4f)
       tl_R_PO4f=R_PO4f(ng)*tl_p(nstp,iR_PO4f)
 # else
-!>    AttSW(ng)=p(nstp,iAttSW)
-!>    AttChl(ng)=p(nstp,iAttChl)
-!>    Vp0(ng)=p(nstp,iVp0)
-!>    I_thNH4(ng)=p(nstp,iI_thNH4)
-!>    D_p5NH4(ng)=p(nstp,iD_p5NH4)
-
-!>    K_Nitri(ng)=p(nstp,iK_Nitri)
-!>    NitriR(ng)=p(nstp,iNitriR)
-!>    K_Denit(ng)=p(nstp,iK_Denit)
-!>    DenitR(ng)=p(nstp,iDenitR)
-!>    K_NO3(ng)=p(nstp,iK_NO3)
-
-!>    K_NH4(ng)=p(nstp,iK_NH4)
-!>    K_PO4(ng)=p(nstp,iK_PO4)
-!>    K_Phy(ng)=p(nstp,iK_Phy)
-!>    Chl2C_m(ng)=p(nstp,iChl2C_m)
-!>    PhyPN(ng)=p(nstp,iPhyPN)
-
-!>    PhyIP(ng)=p(nstp,iPhyIP)
-!>    PhyIS(ng)=p(nstp,iPhyIS)
-!>    PhyMR(ng)=p(nstp,iPhyMR)
-!>    ZooAE_N(ng)=p(nstp,iZooAE_N)
-!>    ZooBM(ng)=p(nstp,iZooBM)
-
-!>    ZooPN(ng)=p(nstp,iZooPN)
-!>    ZooER(ng)=p(nstp,iZooER)
-!>    ZooGR(ng)=p(nstp,iZooGR)
-!>    ZooMR(ng)=p(nstp,iZooMR)
-!>    K_DO(ng)=p(nstp,iK_DO)
-
-!>    LDeRRN(ng)=p(nstp,iLDeRRN)
-!>    LDeRRP(ng)=p(nstp,iLDeRRP)
-!>    CoagR(ng)=p(nstp,iCoagR)
-!>    SDeRRN(ng)=p(nstp,iSDeRRN)
-!>    SDeRRP(ng)=p(nstp,iSDeRRP)
-
-!>    wPhy(ng)=p(nstp,iwPhy)
-!>    wSDet(ng)=p(nstp,iwSDet)
-!>    wLDet(ng)=p(nstp,iwLDet)
-!>    R_SODf(ng)=p(nstp,iR_SODf)
-!>    R_NH4f(ng)=p(nstp,iR_NH4f)
-
-!>    R_PO4f(ng)=p(nstp,iR_PO4f)
-
       tl_AttSW=tl_p(nstp,iAttSW)
       tl_AttChl=tl_p(nstp,iAttChl)
       tl_Vp0=tl_p(nstp,iVp0)
@@ -630,7 +578,11 @@
             DO i=Istr,Iend
               Bio(i,k,ibio)=0.0_r8
               Bio1(i,k,ibio)=0.0_r8
+              Bio2(i,k,ibio)=0.0_r8
+              Bio3(i,k,ibio)=0.0_r8
+              Bio_old(i,k,ibio)=0.0_r8
               tl_Bio(i,k,ibio)=0.0_r8
+              tl_Bio_old(i,k,ibio)=0.0_r8
             END DO
           END DO
 #ifdef BLOWINGUP_CHECKER
@@ -749,8 +701,8 @@
 #endif
 #ifdef ADJUST_PARAM
 # include <tl_fennel_1_param.h>
-#else
-# include <tl_fennel_1.h>
+!#else
+!# include <tl_fennel_1.h>
 #endif
 !
 !-----------------------------------------------------------------------
@@ -761,8 +713,8 @@
 !-----------------------------------------------------------------------
 #ifdef ADJUST_PARAM
 # include <tl_fennel_2_param.h>
-#else
-# include <tl_fennel_2.h>
+!#else
+!# include <tl_fennel_2.h>
 #endif
 !
 !-----------------------------------------------------------------------
@@ -788,8 +740,8 @@
 #endif
 #ifdef ADJUST_PARAM
 # include <tl_fennel_3_param.h>
-#else
-# include <tl_fennel_3.h>
+!#else
+!# include <tl_fennel_3.h>
 #endif
 !
 !-----------------------------------------------------------------------
@@ -810,8 +762,8 @@
 #endif
 #ifdef ADJUST_PARAM
 # include <tl_fennel_4_param.h>
-#else
-# include <tl_fennel_4.h>
+!#else
+! include <tl_fennel_4.h>
 #endif
 !
         END DO ITER_LOOP

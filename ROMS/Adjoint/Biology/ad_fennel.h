@@ -331,6 +331,7 @@
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio1
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio2
+      real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio3
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: Bio_old
 
       real(r8), dimension(IminS:ImaxS,N(ng),NT(ng)) :: ad_Bio
@@ -404,8 +405,6 @@
 !  Set time-stepping according to the number of iterations.
 !
       dtdays=dt(ng)*sec2day/REAL(BioIter(ng),r8)
-
-#ifdef ADJUST_PARAM
 !
 !  Initialize adjoint private parameters.
 !
@@ -452,7 +451,8 @@
       ad_R_PO4f_max=0.0_r8
       ad_K_DO_npflux=0.0_r8
       ad_t_SODf=0.0_r8
-!
+
+#ifdef ADJUST_PARAM
       DO it=1,Nparam(ng)
         ad_my_p(it)=0.0_r8
         buffer(it)=0.0_r8
@@ -609,6 +609,7 @@
               Bio(i,k,ibio)=0.0_r8
               Bio1(i,k,ibio)=0.0_r8
               Bio2(i,k,ibio)=0.0_r8
+              Bio3(i,k,ibio)=0.0_r8
               Bio_old(i,k,ibio)=0.0_r8
               ad_Bio(i,k,ibio)=0.0_r8
               ad_Bio_old(i,k,ibio)=0.0_r8
@@ -693,11 +694,11 @@
 !  and dissolved oxygen.
 #endif
 !
-#ifdef ADJUST_PARAM
+!#ifdef ADJUST_PARAM
 # include <ad_fennel_4_param.h>
-#else
-# include <ad_fennel_4.h>
-#endif
+!#else
+!# include <ad_fennel_4.h>
+!#endif
 !
 #ifdef OXYGEN
 !-----------------------------------------------------------------------
@@ -721,11 +722,11 @@
 !  related excretion (rate: ZooER).
 !-----------------------------------------------------------------------
 !
-#ifdef ADJUST_PARAM
+!#ifdef ADJUST_PARAM
 # include <ad_fennel_3_param.h>
-#else
-# include <ad_fennel_3.h>
-#endif
+!#else
+!# include <ad_fennel_3.h>
+!#endif
 !
 !-----------------------------------------------------------------------
 !  Phytoplankton grazing by zooplankton (rate: ZooGR), phytoplankton
@@ -734,11 +735,11 @@
 !  detritus. [Landry 1993 L&O 38:468-472]
 !-----------------------------------------------------------------------
 !
-#ifdef ADJUST_PARAM
+!#ifdef ADJUST_PARAM
 # include <ad_fennel_2_param.h>
-#else
-# include <ad_fennel_2.h>
-#endif
+!#else
+!# include <ad_fennel_2.h>
+!#endif
 !
 #if defined OXYGEN && defined DENITRIFICATION
 !-----------------------------------------------------------------------
@@ -749,11 +750,11 @@
 !  Light-limited computations.
 !-----------------------------------------------------------------------
 !
-#ifdef ADJUST_PARAM
+!#ifdef ADJUST_PARAM
 # include <ad_fennel_1_param.h>
-#else
-# include <ad_fennel_1.h>
-#endif
+!#else
+!# include <ad_fennel_1.h>
+!#endif
 !
         END DO ITER_LOOP1
 !

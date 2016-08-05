@@ -259,6 +259,7 @@
 # else
               cff3=cff2*fac1
 # endif
+              Bio3(i,k,iNO3_)=Bio(i,k,iNO3_)
               Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff3)
             END DO
           END DO

@@ -353,14 +353,20 @@
             DO i=Istr,Iend
               cff1=fac1*(Bio(i,k,iSDeN)+Bio(i,k,iPhyt))
               cff2=1.0_r8/(1.0_r8+cff1)
+              Bio1(i,k,iPhyt)=Bio(i,k,iPhyt)
+              Bio1(i,k,iChlo)=Bio(i,k,iChlo)
+              Bio1(i,k,iSDeN)=Bio(i,k,iSDeN)
               Bio(i,k,iPhyt)=Bio(i,k,iPhyt)*cff2
               Bio(i,k,iChlo)=Bio(i,k,iChlo)*cff2
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)*cff2
               N_Flux_CoagP=Bio(i,k,iPhyt)*cff1
               N_Flux_CoagD=Bio(i,k,iSDeN)*cff1
+              Bio1(i,k,iLDeN)=Bio(i,k,iLDeN)
               Bio(i,k,iLDeN)=Bio(i,k,iLDeN)+                            &
      &                       N_Flux_CoagP+N_Flux_CoagD
 #ifdef PHOSPHORUS
+              Bio1(i,k,iSDeP)=Bio(i,k,iSDeP)
+              Bio1(i,k,iLDeP)=Bio(i,k,iLDeP)
               Bio(i,k,iSDeP)=Bio(i,k,iSDeP)-PhyPN(ng)*N_Flux_CoagD
               Bio(i,k,iLDeP)=Bio(i,k,iLDeP)+                            &
      &                       PhyPN(ng)*(N_Flux_CoagP+N_Flux_CoagD)
@@ -384,9 +390,13 @@
               cff2=1.0_r8/(1.0_r8+cff1)
               cff3=dtdays*LDeRRN(ng)*fac2
               cff4=1.0_r8/(1.0_r8+cff3)
+              Bio2(i,k,iSDeN)=Bio(i,k,iSDeN)
+              Bio2(i,k,iLDeN)=Bio(i,k,iLDeN)
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)*cff2
               Bio(i,k,iLDeN)=Bio(i,k,iLDeN)*cff4
               N_Flux_Remine=Bio(i,k,iSDeN)*cff1+Bio(i,k,iLDeN)*cff3
+              Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
+              Bio2(i,k,iOxyg)=Bio(i,k,iOxyg)
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Remine
               Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-N_Flux_Remine*rOxNH4
 # ifdef PHOSPHORUS
@@ -394,9 +404,12 @@
               cff2=1.0_r8/(1.0_r8+cff1)
               cff3=dtdays*LDeRRP(ng)*fac2
               cff4=1.0_r8/(1.0_r8+cff3)
+              Bio2(i,k,iSDeP)=Bio(i,k,iSDeP)
+              Bio2(i,k,iLDeP)=Bio(i,k,iLDeP)
               Bio(i,k,iSDeP)=Bio(i,k,iSDeP)*cff2
               Bio(i,k,iLDeP)=Bio(i,k,iLDeP)*cff4
               P_Flux=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
+              Bio2(i,k,iPO4_)=Bio(i,k,iPO4_)
               Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux
 # endif
             END DO
@@ -408,9 +421,12 @@
           cff4=1.0_r8/(1.0_r8+cff3)
           DO k=1,N(ng)
             DO i=Istr,Iend
+              Bio2(i,k,iSDeN)=Bio(i,k,iSDeN)
+              Bio2(i,k,iLDeN)=Bio(i,k,iLDeN)
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)*cff2
               Bio(i,k,iLDeN)=Bio(i,k,iLDeN)*cff4
               N_Flux_Remine=Bio(i,k,iSDeN)*cff1+Bio(i,k,iLDeN)*cff3
+              Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Remine
             END DO
           END DO
@@ -421,9 +437,12 @@
           cff4=1.0_r8/(1.0_r8+cff3)
           DO k=1,N(ng)
             DO i=Istr,Iend
+              Bio2(i,k,iSDeP)=Bio(i,k,iSDeP)
+              Bio2(i,k,iLDeP)=Bio(i,k,iLDeP)
               Bio(i,k,iSDeP)=Bio(i,k,iSDeP)*cff2
               Bio(i,k,iLDeP)=Bio(i,k,iLDeP)*cff4
               P_Flux=Bio(i,k,iSDeP)*cff1+Bio(i,k,iLDeP)*cff3
+              Bio2(i,k,iPO4_)=Bio(i,k,iPO4_)
               Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+P_Flux
             END DO
           END DO
@@ -513,6 +532,7 @@
 !  Add in O2 gas exchange.
 !
             O2_Flux=cff3*(O2satu-Bio(i,k,iOxyg))
+            Bio3(i,k,iOxyg)=Bio(i,k,iOxyg)
             Bio(i,k,iOxyg)=Bio(i,k,iOxyg)+                              &
      &                     O2_Flux*Hz_inv(i,k)
           END DO

@@ -268,6 +268,7 @@
             END DO
 
 #ifdef BIO_SEDIMENT
+! not yet (okada)
 !
 !  Particulate flux reaching the seafloor is remineralized and returned
 !  to the dissolved nitrate pool. Without this conversion, particulate
@@ -276,71 +277,71 @@
 !  parameterization that includes the time delay of remineralization
 !  and dissolved oxygen.
 !
-            cff2=4.0_r8/16.0_r8
-# ifdef OXYGEN
-            cff3=115.0_r8/16.0_r8
-            cff4=106.0_r8/16.0_r8
-# endif
-            IF ((ibio.eq.iPhyt).or.                                     &
-     &          (ibio.eq.iSDeN).or.                                     &
-     &          (ibio.eq.iLDeN)) THEN
-              DO i=Istr,Iend
-                cff1=FC(i,0)*Hz_inv(i,1)
-                tl_cff1=tl_FC(i,0)*Hz_inv(i,1)+FC(i,0)*tl_Hz_inv(i,1)
-# ifdef DENITRIFICATION
-!>              Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1*cff2
-                tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff1*cff2
-#  ifdef OXYGEN
-!>              Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
-                tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff1*cff3
-#  endif
-# else
-!>              Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
-                tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff1
-#  ifdef OXYGEN
-!>              Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
-                tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff1*cff4
-#  endif
-# endif
-              END DO
-            END IF
-# ifdef PHOSPHORUS
-            IF ((ibio.eq.iLDeP).or.                                     &
-     &          (ibio.eq.iSDeP)) THEN
-              DO i=Istr,Iend
-                cff1=FC(i,0)*Hz_inv(i,1)
-                tl_cff1=tl_FC(i,0)*Hz_inv(i,1)+FC(i,0)*tl_Hz_inv(i,1)
+!             cff2=4.0_r8/16.0_r8
+! # ifdef OXYGEN
+!             cff3=115.0_r8/16.0_r8
+!             cff4=106.0_r8/16.0_r8
+! # endif
+!             IF ((ibio.eq.iPhyt).or.                                     &
+!      &          (ibio.eq.iSDeN).or.                                     &
+!      &          (ibio.eq.iLDeN)) THEN
+!               DO i=Istr,Iend
+!                 cff1=FC(i,0)*Hz_inv(i,1)
+!                 tl_cff1=tl_FC(i,0)*Hz_inv(i,1)+FC(i,0)*tl_Hz_inv(i,1)
+! # ifdef DENITRIFICATION
+! !>              Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1*cff2
+!                 tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff1*cff2
+! #  ifdef OXYGEN
+! !>              Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
+!                 tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff1*cff3
+! #  endif
+! # else
+! !>              Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
+!                 tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+tl_cff1
+! #  ifdef OXYGEN
+! !>              Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
+!                 tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff1*cff4
+! #  endif
+! # endif
+!               END DO
+!             END IF
+! # ifdef PHOSPHORUS
+!             IF ((ibio.eq.iLDeP).or.                                     &
+!      &          (ibio.eq.iSDeP)) THEN
+!               DO i=Istr,Iend
+!                 cff1=FC(i,0)*Hz_inv(i,1)
+!                 tl_cff1=tl_FC(i,0)*Hz_inv(i,1)+FC(i,0)*tl_Hz_inv(i,1)
 
-!>              Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1
-                tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff1
-              END DO
-            END IF
-            IF (ibio.eq.iPhyt)THEN
-              DO i=Istr,Iend
-                cff1=FC(i,0)*Hz_inv(i,1)
-                tl_cff1=tl_FC(i,0)*Hz_inv(i,1)+FC(i,0)*tl_Hz_inv(i,1)
+! !>              Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1
+!                 tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff1
+!               END DO
+!             END IF
+!             IF (ibio.eq.iPhyt)THEN
+!               DO i=Istr,Iend
+!                 cff1=FC(i,0)*Hz_inv(i,1)
+!                 tl_cff1=tl_FC(i,0)*Hz_inv(i,1)+FC(i,0)*tl_Hz_inv(i,1)
 
-!>              Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*PhyPN(ng)
-                tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff1*PhyPN(ng)
-              END DO
-            END IF
-# endif
-# if defined H2S && defined OXYGEN
-            IF ((ibio.eq.iPhyt).or.                                     &
-     &          (ibio.eq.iSDeN).or.                                     &
-     &          (ibio.eq.iLDeN)) THEN
-              DO i=Istr,Iend
-!>              Bio(i,1,iH2S_)=Bio(i,1,iH2S_)-                          &
-!>   &                         0.5_r8*MIN(Bio(i,1,iOxyg),0.0_r8)
-                tl_Bio(i,1,iH2S_)=tl_Bio(i,1,iH2S_)-                    &
-     &                            (0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))* &
-     &                            tl_Bio(i,1,iOxyg)
-!>              Bio(i,1,iOxyg)=MAX(Bio(i,1,iOxyg),0.0_r8)
-                tl_Bio(i,1,iOxyg)=(0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))* &
-     &                            tl_Bio(i,1,iOxyg)
-              END DO
-            END IF
-# endif
+! !>              Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*PhyPN(ng)
+!                 tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+tl_cff1*PhyPN(ng)
+!               END DO
+!             END IF
+! # endif
+! # if defined H2S && defined OXYGEN
+!             IF ((ibio.eq.iPhyt).or.                                     &
+!      &          (ibio.eq.iSDeN).or.                                     &
+!      &          (ibio.eq.iLDeN)) THEN
+!               DO i=Istr,Iend
+! !>              Bio(i,1,iH2S_)=Bio(i,1,iH2S_)-                          &
+! !>   &                         0.5_r8*MIN(Bio(i,1,iOxyg),0.0_r8)
+!                 tl_Bio(i,1,iH2S_)=tl_Bio(i,1,iH2S_)-                    &
+!      &                            (0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))* &
+!      &                            tl_Bio(i,1,iOxyg)
+! !>              Bio(i,1,iOxyg)=MAX(Bio(i,1,iOxyg),0.0_r8)
+!                 tl_Bio(i,1,iOxyg)=(0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))* &
+!      &                            tl_Bio(i,1,iOxyg)
+!               END DO
+!             END IF
+! # endif
 #endif
           END DO SINK_LOOP
 #if defined BIO_SED_CONSTANT
@@ -373,9 +374,9 @@
 !
           fac1=dtdays
           fac2=1.0_r8
-          fac4=1.0_r8
+          fac3=1.0_r8
           tl_fac2=0.0_r8
-          tl_fac4=0.0_r8
+          tl_fac3=0.0_r8
           DO i=Istr,Iend
             cff=fac1*Hz_inv(i,1)
 # ifdef TDEPENDANCE
@@ -385,35 +386,33 @@
             tl_fac2=fac2*tlfac
 # endif
 # ifdef NPFLUX_BY_DO
-            fac3=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
-            tl_fac3=tl_K_DO_npflux/mol2g_O2*1000.0_r8
+!!          fac3=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
+            fac4=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
+            tl_fac4=tl_K_DO_npflux/mol2g_O2*1000.0_r8
 
-            fac4=fac3/(Bio(i,1,iOxyg)+fac3)
-            tl_fac4=(tl_fac3-fac4*(tl_Bio(i,1,iOxyg)+tl_fac3))/         &
-     &              (Bio(i,1,iOxyg)+fac3)
+            fac3=fac4/(Bio(i,1,iOxyg)+fac4)
+            tl_fac3=(tl_fac4-fac3*(tl_Bio(i,1,iOxyg)+tl_fac4))/         &
+     &              (Bio(i,1,iOxyg)+fac4)
 # endif
-!>          Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac4
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac3
             tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+                        &
-     &                        cff*(tl_cff2*fac4+cff2*tl_fac4)
+     &                        cff*(tl_cff2*fac3+cff2*tl_fac3)
 # ifdef PHOSPHORUS
-!>          Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3*fac4
+            Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3*fac3
             tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+                        &
-     &                        cff*(tl_cff3*fac4+cff3*tl_fac4)
+     &                        cff*(tl_cff3*fac3+cff3*tl_fac3)
 # endif
 # ifdef OXYGEN
 !!          cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
-            cff4=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
+            cff5=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
             tlfac=SIGN(0.5_r8,cff*cff1*fac2-Bio(i,1,iOxyg))
-            tl_cff4=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
+            tl_cff5=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
      &              (0.5_r8-tlfac)*cff*(tl_cff1*fac2+cff1*tl_fac2)
+            cff4=MAX(cff5,0.0_r8)
+            tl_cff4=(0.5_r8+SIGN(0.5_r8,cff5))*tl_cff5
 
-            cff5=MAX(cff4,0.0_r8)
-            tlfac=SIGN(0.5_r8,cff4)
-            tl_cff5=(0.5_r8+tlfac)*tl_cff4
-
-!>          Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
-!>          Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff5
-            tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff5
+            Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
+            tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff4
 # endif
           END DO
 #endif

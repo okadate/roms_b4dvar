@@ -308,8 +308,6 @@
 #endif
             END DO
           END DO
-!=======================================================================
-          IF (Iteradj.ne.Iter) THEN
 !
 !-----------------------------------------------------------------------
 !  Zooplankton basal metabolism to NH4  (rate: ZooBM), zooplankton
@@ -326,15 +324,20 @@
      &             (K_Phy(ng)+Bio(i,k,iPhyt)*Bio(i,k,iPhyt))
               cff2=fac2*Bio(i,k,iZoop)
               cff3=fac1*ZooAE_N(ng)
+              Bio2(i,k,iZoop)=Bio(i,k,iZoop)
               Bio(i,k,iZoop)=Bio(i,k,iZoop)/(1.0_r8+cff2+cff3)
 !
 !  Zooplankton mortality and excretion.
 !
               N_Flux_Zmortal=cff2*Bio(i,k,iZoop)
               N_Flux_Zexcret=cff3*Bio(i,k,iZoop)
+              Bio1(i,k,iNH4_)=Bio(i,k,iNH4_)
+              Bio3(i,k,iSDeN)=Bio(i,k,iSDeN)
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Zexcret
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)+N_Flux_Zmortal
 #ifdef PHOSPHORUS
+              Bio1(i,k,iPO4_)=Bio(i,k,iPO4_)
+              Bio2(i,k,iSDeP)=Bio(i,k,iSDeP)
               Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+ZooPN(ng)*N_Flux_Zexcret
               Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+ZooPN(ng)*N_Flux_Zmortal
 #endif
@@ -342,17 +345,23 @@
 !  Zooplankton basal metabolism (limited by a zooplankton minimum).
 !
               N_Flux_Zmetabo=cff1*MAX(Bio(i,k,iZoop)-ZooMin(ng),0.0_r8)
+              Bio3(i,k,iZoop)=Bio(i,k,iZoop)
+              Bio2(i,k,iNH4_)=Bio(i,k,iNH4_)
               Bio(i,k,iZoop)=Bio(i,k,iZoop)-N_Flux_Zmetabo
               Bio(i,k,iNH4_)=Bio(i,k,iNH4_)+N_Flux_Zmetabo
 #ifdef PHOSPHORUS
+              Bio2(i,k,iPO4_)=Bio(i,k,iPO4_)
               Bio(i,k,iPO4_)=Bio(i,k,iPO4_)+ZooPN(ng)*N_Flux_Zmetabo
 #endif
 #ifdef OXYGEN
+              Bio1(i,k,iOxyg)=Bio(i,k,iOxyg)
               Bio(i,k,iOxyg)=Bio(i,k,iOxyg)-                            &
      &                       rOxNH4*(N_Flux_Zmetabo+N_Flux_Zexcret)
 #endif
             END DO
           END DO
+!=======================================================================
+          IF (Iteradj.ne.Iter) THEN
 !
 !-----------------------------------------------------------------------
 !  Coagulation of phytoplankton and small detritus to large detritus.
