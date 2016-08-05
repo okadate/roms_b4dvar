@@ -177,7 +177,7 @@
 !>            Bio(i,k,iSDeP)=Bio(i,k,iSDeP)+ZooPN(ng)*N_Flux_Zmortal
               tl_Bio(i,k,iPO4_)=tl_Bio(i,k,iPO4_)+                      &
      &                          tl_ZooPN*N_Flux_Zexcret+                &
-     &                          ZooPN(ng)*tl_N_Flux_Zexcret)
+     &                          ZooPN(ng)*tl_N_Flux_Zexcret
               tl_Bio(i,k,iSDeP)=tl_Bio(i,k,iSDeP)+                      &
      &                          tl_ZooPN*N_Flux_Zmortal+                &
      &                          ZooPN(ng)*tl_N_Flux_Zmortal

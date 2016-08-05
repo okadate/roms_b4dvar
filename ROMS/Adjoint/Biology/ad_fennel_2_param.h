@@ -99,7 +99,7 @@
 
 !>            tl_Bio(i,k,iPO4_)=tl_Bio(i,k,iPO4_)+                      &
 !>   &                          tl_ZooPN*N_Flux_Zexcret+                &
-!>   &                          ZooPN(ng)*tl_N_Flux_Zexcret)
+!>   &                          ZooPN(ng)*tl_N_Flux_Zexcret
               ad_N_Flux_Zexcret=ad_N_Flux_Zexcret+                      &
      &                          ZooPN(ng)*ad_Bio(i,k,iPO4_)
               ad_ZooPN=ad_ZooPN+N_Flux_Zexcret*ad_Bio(i,k,iPO4_)
