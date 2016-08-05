@@ -79,12 +79,15 @@
 !-----------------------------------------------------------------------
 !
       CALL tl_pre_step3d (ng, tile)
+
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Compute baroclinic pressure gradient.
 !-----------------------------------------------------------------------
 !
       CALL tl_prsgrd (ng, tile)
+# endif
 # ifndef TS_FIXED
 #  ifdef TS_DIF2
 !
@@ -115,6 +118,7 @@
         CALL tl_t3drelax (ng, tile)
       END IF
 # endif
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Compute right-hand-side terms for the 3D momentum equations.
@@ -181,6 +185,8 @@
 # ifdef PROFILE
       CALL wclock_off (ng, iTLM, 21)
 # endif
+# endif /* UV_FIXED_TL */
+
 # ifdef UV_VIS2
 !
 !-----------------------------------------------------------------------

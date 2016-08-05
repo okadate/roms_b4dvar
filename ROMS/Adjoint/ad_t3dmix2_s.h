@@ -265,8 +265,10 @@
               adfac2=adfac*(Hz(i,j,k)+Hz(i,j-1,k))
               adfac3=adfac2*0.75_r8
               adfac4=adfac2*0.25_r8
+# ifndef UV_FIXED_TL
               ad_Hz(i,j-1,k)=ad_Hz(i,j-1,k)+adfac1
               ad_Hz(i,j  ,k)=ad_Hz(i,j  ,k)+adfac1
+# endif
               ad_t(i,j-1,k,nrhs,itrc)=ad_t(i,j-1,k,nrhs,itrc)-adfac3
               ad_t(i,j  ,k,nrhs,itrc)=ad_t(i,j  ,k,nrhs,itrc)+adfac3
               ad_t(i,j-1,k,nstp,itrc)=ad_t(i,j-1,k,nstp,itrc)-adfac4
@@ -290,8 +292,10 @@
      &                        (t(i,j-1,k,nrhs,itrc)-                    &
      &                         tclm(i,j-1,k,itrc)))
                 adfac2=adfac*(Hz(i,j,k)+Hz(i,j-1,k))
+# ifndef UV_FIXED_TL
                 ad_Hz(i,j-1,k)=ad_Hz(i,j-1,k)+adfac1
                 ad_Hz(i,j  ,k)=ad_Hz(i,j  ,k)+adfac1
+# endif
                 ad_t(i,j-1,k,nrhs,itrc)=ad_t(i,j-1,k,nrhs,itrc)-adfac2
                 ad_t(i,j  ,k,nrhs,itrc)=ad_t(i,j  ,k,nrhs,itrc)+adfac2
                 ad_FE(i,j)=0.0_r8
@@ -307,8 +311,10 @@
                 adfac=cff*ad_FE(i,j)
                 adfac1=adfac*(t(i,j,k,nrhs,itrc)-t(i,j-1,k,nrhs,itrc))
                 adfac2=adfac*(Hz(i,j,k)+Hz(i,j-1,k))
+# ifndef UV_FIXED_TL
                 ad_Hz(i,j-1,k)=ad_Hz(i,j-1,k)+adfac1
                 ad_Hz(i,j  ,k)=ad_Hz(i,j  ,k)+adfac1
+# endif
                 ad_t(i,j-1,k,nrhs,itrc)=ad_t(i,j-1,k,nrhs,itrc)-adfac2
                 ad_t(i,j  ,k,nrhs,itrc)=ad_t(i,j  ,k,nrhs,itrc)+adfac2
                 ad_FE(i,j)=0.0_r8
@@ -325,8 +331,10 @@
               adfac=cff*ad_FE(i,j)
               adfac1=adfac*(t(i,j,k,nrhs,itrc)-t(i,j-1,k,nrhs,itrc))
               adfac2=adfac*(Hz(i,j,k)+Hz(i,j-1,k))
+# ifndef UV_FIXED_TL
               ad_Hz(i,j-1,k)=ad_Hz(i,j-1,k)+adfac1
               ad_Hz(i,j  ,k)=ad_Hz(i,j  ,k)+adfac1
+# endif
               ad_t(i,j-1,k,nrhs,itrc)=ad_t(i,j-1,k,nrhs,itrc)-adfac2
               ad_t(i,j  ,k,nrhs,itrc)=ad_t(i,j  ,k,nrhs,itrc)+adfac2
               ad_FE(i,j)=0.0_r8
@@ -371,8 +379,10 @@
               adfac2=adfac*(Hz(i,j,k)+Hz(i-1,j,k))
               adfac3=adfac2*0.75_r8
               adfac4=adfac2*0.25_r8
+# ifndef UV_FIXED_TL
               ad_Hz(i-1,j,k)=ad_Hz(i-1,j,k)+adfac1
               ad_Hz(i  ,j,k)=ad_Hz(i  ,j,k)+adfac1
+# endif
               ad_t(i-1,j,k,nrhs,itrc)=ad_t(i-1,j,k,nrhs,itrc)-adfac3
               ad_t(i  ,j,k,nrhs,itrc)=ad_t(i  ,j,k,nrhs,itrc)+adfac3
               ad_t(i-1,j,k,nstp,itrc)=ad_t(i-1,j,k,nstp,itrc)-adfac4
@@ -396,8 +406,10 @@
      &                        (t(i-1,j,k,nrhs,itrc)-                    &
      &                         tclm(i-1,j,k,itrc)))
                 adfac2=adfac*(Hz(i,j,k)+Hz(i-1,j,k))
+# ifndef UV_FIXED_TL
                 ad_Hz(i-1,j,k)=ad_Hz(i-1,j,k)+adfac1
                 ad_Hz(i  ,j,k)=ad_Hz(i  ,j,k)+adfac1
+# endif
                 ad_t(i-1,j,k,nrhs,itrc)=ad_t(i-1,j,k,nrhs,itrc)-adfac2
                 ad_t(i  ,j,k,nrhs,itrc)=ad_t(i  ,j,k,nrhs,itrc)+adfac2
                 ad_FX(i,j)=0.0_r8
@@ -413,8 +425,10 @@
                 adfac=cff*ad_FX(i,j)
                 adfac1=adfac*(t(i,j,k,nrhs,itrc)-t(i-1,j,k,nrhs,itrc))
                 adfac2=adfac*(Hz(i,j,k)+Hz(i-1,j,k))
+# ifndef UV_FIXED_TL
                 ad_Hz(i-1,j,k)=ad_Hz(i-1,j,k)+adfac1
                 ad_Hz(i  ,j,k)=ad_Hz(i  ,j,k)+adfac1
+# endif
                 ad_t(i-1,j,k,nrhs,itrc)=ad_t(i-1,j,k,nrhs,itrc)-adfac2
                 ad_t(i  ,j,k,nrhs,itrc)=ad_t(i  ,j,k,nrhs,itrc)+adfac2
                 ad_FX(i,j)=0.0_r8
@@ -431,8 +445,10 @@
               adfac=cff*ad_FX(i,j)
               adfac1=adfac*(t(i,j,k,nrhs,itrc)-t(i-1,j,k,nrhs,itrc))
               adfac2=adfac*(Hz(i,j,k)+Hz(i-1,j,k))
+# ifndef UV_FIXED_TL
               ad_Hz(i-1,j,k)=ad_Hz(i-1,j,k)+adfac1
               ad_Hz(i  ,j,k)=ad_Hz(i  ,j,k)+adfac1
+# endif
               ad_t(i-1,j,k,nrhs,itrc)=ad_t(i-1,j,k,nrhs,itrc)-adfac2
               ad_t(i  ,j,k,nrhs,itrc)=ad_t(i  ,j,k,nrhs,itrc)+adfac2
               ad_FX(i,j)=0.0_r8

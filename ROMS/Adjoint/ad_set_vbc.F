@@ -364,6 +364,7 @@
       END DO
 #  endif
 
+#  ifndef UV_FIXED_TL
 #  ifndef BBL_MODEL_NOT_YET
 !
 !-----------------------------------------------------------------------
@@ -665,6 +666,7 @@
       END DO
 #   endif
 #  endif
+#  endif /* UV_FIXED_TL */
 
 #  ifdef ICESHELF
 !
@@ -1044,8 +1046,10 @@
 !>   &                         tl_t(i,j,N(ng),nrhs,isalt))
 !>
           adfac=Tnudg(isalt,ng)*ad_stflx(i,j,isalt)
+#    ifndef UV_FIXED_TL
           ad_Hz(i,j,N(ng))=ad_Hz(i,j,N(ng))-                            &
      &                     (t(i,j,N(ng),nrhs,isalt)-sss(i,j))*adfac
+#    endif
           ad_t(i,j,N(ng),nrhs,isalt)=ad_t(i,j,N(ng),nrhs,isalt)-        &
      &                               Hz(i,j,N(ng))*adfac
           ad_t(i,j,N(ng),nrhs,isalt)=ad_t(i,j,N(ng),nrhs,isalt)+        &
@@ -1064,8 +1068,10 @@
 !>   &                         tl_t(i,j,N(ng),nrhs,isalt))
 !>
           adfac=-Tnudg(isalt,ng)*ad_stflx(i,j,isalt)
+#    ifndef UV_FIXED_TL
           ad_Hz(i,j,N(ng))=ad_Hz(i,j,N(ng))+                            &
      &                     (t(i,j,N(ng),nrhs,isalt)-sss(i,j))*adfac
+#    endif
           ad_t(i,j,N(ng),nrhs,isalt)=ad_t(i,j,N(ng),nrhs,isalt)+        &
      &                               Hz(i,j,N(ng))*adfac
 #    if !(defined ADJUST_STFLUX       || defined AD_SENSITIVITY   || \

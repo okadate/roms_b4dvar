@@ -85,6 +85,7 @@
         CALL ad_uv3drelax (ng, tile)
       END IF
 # endif
+# ifndef UV_FIXED_TL
 # ifdef UV_VIS4
 !
 !-----------------------------------------------------------------------
@@ -167,6 +168,9 @@
 # ifdef PROFILE
       CALL wclock_off (ng, iADM, 21)
 # endif
+
+# endif /* UV_FIXED_TL */
+
 # ifdef RPM_RELAXATION
 !
 !-----------------------------------------------------------------------
@@ -198,12 +202,14 @@
       CALL ad_t3dmix2 (ng, tile)
 #  endif
 # endif
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Compute baroclinic pressure gradient.
 !-----------------------------------------------------------------------
 !
       CALL ad_prsgrd (ng, tile)
+# endif
 !
 !-----------------------------------------------------------------------
 !  Initialize computations for new time step of the 3D primitive

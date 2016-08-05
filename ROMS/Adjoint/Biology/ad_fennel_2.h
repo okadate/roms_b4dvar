@@ -139,13 +139,17 @@
               ad_fac1=0.0_r8
 
 !>            tl_fac3=fac3*tl_Bio(i,k,itemp)*LOG(PhyMR_t(ng))
+# ifndef UV_FIXED_TL
               ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+                      &
      &                          fac3*ad_fac3*LOG(PhyMR_t(ng))
+# endif
               ad_fac3=0.0_r8
 
 !>            tl_fac2=fac2*tl_Bio(i,k,itemp)*LOG(ZooGR_t(ng))
+# ifndef UV_FIXED_TL
               ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+                      &
      &                          fac2*ad_fac2*LOG(ZooGR_t(ng))
+# endif
               ad_fac2=0.0_r8
 #endif
             END DO

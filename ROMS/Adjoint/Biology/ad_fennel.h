@@ -656,7 +656,9 @@
               
 !>            tl_t(i,j,k,nnew,ibio)=tl_t(i,j,k,nnew,ibio)+              &
 !>   &                              tl_cff*Hz(i,j,k)+cff*tl_Hz(i,j,k)
+#ifndef UV_FIXED_TL
               ad_Hz(i,j,k)=ad_Hz(i,j,k)+cff*ad_t(i,j,k,nnew,ibio)
+#endif
               ad_cff=ad_cff+Hz(i,j,k)*ad_t(i,j,k,nnew,ibio)
 
 !>            tl_cff=tl_Bio(i,k,ibio)-tl_Bio_old(i,k,ibio)
@@ -772,15 +774,19 @@
 !>          tlfac=0.5_r8+SIGN(0.5_r8,t(i,j,k,nstp,isalt))
 !>          tl_Bio(i,k,isalt)=tlfac*tl_t(i,j,k,nstp,isalt)
             adfac=0.5_r8+SIGN(0.5_r8,t(i,j,k,nstp,isalt))
+#ifndef UV_FIXED_TL
             ad_t(i,j,k,nstp,isalt)=ad_t(i,j,k,nstp,isalt)+              &
      &                             adfac*ad_Bio(i,k,isalt)
+#endif
             ad_Bio(i,k,isalt)=0.0_r8
 
 !>          tlfac=0.5_r8+SIGN(0.5_r8,35.0_r8-t(i,j,k,nstp,itemp))
 !>          tl_Bio(i,k,itemp)=tlfac*tl_t(i,j,k,nstp,itemp)
             adfac=0.5_r8+SIGN(0.5_r8,35.0_r8-t(i,j,k,nstp,itemp))
+#ifndef UV_FIXED_TL
             ad_t(i,j,k,nstp,itemp)=ad_t(i,j,k,nstp,itemp)+              &
      &                             adfac*ad_Bio(i,k,itemp)
+#endif
             ad_Bio(i,k,itemp)=0.0_r8
           END DO
         END DO
@@ -821,9 +827,11 @@
 !>   &                      (tl_Hz(i,j,k-1)+tl_Hz(i,j,k)+               &
 !>   &                       tl_Hz(i,j,k+1))
             adfac=Hz_inv3(i,k)*Hz_inv3(i,k)*ad_Hz_inv3(i,k)
+#ifndef UV_FIXED_TL
             ad_Hz(i,j,k-1)=ad_Hz(i,j,k-1)-adfac
             ad_Hz(i,j,k  )=ad_Hz(i,j,k  )-adfac
             ad_Hz(i,j,k+1)=ad_Hz(i,j,k+1)-adfac
+#endif
             ad_Hz_inv3(i,k)=0.0_r8
           END DO
         END DO
@@ -832,16 +840,20 @@
 !>          tl_Hz_inv2(i,k)=-Hz_inv2(i,k)*Hz_inv2(i,k)*                 &
 !>   &                      (tl_Hz(i,j,k)+tl_Hz(i,j,k+1))
             adfac=Hz_inv2(i,k)*Hz_inv2(i,k)*ad_Hz_inv2(i,k)
+#ifndef UV_FIXED_TL
             ad_Hz(i,j,k  )=ad_Hz(i,j,k  )-adfac
             ad_Hz(i,j,k+1)=ad_Hz(i,j,k+1)-adfac
+#endif
             ad_Hz_inv2(i,k)=0.0_r8
           END DO
         END DO
         DO k=1,N(ng)
           DO i=Istr,Iend
 !>          tl_Hz_inv(i,k)=-Hz_inv(i,k)*Hz_inv(i,k)*tl_Hz(i,j,k)
+#ifndef UV_FIXED_TL
             ad_Hz(i,j,k)=ad_Hz(i,j,k)-                                  &
      &                   Hz_inv(i,k)*Hz_inv(i,k)*ad_Hz_inv(i,k)
+#endif
             ad_Hz_inv(i,k)=0.0_r8
           END DO
         END DO

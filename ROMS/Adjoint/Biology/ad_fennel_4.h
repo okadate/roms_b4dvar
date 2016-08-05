@@ -73,8 +73,10 @@
 # endif
 # ifdef TDEPENDANCE
 !>          tl_fac2=fac2*tl_Bio(i,1,itemp)*LOG(t_SODf(ng))
+#  ifndef UV_FIXED_TL
             ad_Bio(i,1,itemp)=ad_Bio(i,1,itemp)+                        &
      &                        fac2*ad_fac2*LOG(t_SODf(ng))
+#  endif
             ad_fac2=0.0_r8
 # endif
           END DO
@@ -450,7 +452,9 @@
                 adfac1=Hz(i,j,ks)*cu*ad_FC(i,k-1)
                 adfac2=adfac1*cu
                 adfac3=adfac2*(1.5_r8-cu)
+#ifndef UV_FIXED_TL
                 ad_Hz(i,j,ks)=ad_Hz(i,j,ks)+cu*adfac
+#endif
                 ad_cu=ad_cu+Hz(i,j,ks)*adfac
                 ad_bL(i,ks)=ad_bL(i,ks)+adfac1
                 ad_cu=ad_cu+                                            &
@@ -473,7 +477,9 @@
      &                             Hz_inv(i,ks))))*ad_cu
                 adfac1=adfac*Hz_inv(i,ks)
                 ad_WL(i,k)=ad_WL(i,k)+adfac1
+#ifndef UV_FIXED_TL
                 ad_z_w(i,j,ks-1)=ad_z_w(i,j,ks-1)-adfac1
+#endif
                 ad_Hz_inv(i,ks)=ad_Hz_inv(i,ks)+                        &
      &                          (WL(i,k)-z_w(i,j,ks-1))*adfac
                 ad_cu=0.0_r8
@@ -510,12 +516,16 @@
               DO i=Istr,Iend
 !>              tl_WR(i,k)=tl_Hz(i,j,k)*qc(i,k)+Hz(i,j,k)*tl_qc(i,k)
 !>
+#ifndef UV_FIXED_TL
                 ad_Hz(i,j,k)=ad_Hz(i,j,k)+qc(i,k)*ad_WR(i,k)
+#endif
                 ad_qc(i,k)=ad_qc(i,k)+Hz(i,j,k)*ad_WR(i,k)
                 ad_WR(i,k)=0.0_r8
 !>              tl_WL(i,k)=tl_z_w(i,j,k-1)+tl_cff
 !>
+#ifndef UV_FIXED_TL
                 ad_z_w(i,j,k-1)=ad_z_w(i,j,k-1)+ad_WL(i,k)
+#endif
                 ad_cff=ad_cff+ad_WL(i,k)
                 ad_WL(i,k)=0.0_r8
 !>              tl_FC(i,k-1)=0.0_r8
@@ -931,11 +941,15 @@
 !>              tl_dltL=tl_dltL+tl_cff*Hz(i,j,k-1)+cff*tl_Hz(i,j,k-1)
 !>
                 ad_cff=ad_cff+ad_dltL*Hz(i,j,k-1)
+#ifndef UV_FIXED_TL
                 ad_Hz(i,j,k-1)=ad_Hz(i,j,k-1)+cff*ad_dltL
+#endif
 !>              tl_dltR=tl_dltR-tl_cff*Hz(i,j,k+1)-cff*tl_Hz(i,j,k+1)
 !>
                 ad_cff=ad_cff-ad_dltR*Hz(i,j,k+1)
+#ifndef UV_FIXED_TL
                 ad_Hz(i,j,k+1)=ad_Hz(i,j,k+1)-cff*ad_dltR
+#endif
 !>              tl_cff=(tl_dltR-tl_dltL)*Hz_inv3(i,k)+                  &
 !>   &                 (dltR-dltL)*tl_Hz_inv3(i,k)
 !>
@@ -983,18 +997,24 @@
                 ad_cffR=0.0_r8
 !>              tl_cff=tl_Hz(i,j,k-1)+2.0_r8*tl_Hz(i,j,k)+tl_Hz(i,j,k+1)
 !>
+#ifndef UV_FIXED_TL
                 ad_Hz(i,j,k-1)=ad_Hz(i,j,k-1)+ad_cff
                 ad_Hz(i,j,k)=ad_Hz(i,j,k)+2.0_r8*ad_cff
                 ad_Hz(i,j,k+1)=ad_Hz(i,j,k+1)+ad_cff
+#endif
                 ad_cff=0.0_r8
 !>              tl_dltL=tl_Hz(i,j,k)*FC(i,k-1)+Hz(i,j,k)*tl_FC(i,k-1)
 !>
+#ifndef UV_FIXED_TL
                 ad_Hz(i,j,k)=ad_Hz(i,j,k)+ad_dltL*FC(i,k-1)
+#endif
                 ad_FC(i,k-1)=ad_FC(i,k-1)+ad_dltL*Hz(i,j,k)
                 ad_dltL=0.0_r8
 !>              tl_dltR=tl_Hz(i,j,k)*FC(i,k)+Hz(i,j,k)*tl_FC(i,k)
 !>
+#ifndef UV_FIXED_TL
                 ad_Hz(i,j,k)=ad_Hz(i,j,k)+ad_dltR*FC(i,k)
+#endif
                 ad_FC(i,k)=ad_FC(i,k)+ad_dltR*Hz(i,j,k)
                 ad_dltR=0.0_r8
               END DO

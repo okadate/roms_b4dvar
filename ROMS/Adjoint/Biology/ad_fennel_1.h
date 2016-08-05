@@ -35,8 +35,10 @@
               ad_cff3=0.0_r8
 
 !>            tl_fac2=fac2*tl_Bio(i,k,itemp)*LOG(DenitR_t(ng))
+#  ifndef UV_FIXED_TL
               ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+                      &
      &                          fac2*ad_fac2*LOG(DenitR_t(ng))
+#  endif
               ad_fac2=0.0_r8
 # else
 !>            tl_cff3=tl_cff2*fac1+cff2*tl_fac1
@@ -189,8 +191,10 @@
                 ad_fac1=0.0_r8
 
 !>              tl_cff=cff*tl_Bio(i,k,itemp)*LOG(NitriR_t(ng))
+#  ifndef UV_FIXED_TL
                 ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+                    &
      &                            cff*ad_cff*LOG(NitriR_t(ng))
+#  endif
                 ad_cff=0.0_r8
 # else
 !>              tl_fac1=fac*tl_fac3
@@ -568,7 +572,9 @@
                 ad_fac1=0.0_r8
 
 !>              tl_Vp=Vp*tl_Bio(i,k,itemp)
+#ifndef UV_FIXED_TL
                 ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+Vp*ad_Vp
+#endif
                 ad_Vp=0.0_r8
 !
 !  Compute Chlorophyll-a phytoplankton ratio, [mg Chla / (mg C)].
@@ -676,8 +682,10 @@
                 ad_cff3=0.0_r8
 
 !>              tl_cff=cff*tl_Bio(i,k,itemp)*LOG(NitriR_t(ng))
+#  ifndef UV_FIXED_TL
                 ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+                    &
      &                            cff*ad_cff*LOG(NitriR_t(ng))
+#  endif
                 ad_cff=0.0_r8
 # else
 !>              tl_cff3=fac1*tl_fac3

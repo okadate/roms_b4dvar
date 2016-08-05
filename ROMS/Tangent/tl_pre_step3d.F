@@ -1308,6 +1308,8 @@
         END DO
       END DO
 # endif /* !TS_FIXED */
+
+# ifndef UV_FIXED_TL
 !
 !=======================================================================
 !  3D momentum equation in the XI-direction.
@@ -1635,6 +1637,7 @@
           END IF
         END IF
       END DO J_LOOP2
+# endif /* UV_FIXED_TL */
 
 # ifndef TS_FIXED
 !

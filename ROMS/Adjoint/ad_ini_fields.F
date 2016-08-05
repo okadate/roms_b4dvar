@@ -335,6 +335,7 @@
       END DO
 # endif
 
+# ifndef UV_FIXED_TL
 # ifdef SOLVE3D
 !
 !-----------------------------------------------------------------------
@@ -901,6 +902,7 @@
         END DO
       END DO
 # endif
+# endif /* UV_FIXED_TL */
 
       RETURN
       END SUBROUTINE ad_ini_fields_tile
@@ -1512,6 +1514,7 @@
       IF (iic(ng).eq.ntend(ng)) kout=krhs
 # endif
 !
+# ifndef UV_FIXED_TL
 # ifdef SOLVE3D
 #  ifdef DISTRIBUTE
       CALL ad_mp_exchange2d (ng, tile, model, 4,                        &
@@ -1650,8 +1653,10 @@
         END IF
       END DO
 # endif
+# endif /* UV_FIXED_TL */
 !
 # ifdef SOLVE3D
+#  ifndef UV_FIXED_TL
 #  ifdef DISTRIBUTE
       CALL ad_mp_exchange3d (ng, tile, model, 4,                        &
      &                       LBi, UBi, LBj, UBj, 1, N(ng),              &
@@ -1709,6 +1714,8 @@
           END DO
         END DO
       END DO
+#  endif /* UV_FIXED_TL */
+
 #  ifdef DISTRIBUTE
       CALL ad_mp_exchange4d (ng, tile, model, 2,                        &
      &                       LBi, UBi, LBj, UBj, 1, N(ng), 1, NT(ng),   &

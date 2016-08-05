@@ -110,10 +110,12 @@
 
 !>          tl_TS=-tl_Bio(i,k,itemp)/(298.15_r8-Bio(i,k,itemp))-        &
 !>   &             tl_Bio(i,k,itemp)/(273.15_r8+Bio(i,k,itemp))
+# ifndef UV_FIXED_TL
             ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)-                        &
      &                        ad_TS/(273.15_r8+Bio(i,k,itemp))
             ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)-                        &
      &                        ad_TS/(298.15_r8-Bio(i,k,itemp))
+# endif
             ad_TS=0.0_r8
 
 !>          tl_cff3=-0.5_r8*cff3*tl_SchmidtN_Ox/SchmidtN_Ox
@@ -131,9 +133,11 @@
 !>          tl_SchmidtN_Ox=-tl_Bio(i,k,itemp)*                          &
 !>   &                     (81.83_r8-Bio(i,k,itemp)*                    &
 !>   &                     (2.966_r8-Bio(i,k,itemp)*0.024012_r8))
+#  ifndef UV_FIXED_TL
             ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)-ad_SchmidtN_Ox*         &
      &                        (81.83_r8-Bio(i,k,itemp)*                 &
      &                        (2.966_r8-Bio(i,k,itemp)*0.024012_r8))
+#  endif
             ad_SchmidtN_Ox=0.0_r8
 # else
 !
@@ -142,9 +146,11 @@
 !>          tl_SchmidtN_Ox=tl_Bio(i,k,itemp)*                           &
 !>                         (128.0_r8-Bio(i,k,itemp)*                    &
 !>   &                     (7.9836_r8-Bio(i,k,itemp)*0.150273_r8))
+#  ifndef UV_FIXED_TL
             ad_Bio(i,k,itemp)=ad_Bio(i,k,itemp)+ad_SchmidtN_Ox*         &
                               (128.0_r8-Bio(i,k,itemp)*                 &
      &                        (7.9836_r8-Bio(i,k,itemp)*0.150273_r8))
+#  endif
             ad_SchmidtN_Ox=0.0_r8
 # endif
           END DO

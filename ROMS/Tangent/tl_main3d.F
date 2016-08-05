@@ -230,6 +230,7 @@
 !
         DO ng=1,Ngrids
           IF (iic(ng).eq.ntstart(ng)) THEN
+#  ifndef UV_FIXED_TL
 !
 !  Initialize free-surface and compute initial level thicknesses and
 !  depths.
@@ -239,6 +240,7 @@
               CALL tl_set_depth (ng, tile)
             END DO
 !$OMP BARRIER
+#  endif
 !
 !  Initialize other state variables.
 !
@@ -258,9 +260,11 @@
 !
         DO ng=1,Ngrids
           DO tile=first_tile(ng),last_tile(ng),+1
+# ifndef UV_FIXED_TL
             CALL tl_set_massflux (ng, tile)
-# ifndef TS_FIXED
+#  ifndef TS_FIXED
             CALL tl_rho_eos (ng, tile)
+#  endif
 # endif
             CALL tl_diag (ng, tile)
 # ifdef FORWARD_READ
@@ -377,6 +381,7 @@
           END IF
         END DO
 # endif
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Compute tangent linear vertical mixing coefficients for momentum and
@@ -398,6 +403,8 @@
           END DO
 !$OMP BARRIER
         END DO
+# endif
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Set free-surface to it time-averaged value.  If applicable,
@@ -417,6 +424,7 @@
           END DO
 !$OMP BARRIER
         END DO
+# endif
 !
 !-----------------------------------------------------------------------
 !  If appropriate, write out fields into output NetCDF files.  Notice
@@ -490,7 +498,9 @@
 !
             IF (my_iif.le.(nfast(ng)+1)) THEN
               DO tile=last_tile(ng),first_tile(ng),-1
+#  ifndef UV_FIXED_TL
                 CALL tl_step2d (ng, tile)
+#  endif
               END DO
 !$OMP BARRIER
             END IF
@@ -513,7 +523,9 @@
 !
             IF (iif(ng).lt.(nfast(ng)+1)) THEN
               DO tile=first_tile(ng),last_tile(ng),+1
+#  ifndef UV_FIXED_TL
                 CALL tl_step2d (ng, tile)
+#  endif
               END DO
 !$OMP BARRIER
             END IF
@@ -521,6 +533,7 @@
 
         END DO LOOP_2D
 # endif
+# ifndef UV_FIXED_TL
 !
 !-----------------------------------------------------------------------
 !  Recompute depths and thicknesses using the new time filtered
@@ -547,6 +560,7 @@
           END DO
 !$OMP BARRIER
         END DO
+# endif
 !
 !-----------------------------------------------------------------------
 !  Time-step vertical mixing turbulent equations and passive tracer
@@ -555,7 +569,9 @@
 !
         DO ng=1,Ngrids
           DO tile=first_tile(ng),last_tile(ng),+1
+# ifndef UV_FIXED_TL
             CALL tl_omega (ng, tile)
+# endif
 # ifdef MY25_MIXING_NOT_YET
             CALL tl_my25_corstep (ng, tile)
 # elif defined GLS_MIXING_NOT_YET
