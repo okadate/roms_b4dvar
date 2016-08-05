@@ -309,7 +309,8 @@
         IF (Lparam(itrc,ng)) THEN
           p(Lout,itrc)=p(Lout,itrc)+tl_p(Linp,itrc)
 #    ifdef POSITIVE_PARAM
-          p(Lout,itrc)=MAX(p(Lout,itrc),0.0_r8)
+!!        p(Lout,itrc)=MAX(p(Lout,itrc),0.0_r8)
+          p(Lout,itrc)=MAX(p(Lout,itrc),0.1_r8*p(Linp,itrc))
 #    endif
 !#    ifndef EXP_PARAM
 !          p(Lout,itrc)=MAX(p(Lout,itrc),pmin(itrc,ng))
