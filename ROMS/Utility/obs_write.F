@@ -362,6 +362,9 @@
      &                        Tobs, Xobs, Yobs, Zobs,                   &
      &                        OCEAN(ng)%u(:,:,:,NOUT),                  &
      &                        GRID(ng)%z_v,                             &
+#   ifdef OBS_DEPTH_SSH
+     &                        GRID(ng)%z_v(:,:,N(ng)),                  &
+#   endif
 #   ifdef MASKING
      &                        GRID(ng)%umask,                           &
 #   endif
@@ -378,6 +381,9 @@
      &                        Tobs, Xobs, Yobs, Zobs,                   &
      &                        OCEAN(ng)%e_u(:,:,:,1),                   &
      &                        GRID(ng)%z_v,                             &
+#    ifdef OBS_DEPTH_SSH
+     &                        GRID(ng)%z_v(:,:,N(ng)),                  &
+#    endif
 #    ifdef MASKING
      &                        GRID(ng)%umask,                           &
 #    endif
@@ -407,6 +413,9 @@
      &                        Tobs, Xobs, Yobs, Zobs,                   &
      &                        OCEAN(ng)%tl_u(:,:,:,NOUT),               &
      &                        GRID(ng)%z_v,                             &
+#   ifdef OBS_DEPTH_SSH
+     &                        GRID(ng)%z_v(:,:,N(ng)),                  &
+#   endif
 #   ifdef MASKING
      &                        GRID(ng)%umask,                           &
 #   endif
@@ -438,6 +447,9 @@
      &                        Tobs, Xobs, Yobs, Zobs,                   &
      &                        OCEAN(ng)%v(:,:,:,NOUT),                  &
      &                        GRID(ng)%z_v,                             &
+#   ifdef OBS_DEPTH_SSH
+     &                        GRID(ng)%z_v(:,:,N(ng)),                  &
+#   endif
 #   ifdef MASKING
      &                        GRID(ng)%vmask,                           &
 #   endif
@@ -454,6 +466,9 @@
      &                        Tobs, Xobs, Yobs, Zobs,                   &
      &                        OCEAN(ng)%e_v(:,:,:,1),                   &
      &                        GRID(ng)%z_v,                             &
+#    ifdef OBS_DEPTH_SSH
+     &                        GRID(ng)%z_v(:,:,N(ng)),                  &
+#    endif
 #    ifdef MASKING
      &                        GRID(ng)%vmask,                           &
 #    endif
@@ -483,6 +498,9 @@
      &                        Tobs, Xobs, Yobs, Zobs,                   &
      &                        OCEAN(ng)%tl_v(:,:,:,NOUT),               &
      &                        GRID(ng)%z_v,                             &
+#   ifdef OBS_DEPTH_SSH
+     &                        GRID(ng)%z_v(:,:,N(ng)),                  &
+#   endif
 #   ifdef MASKING
      &                        GRID(ng)%vmask,                           &
 #   endif
@@ -507,6 +525,9 @@
      &                          Tobs, Xobs, Yobs, Zobs,                 &
      &                          OCEAN(ng)%t(:,:,:,NOUT,itrc),           &
      &                          GRID(ng)%z_r,                           &
+#   ifdef OBS_DEPTH_SSH
+     &                          GRID(ng)%z_w(:,:,N(ng)),                &
+#   endif
 #   ifdef MASKING
      &                          GRID(ng)%rmask,                         &
 #   endif
@@ -523,6 +544,9 @@
      &                          Tobs, Xobs, Yobs, Zobs,                 &
      &                          OCEAN(ng)%e_t(:,:,:,1,itrc),            &
      &                          GRID(ng)%z_r,                           &
+#    ifdef OBS_DEPTH_SSH
+     &                          GRID(ng)%z_w(:,:,N(ng)),                &
+#    endif
 #    ifdef MASKING
      &                          GRID(ng)%rmask,                         &
 #    endif
@@ -544,6 +568,9 @@
      &                          Tobs, Xobs, Yobs, Zobs,                 &
      &                          OCEAN(ng)%tl_t(:,:,:,NOUT,itrc),        &
      &                          GRID(ng)%z_r,                           &
+#   ifdef OBS_DEPTH_SSH
+     &                          GRID(ng)%z_w(:,:,N(ng)),                &
+#   endif
 #   ifdef MASKING
      &                          GRID(ng)%rmask,                         &
 #   endif

@@ -283,6 +283,9 @@
      &                             ObsType, ObsScale,                   &
      &                             Tobs, Xobs, Yobs, Zobs,              &
      &                             ad_A, Adepth,                        &
+#  ifdef OBS_DEPTH_SSH
+     &                             Assh,                                &
+#  endif
 #  ifdef MASKING
      &                             Amask,                               &
 #  endif
@@ -311,6 +314,9 @@
       real(r8), intent(in) :: Xobs(:)
       real(r8), intent(in) :: Yobs(:)
       real(r8), intent(in) :: Adepth(LBi:,LBj:,LBk:)
+#   ifdef OBS_DEPTH_SSH
+      real(r8), intent(in) :: Assh(LBi:,LBj:)
+#   endif
 #   ifdef MASKING
       real(r8), intent(in) :: Amask(LBi:,LBj:)
 #   endif
@@ -325,6 +331,9 @@
       real(r8), intent(in) :: Xobs(Mobs)
       real(r8), intent(in) :: Yobs(Mobs)
       real(r8), intent(in) :: Adepth(LBi:UBi,LBj:UBj,LBk:UBk)
+#   ifdef OBS_DEPTH_SSH
+      real(r8), intent(in) :: Assh(LBi:UBi,LBj:UBj)
+#   endif
 #   ifdef MASKING
       real(r8), intent(in) :: Amask(LBi:UBi,LBj:UBj)
 #   endif
@@ -389,6 +398,9 @@
           ELSE
             Ztop=Adepth(i1,j1,N(ng))
             Zbot=Adepth(i1,j1,1    )
+# ifdef OBS_DEPTH_SSH
+            Zobs(iobs)=Zobs(iobs)+Assh(i1,j1)
+# endif
             IF (Zobs(iobs).ge.Ztop) THEN
               r1=0.0_r8                        ! If shallower, ignore.
               r2=0.0_r8

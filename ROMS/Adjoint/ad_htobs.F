@@ -48,6 +48,9 @@
 # ifdef SOLVE3D
      &                    GRID(ng) % z_r,                               &
      &                    GRID(ng) % z_v,                               &
+#  ifdef OBS_DEPTH_SSH
+     &                    GRID(ng) % z_w,                               &
+#  endif
      &                    OCEAN(ng) % f_u,                              &
      &                    OCEAN(ng) % f_v,                              &
      &                    OCEAN(ng) % f_t,                              &
@@ -67,6 +70,9 @@
 # endif
 # ifdef SOLVE3D
      &                          z_r, z_v,                               &
+#  ifdef OBS_DEPTH_SSH
+     &                          z_w,                                    &
+#  endif
      &                          f_u, f_v, f_t,                          &
 # endif
      &                          f_ubar, f_vbar, f_zeta)
@@ -106,6 +112,9 @@
 #  ifdef SOLVE3D
       real(r8), intent(in) :: z_r(LBi:,LBj:,:)
       real(r8), intent(inout) :: z_v(LBi:,LBj:,:)
+#   ifdef OBS_DEPTH_SSH
+      real(r8), intent(in) :: z_w(LBi:,LBj:,0:)
+#   endif
       real(r8), intent(inout) :: f_u(LBi:,LBj:,:)
       real(r8), intent(inout) :: f_v(LBi:,LBj:,:)
       real(r8), intent(inout) :: f_t(LBi:,LBj:,:,:)
@@ -122,6 +131,9 @@
 #  ifdef SOLVE3D
       real(r8), intent(in) :: z_r(LBi:UBi,LBj:UBj,N(ng))
       real(r8), intent(inout) :: z_v(LBi:UBi,LBj:UBj,N(ng))
+#   ifdef OBS_DEPTH_SSH
+      real(r8), intent(in) :: z_w(LBi:UBi,LBj:UBj,0:N(ng))
+#   endif
       real(r8), intent(inout) :: f_u(LBi:UBi,LBj:UBj,N(ng))
       real(r8), intent(inout) :: f_v(LBi:UBi,LBj:UBj,N(ng))
       real(r8), intent(inout) :: f_t(LBi:UBi,LBj:UBj,N(ng),NT(ng))
@@ -306,6 +318,9 @@
      &                           ObsType, ObsScale,                     &
      &                           Tobs, Xobs, Yobs, Zobs,                &
      &                           f_u, z_v,                              &
+#  ifdef OBS_DEPTH_SSH
+     &                           z_v(:,:,N(ng)),                        &
+#  endif
 #  ifdef MASKING
      &                           umask,                                 &
 #  endif
@@ -347,6 +362,9 @@
      &                           ObsType, ObsScale,                     &
      &                           Tobs, Xobs, Yobs, Zobs,                &
      &                           f_v, z_v,                              &
+#  ifdef OBS_DEPTH_SSH
+     &                           z_v(:,:,N(ng)),                        &
+#  endif
 #  ifdef MASKING
      &                           vmask,                                 &
 #  endif
@@ -381,6 +399,9 @@
      &                             ObsType, ObsScale,                   &
      &                             Tobs, Xobs, Yobs, Zobs,              &
      &                             f_t(:,:,:,itrc), z_r,                &
+#  ifdef OBS_DEPTH_SSH
+     &                             z_w(:,:,N(ng)),                      &
+#  endif
 #  ifdef MASKING
      &                             rmask,                               &
 #  endif

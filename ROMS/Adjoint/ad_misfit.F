@@ -51,6 +51,9 @@
 # ifdef SOLVE3D
      &                     GRID(ng) % z_r,                              &
      &                     GRID(ng) % z_v,                              &
+#  ifdef OBS_DEPTH_SSH
+     &                     GRID(ng) % z_w,                              &
+#  endif
      &                     OCEAN(ng) % ad_u,                            &
      &                     OCEAN(ng) % ad_v,                            &
      &                     OCEAN(ng) % ad_t,                            &
@@ -74,6 +77,9 @@
 # endif
 # ifdef SOLVE3D
      &                           z_r, z_v,                              &
+#  ifdef OBS_DEPTH_SSH
+     &                           z_w,                                   &
+#  endif
      &                           ad_u, ad_v, ad_t,                      &
 # endif
      &                           ad_ubar, ad_vbar, ad_zeta)
@@ -113,6 +119,9 @@
 #  ifdef SOLVE3D
       real(r8), intent(in) :: z_r(LBi:,LBj:,:)
       real(r8), intent(inout) :: z_v(LBi:,LBj:,:)
+#   ifdef OBS_DEPTH_SSH
+      real(r8), intent(in) :: z_w(LBi:,LBj:,0:)
+#   endif
       real(r8), intent(inout) :: ad_u(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: ad_v(LBi:,LBj:,:,:)
       real(r8), intent(inout) :: ad_t(LBi:,LBj:,:,:,:)
@@ -129,6 +138,9 @@
 #  ifdef SOLVE3D
       real(r8), intent(in) :: z_r(LBi:UBi,LBj:UBj,N(ng))
       real(r8), intent(inout) :: z_v(LBi:UBi,LBj:UBj,N(ng))
+#   ifdef OBS_DEPTH_SSH
+      real(r8), intent(in) :: z_w(LBi:UBi,LBj:UBj,0:N(ng))
+#   endif
       real(r8), intent(inout) :: ad_u(LBi:UBi,LBj:UBj,N(ng),2)
       real(r8), intent(inout) :: ad_v(LBi:UBi,LBj:UBj,N(ng),2)
       real(r8), intent(inout) :: ad_t(LBi:UBi,LBj:UBj,N(ng),3,NT(ng))
@@ -276,6 +288,9 @@
      &                           Tobs, Xobs, Yobs, Zobs,                &
      &                           ad_u(:,:,:,nfrc),                      &
      &                           z_v,                                   &
+#  ifdef OBS_DEPTH_SSH
+     &                           z_v(:,:,N(ng)),                        &
+#  endif
 #  ifdef MASKING
      &                           umask,                                 &
 #  endif
@@ -304,6 +319,9 @@
      &                           Tobs, Xobs, Yobs, Zobs,                &
      &                           ad_v(:,:,:,nfrc),                      &
      &                           z_v,                                   &
+#  ifdef OBS_DEPTH_SSH
+     &                           z_v(:,:,N(ng)),                        &
+#  endif
 #  ifdef MASKING
      &                           vmask,                                 &
 #  endif
@@ -325,6 +343,9 @@
      &                             Tobs, Xobs, Yobs, Zobs,              &
      &                             ad_t(:,:,:,nfrc,itrc),               &
      &                             z_r,                                 &
+#  ifdef OBS_DEPTH_SSH
+     &                             z_w(:,:,N(ng)),                      &
+#  endif
 #  ifdef MASKING
      &                             rmask,                               &
 #  endif
