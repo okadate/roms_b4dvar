@@ -149,6 +149,7 @@
       USE mod_param
 #   ifdef ADJUST_PARAM
       USE mod_scalars
+      USE mod_biology
 #   endif
 !
 !  Imported variable declarations.
@@ -312,6 +313,9 @@
 !!        p(Lout,itrc)=MAX(p(Lout,itrc),0.0_r8)
           p(Lout,itrc)=MAX(p(Lout,itrc),0.1_r8*p(Linp,itrc))
 #    endif
+          IF (itrc.eq.iZooAE_N) THEN
+            p(Lout,itrc)=MIN(p(Lout,itrc),1.0_r8)
+          END IF
 !#    ifndef EXP_PARAM
 !          p(Lout,itrc)=MAX(p(Lout,itrc),pmin(itrc,ng))
 !          p(Lout,itrc)=MIN(p(Lout,itrc),pmax(itrc,ng))
