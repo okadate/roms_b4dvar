@@ -368,7 +368,7 @@
       real(r8) :: Chl2C, dtdays, t_PPmax, inhNH4
 
       real(r8) :: cff, cff1, cff2, cff3, cff4, cff5
-      real(r8) :: fac1, fac2, fac3
+      real(r8) :: fac1, fac2, fac3, fac4, fac5, fac6
       real(r8) :: cffL, cffR, cu, dltL, dltR
       real(r8) :: fac
 
@@ -1857,19 +1857,22 @@
             fac2=t_SODf(ng)**(Bio(i,1,itemp)-20.0_r8)
 # endif
 # ifdef NPFLUX_BY_DO
-            fac3=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
-            fac3=fac3/(Bio(i,1,iOxyg)+fac3)
+            fac4=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
+            fac5=MAX(Bio(i,1,iOxyg),0.0_r8)/fac4
+            fac3=1.0_r8/(1.0_r8+fac5)
 # endif
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac3
 # ifdef PHOSPHORUS
             Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3*fac3
 # endif
 # ifdef OXYGEN
-            cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
+!!          cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
+            fac6=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
+            cff4=MAX(fac6,0.0_r8)
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
 #  ifdef H2S
-            cff5=MIN(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
-            Bio(i,1,iH2S_)=Bio(i,1,iH2S_)+cff5*rOxH2S
+            cff5=MIN(fac6,0.0_r8)
+            Bio(i,1,iH2S_)=Bio(i,1,iH2S_)-cff5*rOxH2S
 #  endif
 # endif
 # ifdef DIAGNOSTICS_BIO

@@ -386,13 +386,15 @@
             tl_fac2=fac2*tlfac
 # endif
 # ifdef NPFLUX_BY_DO
-!!          fac3=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
             fac4=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
             tl_fac4=tl_K_DO_npflux/mol2g_O2*1000.0_r8
 
-            fac3=fac4/(Bio(i,1,iOxyg)+fac4)
-            tl_fac3=(tl_fac4-fac3*(tl_Bio(i,1,iOxyg)+tl_fac4))/         &
-     &              (Bio(i,1,iOxyg)+fac4)
+            fac5=MAX(Bio(i,1,iOxyg),0.0_r8)/fac4
+            tlfac=(0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))
+            tl_fac5=(tlfac*tl_Bio(i,1,iOxyg)-fac5*tl_fac4)/fac4
+
+            fac3=1.0_r8/(1.0_r8+fac5)
+            tl_fac3=-fac3*fac3*tl_fac5
 # endif
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac3
             tl_Bio(i,1,iNH4_)=tl_Bio(i,1,iNH4_)+                        &
@@ -403,13 +405,13 @@
      &                        cff*(tl_cff3*fac3+cff3*tl_fac3)
 # endif
 # ifdef OXYGEN
-!!          cff4=MAX(MIN(Bio(i,1,iOxyg),cff*cff1*fac2),0.0_r8)
-            cff5=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
+            fac6=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
             tlfac=SIGN(0.5_r8,cff*cff1*fac2-Bio(i,1,iOxyg))
-            tl_cff5=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
+            tl_fac6=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
      &              (0.5_r8-tlfac)*cff*(tl_cff1*fac2+cff1*tl_fac2)
-            cff4=MAX(cff5,0.0_r8)
-            tl_cff4=(0.5_r8+SIGN(0.5_r8,cff5))*tl_cff5
+
+            cff4=MAX(fac6,0.0_r8)
+            tl_cff4=(0.5_r8+SIGN(0.5_r8,fac6))*tl_fac6
 
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
             tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff4

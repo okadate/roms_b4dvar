@@ -311,7 +311,7 @@
       real(r8) :: tl_cff, tl_cff1, tl_cff2, tl_cff3, tl_cff4, tl_cff5
       real(r8) :: tl_fac1, tl_fac2, tl_fac3, tl_fac4, tl_fac5, tl_fac6
       real(r8) :: tl_cffL, tl_cffR, tl_cu, tl_dltL, tl_dltR
-      real(r8) :: fac, tl_fac, tlfac
+      real(r8) :: fac, tl_fac, tlfac, tlfac1
 
       real(r8) :: total_N
       real(r8) :: tl_total_N

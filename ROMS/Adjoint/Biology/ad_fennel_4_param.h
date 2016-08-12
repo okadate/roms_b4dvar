@@ -32,15 +32,16 @@
 # endif
 # ifdef NPFLUX_BY_DO
             fac4=K_DO_npflux(ng)/mol2g_O2*1000.0_r8
-            fac3=fac4/(Bio1(i,1,iOxyg)+fac4)
+            fac5=MAX(Bio(i,1,iOxyg),0.0_r8)/fac4
+            fac3=1.0_r8/(1.0_r8+fac5)
+# endif
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac3
 # ifdef PHOSPHORUS
             Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff*cff3*fac3
 # endif
-            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff*cff2*fac3
-# endif
 # ifdef OXYGEN
-            cff5=MIN(Bio1(i,1,iOxyg),cff*cff1*fac2)
-            cff4=MAX(cff5,0.0_r8)
+            cff6=MIN(Bio(i,1,iOxyg),cff*cff1*fac2)
+            cff4=MAX(cff6,0.0_r8)
             Bio1(i,1,iOxyg)=Bio(i,1,iOxyg)
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff4
 # endif
@@ -49,18 +50,18 @@
 !>          tl_Bio(i,1,iOxyg)=tl_Bio(i,1,iOxyg)-tl_cff4
             ad_cff4=ad_cff4-ad_Bio(i,1,iOxyg)
 
-!>          tl_cff4=(0.5_r8+SIGN(0.5_r8,cff5))*tl_cff5
-            ad_cff5=ad_cff5+(0.5_r8+SIGN(0.5_r8,cff5))*ad_cff4
+!>          tl_cff4=(0.5_r8+SIGN(0.5_r8,cff6))*tl_cff6
+            ad_cff6=ad_cff6+(0.5_r8+SIGN(0.5_r8,cff6))*ad_cff4
             ad_cff4=0.0_r8
 
 !>          tlfac=SIGN(0.5_r8,cff*cff1*fac2-Bio1(i,1,iOxyg))
-!>          tl_cff5=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
+!>          tl_cff6=(0.5_r8+tlfac)*tl_Bio(i,1,iOxyg)+                   &
 !>   &              (0.5_r8-tlfac)*cff*(tl_cff1*fac2+cff1*tl_fac2)
             adfac=SIGN(0.5_r8,cff*cff1*fac2-Bio1(i,1,iOxyg))
-            ad_fac2=ad_fac2+(0.5_r8-adfac)*cff*cff1*ad_cff5
-            ad_cff1=ad_cff1+(0.5_r8-adfac)*cff*fac2*ad_cff5
-            ad_Bio(i,1,iOxyg)=ad_Bio(i,1,iOxyg)+(0.5_r8+adfac)*ad_cff5
-            ad_cff5=0.0_r8
+            ad_fac2=ad_fac2+(0.5_r8-adfac)*cff*cff1*ad_cff6
+            ad_cff1=ad_cff1+(0.5_r8-adfac)*cff*fac2*ad_cff6
+            ad_Bio(i,1,iOxyg)=ad_Bio(i,1,iOxyg)+(0.5_r8+adfac)*ad_cff6
+            ad_cff6=0.0_r8
 # endif
 # ifdef PHOSPHORUS
 !>          tl_Bio(i,1,iPO4_)=tl_Bio(i,1,iPO4_)+                        &
@@ -73,13 +74,16 @@
             ad_fac3=ad_fac3+cff*cff2*ad_Bio(i,1,iNH4_)
             ad_cff2=ad_cff2+cff*ad_Bio(i,1,iNH4_)*fac3
 # ifdef NPFLUX_BY_DO
-!>          tl_fac3=(tl_fac4-fac3*(tl_Bio(i,1,iOxyg)+tl_fac4))/         &
-!>   &              (Bio1(i,1,iOxyg)+fac4)
-            adfac=ad_fac3/(Bio1(i,1,iOxyg)+fac4)
-            ad_fac4=ad_fac4-fac3*adfac
-            ad_Bio(i,1,iOxyg)=ad_Bio(i,1,iOxyg)-fac3*adfac
-            ad_fac4=ad_fac4+adfac
+!>          tl_fac3=-fac3*fac3*tl_fac5
+            ad_fac5=ad_fac5-fac3*fac3*ad_fac3
             ad_fac3=0.0_r8
+
+!>          tlfac=(0.5_r8+SIGN(0.5_r8,Bio(i,1,iOxyg)))
+!>          tl_fac5=(tlfac*tl_Bio(i,1,iOxyg)-fac5*tl_fac4)/fac4
+            adfac=(0.5_r8+SIGN(0.5_r8,Bio1(i,1,iOxyg)))
+            ad_fac4=ad_fac4-fac5*ad_fac5/fac4
+            ad_Bio(i,1,iOxyg)=ad_Bio(i,1,iOxyg)+adfac*ad_fac5/fac4
+            ad_fac5=0.0_r8
 
 !>          tl_fac4=tl_K_DO_npflux/mol2g_O2*1000.0_r8
             ad_K_DO_npflux=ad_K_DO_npflux+ad_fac4/mol2g_O2*1000.0_r8
@@ -299,7 +303,7 @@
             END DO
             DO k=1,N(ng)
               DO i=Istr,Iend
-                Bio(i,k,ibio)=qc(i,k)+(FC(i,k)-FC(i,k-1))*Hz_inv(i,k)
+!>              Bio(i,k,ibio)=qc(i,k)+(FC(i,k)-FC(i,k-1))*Hz_inv(i,k)
               END DO
             END DO
 #ifdef BIO_SEDIMENT
