@@ -796,8 +796,12 @@
 !
 !  Observation screening/normalization scale.
 !
+#ifdef BGQC
+        IF (wrtNLmod(ng).or.wrtTLmod(ng).or.wrtRPmod(ng)) THEN
+#else
         IF ((Nrun.eq.1).and.                                            &
      &      (wrtNLmod(ng).or.wrtTLmod(ng).or.wrtRPmod(ng))) THEN
+#endif
           CALL netcdf_put_fvar (ng, model, DAV(ng)%name,                &
      &                          Vname(1,idObsS), ObsScale(Mstr:),       &
      &                          (/NstrObs(ng)/), (/Nobs(ng)/),          &
