@@ -159,7 +159,11 @@
 !  Set dimension for generic user parameters.
 !
       IF ((Nuser.gt.0).and.(ncid.ne.GST(ng)%ncid)) THEN
+#ifdef USER_ENSEMBLE
+        status=def_dim(ng, model, ncid, ncname, 'Nuser', 100, usrdim)
+#else
         status=def_dim(ng, model, ncid, ncname, 'Nuser', 25, usrdim)
+#endif
         IF (exit_flag.ne.NoError) RETURN
       END IF
 !

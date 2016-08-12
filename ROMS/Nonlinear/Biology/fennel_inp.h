@@ -929,6 +929,53 @@
       exit_flag=4
       RETURN
   20  CONTINUE
+
+#ifdef USER_ENSEMBLE
+      IF (Lbiology(ng)) THEN
+        DO ng=1,Ngrids
+          AttSW(ng)=AttSW(ng)*user(1)
+          AttChl(ng)=AttChl(ng)*user(2)
+          Chl2C_m(ng)=Chl2C_m(ng)*user(3)
+          CoagR(ng)=CoagR(ng)*user(4)
+          D_p5NH4(ng)=D_p5NH4(ng)*user(5)
+          I_thNH4(ng)=I_thNH4(ng)*user(6)
+          K_NH4(ng)=K_NH4(ng)*user(7)
+          K_NO3(ng)=K_NO3(ng)*user(8)
+          K_Phy(ng)=K_Phy(ng)*user(9)
+          LDeRRN(ng)=LDeRRN(ng)*user(10)
+          NitriR(ng)=NitriR(ng)*user(11)
+          PARfrac(ng)=PARfrac(ng)*user(12)
+          PhyCN(ng)=PhyCN(ng)*user(13)
+          PhyIP(ng)=PhyIP(ng)*user(14)
+          PhyIS(ng)=PhyIS(ng)*user(15)
+          PhyMR(ng)=PhyMR(ng)*user(16)
+          SDeRRN(ng)=SDeRRN(ng)*user(17)
+          Vp0(ng)=Vp0(ng)*user(18)
+          wLDet(ng)=wLDet(ng)*user(19)
+          wPhy(ng)=wPhy(ng)*user(20)
+          wSDet(ng)=wSDet(ng)*user(21)
+          ZooAE_N(ng)=ZooAE_N(ng)*user(22)
+          ZooBM(ng)=ZooBM(ng)*user(23)
+          ZooER(ng)=ZooER(ng)*user(24)
+          ZooGR(ng)=ZooGR(ng)*user(25)
+          ZooMR(ng)=ZooMR(ng)*user(26)
+
+          K_PO4(ng)=K_PO4(ng)*user(27)
+          PhyPN(ng)=PhyPN(ng)*user(28)
+          ZooPN(ng)=ZooPN(ng)*user(29)
+          LDeRRP(ng)=LDeRRP(ng)*user(30)
+          SDeRRP(ng)=SDeRRP(ng)*user(31)
+          K_DO(ng)=K_DO(ng)*user(32)
+          K_Nitri(ng)=K_Nitri(ng)*user(33)
+          DenitR(ng)=DenitR(ng)*user(34)
+          K_Denit(ng)=K_Denit(ng)*user(35)
+          R_SODf(ng)=R_SODf(ng)*user(36)
+          R_NH4f_max(ng)=R_NH4f_max(ng)*user(37)
+          R_PO4f_max(ng)=R_PO4f_max(ng)*user(38)
+          K_DO_npflux(ng)=K_DO_npflux(ng)*user(39)
+        END DO
+      END IF
+#endif
 !
 !-----------------------------------------------------------------------
 !  Report input parameters.

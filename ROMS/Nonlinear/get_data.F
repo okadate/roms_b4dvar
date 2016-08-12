@@ -51,6 +51,10 @@
       integer :: ILB, IUB, JLB, JUB
       integer :: LBi, UBi, LBj, UBj
       integer :: i, ic, my_tile
+
+#ifdef USER_ENSEMBLE
+      real(r8) :: scale
+#endif
 !
 !  Lower and upper bounds for nontiled (global values) boundary arrays.
 !
@@ -89,11 +93,18 @@
 !  Point Source/Sink vertically integrated mass transport.
 !
       IF (LuvSrc(ng).or.LwSrc(ng)) THEN
+# ifdef USER_ENSEMBLE
+        scale=Fscale(idRtra,ng)                    ! save and rescale
+        Fscale(idRtra,ng)=user(40)
+# endif
         CALL get_ngfld (ng, iNLM, idRtra, SSF(ng)%ncid,                 &
      &                  1, SSF(ng), update(1),                          &
      &                  1, Nsrc(ng), 1, 2, 1, Nsrc(ng), 1,              &
      &                  SOURCES(ng) % QbarG(:,:))
         IF (exit_flag.ne.NoError) RETURN
+# ifdef USER_ENSEMBLE
+        Fscale(idRtra,ng)=scale
+# endif
       END IF
 
 # ifdef SOLVE3D
@@ -118,6 +129,10 @@
 !  Surface wind components.
 !-----------------------------------------------------------------------
 !
+# ifdef USER_ENSEMBLE
+        scale=Fscale(idUair,ng)                    ! save and rescale
+        Fscale(idUair,ng)=user(41)
+# endif
       CALL get_2dfld (ng, iNLM, idUair, ncFRCid(idUair,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -126,7 +141,14 @@
 # endif
      &                FORCES(ng) % UwindG)
       IF (exit_flag.ne.NoError) RETURN
+# ifdef USER_ENSEMBLE
+        Fscale(idUair,ng)=scale
+# endif
 
+# ifdef USER_ENSEMBLE
+        scale=Fscale(idVair,ng)                    ! save and rescale
+        Fscale(idVair,ng)=user(42)
+# endif
       CALL get_2dfld (ng , iNLM, idVair, ncFRCid(idVair,ng),            &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -135,6 +157,9 @@
 # endif
      &                FORCES(ng) % VwindG)
       IF (exit_flag.ne.NoError) RETURN
+# ifdef USER_ENSEMBLE
+        Fscale(idVair,ng)=scale
+# endif
 #endif
 
 #ifndef AIR_OCEAN

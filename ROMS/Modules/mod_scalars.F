@@ -652,7 +652,11 @@
 !  Vector containing USER generic parameters.
 !
         integer :: Nuser
+#ifdef USER_ENSEMBLE
+        real(r8), dimension(100) :: user(100)
+#else
         real(r8), dimension(25) :: user(25)
+#endif
 !
 !  Weights for the time average of 2D fields.
 !
