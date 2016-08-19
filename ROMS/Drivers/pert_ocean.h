@@ -556,7 +556,7 @@
 !  Report sanity check values.
 !
 # ifdef DISTRIBUTE
-          CALL mp_collect (ng, iTLM, 4, IniVal, val(1,ng))
+          CALL mp_collect (ng, iTLM, 4, IniVal, val(:,ng))
 # endif
           IF (Master) THEN
             IF (SAME_VAR) THEN
