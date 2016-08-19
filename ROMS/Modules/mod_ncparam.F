@@ -624,6 +624,7 @@
       allocate ( idefAVG(Ngrids) )
       allocate ( idefDIA(Ngrids) )
       allocate ( idefHIS(Ngrids) )
+      allocate ( idefQCK(Ngrids) )
       allocate ( idefTLM(Ngrids) )
 
       allocate ( idTvar(MT) )
