@@ -233,6 +233,7 @@
               mc=mc+1
               SCALARS(ng)%SposX(l)=Ista(mc)
               SCALARS(ng)%SposY(l)=Jsta(mc)
+              SCALARS(ng)%Sflag(l)=0
             END IF
           END DO
         END IF
