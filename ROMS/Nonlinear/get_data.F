@@ -95,7 +95,7 @@
       IF (LuvSrc(ng).or.LwSrc(ng)) THEN
 # ifdef USER_ENSEMBLE
         scale=Fscale(idRtra,ng)                    ! save and rescale
-        Fscale(idRtra,ng)=user(40)
+        Fscale(idRtra,ng)=scale*user(40)
 # endif
         CALL get_ngfld (ng, iNLM, idRtra, SSF(ng)%ncid,                 &
      &                  1, SSF(ng), update(1),                          &
@@ -113,11 +113,22 @@
 !
       DO i=1,NT(ng)
         IF (LtracerSrc(i,ng)) THEN
+# ifdef USER_ENSEMBLE
+          IF (i.eq.itemp) THEN
+            scale=Fscale(idRtrc(i),ng)                    ! save and rescale
+            Fscale(idRtrc(i),ng)=scale*user(41)
+          END IF
+# endif
           CALL get_ngfld (ng, iNLM, idRtrc(i), SSF(ng)%ncid,            &
      &                    1, SSF(ng), update(1),                        &
      &                    1, Nsrc(ng), N(ng), 2, 1, Nsrc(ng), N(ng),    &
      &                    SOURCES(ng) % TsrcG(:,:,:,i))
           IF (exit_flag.ne.NoError) RETURN
+# ifdef USER_ENSEMBLE
+          IF (i.eq.itemp) THEN
+            Fscale(idRtrc(i),ng)=scale
+          END IF
+# endif
         END IF
       END DO
 # endif
@@ -130,8 +141,8 @@
 !-----------------------------------------------------------------------
 !
 # ifdef USER_ENSEMBLE
-        scale=Fscale(idUair,ng)                    ! save and rescale
-        Fscale(idUair,ng)=user(41)
+      scale=Fscale(idUair,ng)                    ! save and rescale
+      Fscale(idUair,ng)=scale*user(42)
 # endif
       CALL get_2dfld (ng, iNLM, idUair, ncFRCid(idUair,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
@@ -142,12 +153,12 @@
      &                FORCES(ng) % UwindG)
       IF (exit_flag.ne.NoError) RETURN
 # ifdef USER_ENSEMBLE
-        Fscale(idUair,ng)=scale
+      Fscale(idUair,ng)=scale
 # endif
 
 # ifdef USER_ENSEMBLE
-        scale=Fscale(idVair,ng)                    ! save and rescale
-        Fscale(idVair,ng)=user(42)
+      scale=Fscale(idVair,ng)                    ! save and rescale
+      Fscale(idVair,ng)=scale*user(43)
 # endif
       CALL get_2dfld (ng , iNLM, idVair, ncFRCid(idVair,ng),            &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
@@ -158,7 +169,7 @@
      &                FORCES(ng) % VwindG)
       IF (exit_flag.ne.NoError) RETURN
 # ifdef USER_ENSEMBLE
-        Fscale(idVair,ng)=scale
+      Fscale(idVair,ng)=scale
 # endif
 #endif
 
@@ -224,6 +235,10 @@
 !  Surface air pressure.
 !-----------------------------------------------------------------------
 !
+# ifdef USER_ENSEMBLE
+      scale=Fscale(idPair,ng)                    ! save and rescale
+      !Fscale(idPair,ng)=scale*user(44)
+# endif
       CALL get_2dfld (ng, iNLM, idPair, ncFRCid(idPair,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -232,6 +247,9 @@
 # endif
      &                FORCES(ng) % PairG)
       IF (exit_flag.ne.NoError) RETURN
+# ifdef USER_ENSEMBLE
+      Fscale(idPair,ng)=scale
+# endif
 #endif
 
 #if !defined ANA_WWAVE && defined WAVE_DATA
@@ -337,6 +355,10 @@
 !  Cloud fraction.
 !-----------------------------------------------------------------------
 !
+#  ifdef USER_ENSEMBLE
+      scale=Fscale(idCfra,ng)                    ! save and rescale
+      !Fscale(idCfra,ng)=scale*user(45)
+#  endif
       CALL get_2dfld (ng, iNLM, idCfra, ncFRCid(idCfra,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -345,6 +367,9 @@
 #  endif
      &                FORCES(ng) % cloudG)
       IF (exit_flag.ne.NoError) RETURN
+#  ifdef USER_ENSEMBLE
+      Fscale(idCfra,ng)=scale
+#  endif
 # endif
 
 # if !defined ANA_SRFLUX && defined SHORTWAVE
@@ -353,6 +378,10 @@
 !  Surface solar shortwave radiation.
 !-----------------------------------------------------------------------
 !
+#  ifdef USER_ENSEMBLE
+      scale=Fscale(idSrad,ng)                    ! save and rescale
+      Fscale(idSrad,ng)=scale*user(46)
+#  endif
       CALL get_2dfld (ng, iNLM, idSrad, ncFRCid(idSrad,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -361,6 +390,9 @@
 #  endif
      &                FORCES(ng) % srflxG)
       IF (exit_flag.ne.NoError) RETURN
+#  ifdef USER_ENSEMBLE
+      Fscale(idSrad,ng)=scale
+#  endif
 # endif
 
 # if defined RED_TIDE && defined DAILY_SHORTWAVE
@@ -419,6 +451,10 @@
 !  Surface air temperature.
 !-----------------------------------------------------------------------
 !
+#  ifdef USER_ENSEMBLE
+      scale=Fscale(idTair,ng)                    ! save and rescale
+      Fscale(idTair,ng)=scale*user(47)
+#  endif
       CALL get_2dfld (ng, iNLM, idTair, ncFRCid(idTair,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -427,6 +463,9 @@
 #  endif
      &                FORCES(ng) % TairG)
       IF (exit_flag.ne.NoError) RETURN
+#  ifdef USER_ENSEMBLE
+      Fscale(idTair,ng)=scale
+#  endif
 # endif
 
 # if !defined ANA_HUMIDITY && (defined BULK_FLUXES || defined ECOSIM)
@@ -435,6 +474,10 @@
 !  Surface air humidity.
 !-----------------------------------------------------------------------
 !
+#  ifdef USER_ENSEMBLE
+      scale=Fscale(idQair,ng)                    ! save and rescale
+      !Fscale(idQair,ng)=scale*user(48)
+#  endif
       CALL get_2dfld (ng, iNLM, idQair, ncFRCid(idQair,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -443,6 +486,9 @@
 #  endif
      &                FORCES(ng) % HairG)
       IF (exit_flag.ne.NoError) RETURN
+#  ifdef USER_ENSEMBLE
+      Fscale(idQair,ng)=scale
+#  endif
 # endif
 
 # if !defined ANA_RAIN && defined BULK_FLUXES
@@ -451,6 +497,10 @@
 !  Rain fall rate.
 !-----------------------------------------------------------------------
 !
+#  ifdef USER_ENSEMBLE
+      scale=Fscale(idrain,ng)                    ! save and rescale
+      Fscale(idrain,ng)=scale*user(49)
+#  endif
       CALL get_2dfld (ng, iNLM, idrain, ncFRCid(idrain,ng),             &
      &                nFfiles(ng), FRC(1,ng), update(1),                &
      &                LBi, UBi, LBj, UBj, 2, 1,                         &
@@ -459,6 +509,9 @@
 #  endif
      &                FORCES(ng) % rainG)
       IF (exit_flag.ne.NoError) RETURN
+#  ifdef USER_ENSEMBLE
+      Fscale(idrain,ng)=scale
+#  endif
 # endif
 
 # if !defined ANA_STFLUX && !defined BULK_FLUXES
