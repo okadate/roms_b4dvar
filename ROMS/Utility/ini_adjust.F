@@ -308,10 +308,11 @@
 #   ifdef ADJUST_PARAM
       DO itrc=1,Nparam(ng)
         IF (Lparam(itrc,ng)) THEN
-          p(Lout,itrc)=p(Lout,itrc)+tl_p(Linp,itrc)
 #    ifdef POSITIVE_PARAM
-!!        p(Lout,itrc)=MAX(p(Lout,itrc),0.0_r8)
-          p(Lout,itrc)=MAX(p(Lout,itrc),0.1_r8*p(Linp,itrc))
+          p(Lout,itrc)=MAX(p(Lout,itrc)+tl_p(Linp,itrc),                &
+     &                     p(Lout,itrc)*0.1_r8)
+#    else
+          p(Lout,itrc)=p(Lout,itrc)+tl_p(Linp,itrc)
 #    endif
           IF (itrc.eq.iZooAE_N) THEN
             p(Lout,itrc)=MIN(p(Lout,itrc),1.0_r8)
