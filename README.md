@@ -1,6 +1,8 @@
 # ROMS B4D-Var
 
-ROMS with 4D-Var codes for Fennel et al.(2006) biogeochemical model (under development)
+Regional Ocean Modeling Sysytem with Biological 4D-Var for Fennel et al. (2006) biology model
+
+Original ROMS code: https://www.myroms.org/
 
 ## Additional CPP flags
 
@@ -40,4 +42,5 @@ POSITIVE_CG_RITZ    use to make cg_ritz positive
 
 ```
 DSTARTSEC           use to change units of dstart from days to seconds
+USER_ENSEMBLE       use if ensemble runs by user parameters in ocean.in
 ```
