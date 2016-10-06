@@ -23,7 +23,7 @@
 !>            tl_Bio(i,k,iNO3_)=(tl_Bio(i,k,iNO3_)-Bio(i,k,iNO3_)*      &
 !>   &                           tl_cff3)/(1.0_r8+cff3)
               adfac=ad_Bio(i,k,iNO3_)/(1.0_r8+cff3)
-              ad_cff2=ad_cff2-Bio(i,k,iNO3_)*adfac
+              ad_cff3=ad_cff3-Bio(i,k,iNO3_)*adfac
               ad_Bio(i,k,iNO3_)=adfac
 # ifdef TDEPENDANCE
 !>            tl_cff3=tl_cff2*fac1*fac2+                                &
