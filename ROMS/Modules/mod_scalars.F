@@ -950,6 +950,11 @@
 !
         real(r8), allocatable :: pmax(:,:)
         real(r8), allocatable :: pmin(:,:)
+!
+!  Logical switches to process initial conditions during 4DVar
+!  adjustments.
+!
+        logical, allocatable :: Linitial(:)
 #endif
 
 #ifdef ADJUST_STFLUX
@@ -2020,6 +2025,7 @@
       allocate ( pfactor(Mparam,Ngrids) )
       allocate ( pmax(Mparam,Ngrids) )
       allocate ( pmin(Mparam,Ngrids) )
+      allocate ( Linitial(MstateVar) )
 #endif
 
 #ifdef ADJUST_STFLUX
@@ -2298,8 +2304,7 @@
 #ifdef ADJUST_PARAM
 !
 !-----------------------------------------------------------------------
-!  Initilize switches to process paramaters for 4DVar
-!  adjustments.
+!  Initilize switches to process paramaters for 4DVar adjustments.
 !-----------------------------------------------------------------------
 !
       DO ng=1,Ngrids
@@ -2310,6 +2315,14 @@
           pmax(i,ng)=0.0_r8
           pmin(i,ng)=0.0_r8
         END DO
+      END DO
+!
+!-----------------------------------------------------------------------
+!  Initilize switches to process initial arrays for 4DVar adjustments.
+!-----------------------------------------------------------------------
+!
+      DO i=1,MT
+        Linitial(i)=.TRUE.
       END DO
 #endif
 #ifdef ADJUST_STFLUX

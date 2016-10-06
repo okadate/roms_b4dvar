@@ -456,11 +456,12 @@
         DO k=1,N(ng)
           DO j=JstrT,JendT
             DO i=IstrT,IendT
-#  ifdef T_STD0
-              tl_t(i,j,k,Linp,it)=tl_t(i,j,k,Linp,it)*0.0_r8
-#  else
               tl_t(i,j,k,Linp,it)=tl_t(i,j,k,Linp,it)*                  &
      &                            t_std(i,j,k,rec,it)
+#  ifdef ADJUST_PARAM
+              IF (.not.Linitial(isTvar(it))) THEN
+                tl_t(i,j,k,Linp,it)=0.0_r8
+              END IF
 #  endif
             END DO
           END DO

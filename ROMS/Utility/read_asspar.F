@@ -469,6 +469,14 @@
               Mval=MAXVAL(Nprovenance)*Ngrids
               Npts=load_r(Nval, Rval, Mval, P_bgqc)
 #  endif
+#  ifdef ADJUST_PARAM
+            CASE ('Linitial')
+              Npts=load_l(Nval, Cval, MT, Ltracer)
+              DO itrc=1,MT
+                i=isTvar(itrc)
+                Linitial(i)=Ltracer(itrc)
+              END DO
+#  endif
 #  if defined ADJUST_STFLUX && defined SOLVE3D
             CASE ('Lstflux')
               Npts=load_l(Nval, Cval, MT*Ngrids, Ltsur)
@@ -1084,6 +1092,13 @@
      &            Iprovenance(i,ng)
             END DO
           END IF
+#    endif
+#    ifdef ADJUST_PARAM
+          DO itrc=1,MT
+            WRITE (out,110) Linitial(isTvar(itrc)), 'Linitial(itrc)',   &
+     &            'Adjusting initial condition of tracer ', itrc,       &
+     &            TRIM(Vname(1,idTvar(itrc)))
+          END DO
 #    endif
 #    if defined ADJUST_STFLUX && defined SOLVE3D
           DO itrc=1,NT(ng)
