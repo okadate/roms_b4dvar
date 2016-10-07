@@ -1,8 +1,7 @@
-# ROMS B4D-Var
+# ROMS with Biological 4D-Var
 
-Regional Ocean Modeling Sysytem with Biological 4D-Var for Fennel et al. (2006) biology model
-
-Original ROMS code: https://www.myroms.org/
+This is Regional Ocean Modelling System with 4D-Var data assimilation codes for Fennel et al. (2006) biology model, and under development.
+Original ROMS codes can be obtained at https://www.myroms.org/.
 
 ## Additional CPP flags
 
